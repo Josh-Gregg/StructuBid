@@ -168,7 +168,7 @@ export default function ProposalDetails() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-full -z-10 print:hidden"></div>
           
           <header className="flex justify-between items-start mb-24">
-            <Logo className="w-64" />
+            <Logo imageClassName="h-32" />
             <div className="text-right text-sm text-gray-600 space-y-1">
               <p className="font-bold text-gray-900">Great White Construction</p>
               <p>2470 S Zephyr St</p>
@@ -179,12 +179,18 @@ export default function ProposalDetails() {
           </header>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="uppercase tracking-widest text-blue-600 font-bold text-sm mb-4">Project Proposal</div>
+            <div className="uppercase tracking-widest text-blue-600 font-bold text-sm mb-4">{proposal.cover_title || 'Project Proposal'}</div>
             <h1 className="text-5xl md:text-6xl font-black text-blue-900 leading-tight mb-8">
               {proposal.project_type?.replace(/_/g, ' ')}
             </h1>
             
             <div className="w-24 h-1.5 bg-blue-600 mb-12"></div>
+
+            {proposal.cover_photo_url && (
+              <div className="mb-12 w-full h-80 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+                <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-12">
               <div>

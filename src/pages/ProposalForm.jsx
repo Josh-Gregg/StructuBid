@@ -23,6 +23,7 @@ export default function ProposalForm() {
   const defaultState = {
     client_name: '', company_name: '', client_address: '', client_phone: '', client_email: '', referral_source: '', project_number: `PRJ-${Date.now().toString().slice(-6)}`,
     project_type: 'residential_remodel', project_address: '', property_owner: '', scope_of_work: '', executive_summary: '',
+    cover_title: 'Project Proposal', cover_photo_url: '',
     schedule_start_date: '', schedule_end_date: '', milestones: [], categories: [], hide_markups: false,
     overall_markup_percentage: 0, tax_amount: 0, tax_type: 'percentage', discount_amount: 0, discount_type: 'percentage',
     contingency_percentage: 10, assumptions: '', terms_and_conditions_url: '', attachments: [], status: 'draft', change_orders: []
@@ -82,6 +83,20 @@ export default function ProposalForm() {
     const newCategories = [...form.categories];
     newCategories[catIndex].line_items = newCategories[catIndex].line_items.filter((_, i) => i !== itemIndex);
     updateForm('categories', newCategories);
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsSaving(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      updateForm('cover_photo_url', file_url);
+    } catch (err) {
+      alert("Failed to upload photo");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSave = async () => {
@@ -188,6 +203,19 @@ export default function ProposalForm() {
               <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700">Property Owner</Label>
                 <Input value={form.property_owner} onChange={e => updateForm('property_owner', e.target.value)} className="bg-gray-50 border-gray-200 focus:bg-white" />
+              </div>
+              <div className="space-y-2">
+                <Label className="font-bold text-gray-700">Cover Sheet Title</Label>
+                <Input value={form.cover_title} onChange={e => updateForm('cover_title', e.target.value)} placeholder="e.g. Project Proposal" className="bg-gray-50 border-gray-200 focus:bg-white" />
+              </div>
+              <div className="space-y-2">
+                <Label className="font-bold text-gray-700">Cover Photo</Label>
+                <div className="flex items-center gap-3">
+                  <Input type="file" accept="image/*" onChange={handlePhotoUpload} className="bg-gray-50 border-gray-200 focus:bg-white" />
+                  {form.cover_photo_url && (
+                    <img src={form.cover_photo_url} alt="Cover Preview" className="h-10 w-10 object-cover rounded shadow-sm" />
+                  )}
+                </div>
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700">Scope of Work *</Label>
