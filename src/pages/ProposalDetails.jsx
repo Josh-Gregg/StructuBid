@@ -129,7 +129,7 @@ export default function ProposalDetails() {
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8 print:hidden">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-gray-900">Change Orders</h3>
-            <Button variant="ghost" size="sm" onClick={() => setIsAddingCO(!isAddingCO)} className="text-blue-600 font-bold">
+            <Button variant="ghost" size="sm" onClick={() => setIsAddingCO(!isAddingCO)} className="text-[#042950] font-bold">
               <PlusCircle className="w-4 h-4 mr-2" /> Add CO
             </Button>
           </div>
@@ -162,7 +162,7 @@ export default function ProposalDetails() {
         
         {/* Cover Page */}
         <div className="p-12 md:p-16 min-h-[1000px] flex flex-col relative" style={{pageBreakAfter: 'always'}}>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-full -z-10 print:hidden"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#042950]/10 rounded-bl-full -z-10 print:hidden"></div>
           
           <header className="flex justify-between items-start mb-12">
             <Logo imageClassName="h-32" />
@@ -176,12 +176,10 @@ export default function ProposalDetails() {
           </header>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="uppercase tracking-widest text-blue-600 font-bold text-sm mb-4">{proposal.cover_title || 'Project Proposal'}</div>
-            <h1 className="text-5xl md:text-6xl font-black text-blue-900 leading-tight mb-8">
+            <div className="uppercase tracking-widest text-[#042950] font-bold text-sm mb-4">{proposal.cover_title || 'Project Proposal'}</div>
+            <h1 className="text-5xl md:text-6xl font-black text-[#042950] leading-tight mb-8">
               {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
             </h1>
-            
-            <div className="w-24 h-1.5 bg-blue-600 mb-8"></div>
 
             {proposal.cover_photo_url && (
               <div className="mb-8 w-full h-64 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
@@ -206,11 +204,9 @@ export default function ProposalDetails() {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="pt-12 border-t border-gray-200 mt-auto flex justify-start items-center">
-            <div>
-              <p className="text-sm text-gray-500">Proposal Number: <span className="font-bold text-gray-900">{proposal.project_number}</span></p>
+            
+            <div className="mt-12 pt-6 border-t border-gray-200">
+              <p className="text-sm text-gray-500">Proposal Number: <span className="font-bold text-[#042950]">{proposal.project_number}</span></p>
             </div>
           </div>
         </div>
@@ -219,13 +215,13 @@ export default function ProposalDetails() {
         <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col" style={{pageBreakAfter: 'always'}}>
           {proposal.executive_summary && (
             <div className="mb-16">
-              <h2 className="text-2xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Executive Summary</h2>
+              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Executive Summary</h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
             </div>
           )}
 
           <div className="mb-16">
-            <h2 className="text-2xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Scope of Work</h2>
+            <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Scope of Work</h2>
             <div className="prose prose-blue max-w-none text-gray-700">
               <p className="whitespace-pre-wrap leading-relaxed">{proposal.scope_of_work}</p>
             </div>
@@ -233,7 +229,7 @@ export default function ProposalDetails() {
 
           {(proposal.schedule_start_date || proposal.schedule_end_date) && (
             <div className="mb-16">
-              <h2 className="text-2xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Schedule</h2>
+              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Schedule</h2>
               <div className="flex gap-12">
                 {proposal.schedule_start_date && (
                   <div>
@@ -251,14 +247,12 @@ export default function ProposalDetails() {
             </div>
           )}
 
-          <div className="mt-auto pt-12">
-            <Logo imageClassName="h-8 opacity-50 grayscale" />
-          </div>
+
         </div>
 
         {/* Estimate Section */}
         <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col" style={{pageBreakAfter: 'always'}}>
-          <h2 className="text-2xl font-black text-blue-900 mb-8 pb-2 border-b-2 border-blue-100">Estimate</h2>
+          <h2 className="text-2xl font-black text-[#042950] mb-8 pb-2 border-b-2 border-[#042950]/20">Estimate</h2>
           
           <div className="space-y-8">
             {proposal.categories?.map((cat, i) => {
@@ -345,34 +339,43 @@ export default function ProposalDetails() {
                 </div>
               )}
 
-              <div className="flex justify-between text-xl font-black text-blue-900 pt-4 border-t-2 border-gray-900">
+              <div className="flex justify-between text-xl font-black text-[#042950] pt-4 border-t-2 border-gray-900">
                 <span>Grand Total</span>
                 <span>${totals.grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
               </div>
             </div>
           </div>
 
-          <div className="mt-auto pt-12">
-            <Logo imageClassName="h-8 opacity-50 grayscale" />
-          </div>
+
         </div>
 
         {/* Assumptions & Signatures Page */}
         <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col">
           {proposal.assumptions && (
             <div className="mb-16">
-              <h2 className="text-xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Assumptions & Exclusions</h2>
+              <h2 className="text-xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Assumptions & Exclusions</h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm">{proposal.assumptions}</p>
             </div>
           )}
 
           <div className="mb-16">
-            <h2 className="text-xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Terms & Conditions</h2>
-            <p className="text-gray-700 text-sm">Terms and Conditions are attached to this proposal or provided as a separate document. Acceptance of this proposal indicates acceptance of all attached terms.</p>
+            <h2 className="text-xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Attachments</h2>
+            {proposal.attachments && proposal.attachments.length > 0 ? (
+              <div className="space-y-6">
+                {proposal.attachments.map((att, idx) => (
+                  <div key={idx}>
+                    <p className="font-bold text-[#042950] text-lg">{att.name}</p>
+                    <p className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{att.description}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-700 text-sm">No attachments provided.</p>
+            )}
           </div>
 
           <div className="mt-20">
-            <h2 className="text-xl font-black text-blue-900 mb-12">Acceptance & Signatures</h2>
+            <h2 className="text-xl font-black text-[#042950] mb-12">Acceptance & Signatures</h2>
             <div className="grid grid-cols-2 gap-16">
               <div>
                 <div className="border-b border-gray-400 h-10 mb-2"></div>
@@ -407,9 +410,7 @@ export default function ProposalDetails() {
             </p>
           </div>
 
-          <div className="mt-auto pt-12">
-            <Logo imageClassName="h-8 opacity-50 grayscale" />
-          </div>
+
         </div>
 
       </div>

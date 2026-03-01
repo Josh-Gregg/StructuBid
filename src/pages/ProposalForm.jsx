@@ -46,6 +46,25 @@ export default function ProposalForm() {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
+  const addAttachment = () => {
+    setForm(prev => ({
+      ...prev,
+      attachments: [...(prev.attachments || []), { name: '', description: '' }]
+    }));
+  };
+
+  const updateAttachment = (index, field, value) => {
+    const newAtts = [...(form.attachments || [])];
+    newAtts[index] = { ...newAtts[index], [field]: value };
+    updateForm('attachments', newAtts);
+  };
+
+  const removeAttachment = (index) => {
+    const newAtts = [...(form.attachments || [])];
+    newAtts.splice(index, 1);
+    updateForm('attachments', newAtts);
+  };
+
   const addCategory = () => {
     const name = window.prompt("Enter category name (e.g. Materials, Labor):");
     if (name) {
@@ -261,7 +280,10 @@ export default function ProposalForm() {
                   
                   <div className="space-y-3">
                     {cat.line_items?.map((item, itemIndex) => {
-                      const itemTotal = (item.quantity * item.cost_per_unit * (1 + item.markup_percentage/100)).toFixed(2);
+                      const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0)/100);
+                      const itemDistMarkup = (!item.exclude_from_markup && totals.totalLineItemsForMarkup > 0) ? (totals.distMarkup / totals.totalLineItemsForMarkup) : 0;
+                      const itemTotalWithOverallMarkup = itemSub + itemDistMarkup;
+
                       return (
                         <div key={itemIndex} className="flex flex-col gap-2 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
                           <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
@@ -303,7 +325,10 @@ export default function ProposalForm() {
                                 />
                                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
                               </div>
-                              <div className="w-24 text-right font-bold text-gray-900">${itemTotal}</div>
+                              <div className="w-24 text-right flex flex-col justify-center">
+                                <span className="font-bold text-gray-900" title="Cost (Without Overall Markup)">${itemSub.toFixed(2)}</span>
+                                <span className="text-[10px] text-blue-600 font-semibold" title="Cost (With Overall Markup)">w/ mkp: ${itemTotalWithOverallMarkup.toFixed(2)}</span>
+                              </div>
                               <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 ml-1">
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -325,6 +350,15 @@ export default function ProposalForm() {
                               />
                               Show note on PDF
                             </Label>
+                            <Label className="flex items-center gap-2 text-xs font-medium text-gray-600 min-w-[150px] cursor-pointer ml-4">
+                              <input 
+                                type="checkbox" 
+                                checked={item.exclude_from_markup || false} 
+                                onChange={e => updateLineItem(catIndex, itemIndex, 'exclude_from_markup', e.target.checked)} 
+                                className="w-3 h-3 text-blue-600 rounded border-gray-300"
+                              />
+                              Exclude from overall markup
+                            </Label>
                           </div>
                         </div>
                       );
@@ -335,6 +369,33 @@ export default function ProposalForm() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Attachments Section */}
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+              <h2 className="text-lg font-black text-gray-900 uppercase tracking-wider">Attachments</h2>
+              <Button onClick={addAttachment} variant="outline" size="sm" className="font-bold border-gray-300">
+                <Plus className="w-4 h-4 mr-2" /> Add Attachment
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              {(form.attachments || []).map((att, i) => (
+                <div key={i} className="flex gap-4 items-start bg-gray-50 p-4 rounded-lg">
+                  <div className="flex-1 space-y-3">
+                    <Input placeholder="Attachment Name" value={att.name || ''} onChange={e => updateAttachment(i, 'name', e.target.value)} />
+                    <Textarea placeholder="Short Description" value={att.description || ''} onChange={e => updateAttachment(i, 'description', e.target.value)} rows={2} />
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={() => removeAttachment(i)} className="text-red-500 hover:text-red-700 hover:bg-red-50 mt-1">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+              {(!form.attachments || form.attachments.length === 0) && (
+                <div className="text-center p-4 text-gray-500 text-sm border-2 border-dashed border-gray-200 rounded-xl">No attachments added.</div>
+              )}
             </div>
           </div>
 
