@@ -40,7 +40,12 @@ export default function TeamPage() {
     
     setIsInviting(true);
     try {
-      await base44.users.inviteUser(inviteEmail, inviteRole);
+      const systemRole = inviteRole === 'admin' ? 'admin' : 'user';
+      try {
+        await base44.users.inviteUser(inviteEmail, systemRole);
+      } catch (systemErr) {
+        console.warn("System invite error:", systemErr);
+      }
       
       const appUrl = window.location.origin;
       const body = `Hello,\n\nYou have been invited to join the Great White Construction app as a ${inviteRole.replace('_', ' ')}.\n\nPlease click the link below to sign in or sign up:\n${appUrl}\n\nThank you!`;
