@@ -187,7 +187,7 @@ export default function ProposalDetails() {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-12">
+            <div className="grid grid-cols-2 gap-12 mb-8">
               <div>
                 <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-2">Prepared For</p>
                 <p className="text-xl font-bold">{proposal.client_name}</p>
@@ -199,14 +199,11 @@ export default function ProposalDetails() {
                 <p className="text-lg font-medium">{proposal.project_address}</p>
                 
                 <div className="mt-8">
-                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Date</p>
+                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Date & Proposal #</p>
                   <p className="font-medium">{new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  <p className="font-medium text-[#042950]">#{proposal.project_number}</p>
                 </div>
               </div>
-            </div>
-            
-            <div className="mt-12 pt-6 border-t border-gray-200">
-              <p className="text-sm text-gray-500">Proposal Number: <span className="font-bold text-[#042950]">{proposal.project_number}</span></p>
             </div>
           </div>
         </div>
