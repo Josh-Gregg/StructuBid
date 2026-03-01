@@ -287,9 +287,15 @@ export default function ProposalForm() {
                       const itemTotalWithOverallMarkup = itemSub + itemDistMarkup;
 
                       return (
-                        <div key={itemIndex} className="flex flex-col gap-4 bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+                        <div key={itemIndex} className="flex flex-col gap-5 bg-white p-5 rounded-lg shadow-sm border border-gray-100 relative pt-8">
+                          <div className="absolute top-2 right-2">
+                            <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 h-8 w-8">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+
                           {/* Top Row: Description */}
-                          <div className="w-full space-y-1.5">
+                          <div className="w-full space-y-1.5 pr-8">
                             <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Item Description</Label>
                             <Input 
                               value={item.description} 
@@ -300,8 +306,8 @@ export default function ProposalForm() {
                           </div>
 
                           {/* Bottom Row: Numbers */}
-                          <div className="flex flex-wrap sm:flex-nowrap items-end gap-4">
-                            <div className="w-full sm:w-24 space-y-1.5">
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                            <div className="space-y-1.5">
                               <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Quantity</Label>
                               <Input 
                                 type="number" 
@@ -311,7 +317,7 @@ export default function ProposalForm() {
                                 placeholder="Qty" 
                               />
                             </div>
-                            <div className="w-full sm:w-20 space-y-1.5">
+                            <div className="space-y-1.5">
                               <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Unit</Label>
                               <Input 
                                 value={item.unit} 
@@ -320,7 +326,7 @@ export default function ProposalForm() {
                                 placeholder="Unit" 
                               />
                             </div>
-                            <div className="w-full sm:w-32 space-y-1.5">
+                            <div className="space-y-1.5">
                               <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Cost / Unit</Label>
                               <Input 
                                 type="number" 
@@ -330,7 +336,7 @@ export default function ProposalForm() {
                                 placeholder="Cost" 
                               />
                             </div>
-                            <div className="w-full sm:w-28 space-y-1.5">
+                            <div className="space-y-1.5">
                               <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Markup %</Label>
                               <div className="relative">
                                 <Input 
@@ -340,20 +346,15 @@ export default function ProposalForm() {
                                   className="w-full border-gray-200 text-right pr-6" 
                                   placeholder="Markup" 
                                 />
-                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
                               </div>
                             </div>
-                            <div className="flex-1 text-right flex flex-col justify-end pb-1 space-y-1 min-w-[120px]">
-                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider text-right mb-1">Subtotal</Label>
-                              <div className="flex flex-col justify-center">
+                            <div className="space-y-1.5 flex flex-col justify-center">
+                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Subtotal</Label>
+                              <div className="flex flex-col">
                                 <span className="font-bold text-gray-900 text-lg" title="Cost (Without Overall Markup)">${itemSub.toFixed(2)}</span>
                                 <span className="text-[10px] text-blue-600 font-semibold leading-tight" title="Cost (With Overall Markup)">w/ mkp: ${itemTotalWithOverallMarkup.toFixed(2)}</span>
                               </div>
-                            </div>
-                            <div className="pb-1">
-                              <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 h-10 w-10">
-                                <Trash2 className="w-5 h-5" />
-                              </Button>
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
