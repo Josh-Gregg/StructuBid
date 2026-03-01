@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import Logo from './components/Logo';
-import { LayoutDashboard, FileText, PlusCircle, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, FileText, PlusCircle, LogOut, Menu, X, Users } from 'lucide-react';
 
 export default function Layout({ children }) {
   const [user, setUser] = React.useState(null);
@@ -21,6 +21,7 @@ export default function Layout({ children }) {
   const navItems = [
     { name: 'Dashboard', path: 'Home', icon: LayoutDashboard },
     { name: 'Proposals', path: 'Proposals', icon: FileText },
+    ...(user?.role === 'admin' ? [{ name: 'Team', path: 'Team', icon: Users }] : []),
   ];
 
   if (!user) return <div className="min-h-screen flex items-center justify-center text-gray-500">Loading...</div>;

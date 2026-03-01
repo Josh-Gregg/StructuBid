@@ -51,6 +51,7 @@ import Home from './pages/Home';
 import ProposalDetails from './pages/ProposalDetails';
 import ProposalForm from './pages/ProposalForm';
 import Proposals from './pages/Proposals';
+import Team from './pages/Team';
 import __Layout from './Layout.jsx';
 
 
@@ -59,6 +60,7 @@ export const PAGES = {
     "ProposalDetails": ProposalDetails,
     "ProposalForm": ProposalForm,
     "Proposals": Proposals,
+    "Team": Team,
 }
 
 export const pagesConfig = {
