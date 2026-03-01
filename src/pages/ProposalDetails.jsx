@@ -285,12 +285,17 @@ export default function ProposalDetails() {
                     <tbody className="divide-y divide-gray-100">
                       {cat.line_items.map((item, j) => (
                         <tr key={j}>
-                          <td className="py-3 px-3 text-gray-800">{item.description}</td>
-                          <td className="py-3 px-3 text-right text-gray-600">{item.quantity} {item.unit}</td>
+                          <td className="py-3 px-3 text-gray-800 align-top">
+                            <div>{item.description}</div>
+                            {item.show_note && item.note && (
+                              <div className="text-xs text-gray-500 mt-1 italic">{item.note}</div>
+                            )}
+                          </td>
+                          <td className="py-3 px-3 text-right text-gray-600 align-top">{item.quantity} {item.unit}</td>
                           {!proposal.hide_markups && (
                             <>
-                              <td className="py-3 px-3 text-right text-gray-600">${(item.cost_per_unit || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
-                              <td className="py-3 px-3 text-right font-medium text-gray-900">${getDisplayCost(item).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+                              <td className="py-3 px-3 text-right text-gray-600 align-top">${(item.cost_per_unit || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+                              <td className="py-3 px-3 text-right font-medium text-gray-900 align-top">${getDisplayCost(item).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
                             </>
                           )}
                         </tr>

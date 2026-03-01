@@ -67,7 +67,7 @@ export default function ProposalForm() {
   const addLineItem = (catIndex) => {
     const newCategories = [...form.categories];
     newCategories[catIndex].line_items.push({
-      description: '', quantity: 1, unit: 'ea', cost_per_unit: 0, markup_percentage: 0
+      description: '', quantity: 1, unit: 'ea', cost_per_unit: 0, markup_percentage: 0, note: '', show_note: false
     });
     updateForm('categories', newCategories);
   };
@@ -231,49 +231,68 @@ export default function ProposalForm() {
                     {cat.line_items?.map((item, itemIndex) => {
                       const itemTotal = (item.quantity * item.cost_per_unit * (1 + item.markup_percentage/100)).toFixed(2);
                       return (
-                        <div key={itemIndex} className="flex flex-wrap md:flex-nowrap items-center gap-3 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                          <Input 
-                            value={item.description} 
-                            onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
-                            placeholder="Description" 
-                            className="flex-1 min-w-[200px] border-gray-200" 
-                          />
-                          <div className="flex items-center gap-2">
+                        <div key={itemIndex} className="flex flex-col gap-2 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                          <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
                             <Input 
-                              type="number" 
-                              value={item.quantity} 
-                              onChange={e => updateLineItem(catIndex, itemIndex, 'quantity', parseFloat(e.target.value) || 0)} 
-                              className="w-20 border-gray-200 text-right" 
-                              placeholder="Qty" 
+                              value={item.description} 
+                              onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
+                              placeholder="Description" 
+                              className="flex-1 min-w-[200px] border-gray-200" 
                             />
-                            <Input 
-                              value={item.unit} 
-                              onChange={e => updateLineItem(catIndex, itemIndex, 'unit', e.target.value)} 
-                              className="w-16 border-gray-200" 
-                              placeholder="Unit" 
-                            />
-                            <span className="text-gray-400">×</span>
-                            <Input 
-                              type="number" 
-                              value={item.cost_per_unit} 
-                              onChange={e => updateLineItem(catIndex, itemIndex, 'cost_per_unit', parseFloat(e.target.value) || 0)} 
-                              className="w-24 border-gray-200 text-right" 
-                              placeholder="Cost" 
-                            />
-                            <div className="w-24 relative">
+                            <div className="flex items-center gap-2">
                               <Input 
                                 type="number" 
-                                value={item.markup_percentage} 
-                                onChange={e => updateLineItem(catIndex, itemIndex, 'markup_percentage', parseFloat(e.target.value) || 0)} 
-                                className="w-full border-gray-200 text-right pr-6" 
-                                placeholder="Markup" 
+                                value={item.quantity} 
+                                onChange={e => updateLineItem(catIndex, itemIndex, 'quantity', parseFloat(e.target.value) || 0)} 
+                                className="w-20 border-gray-200 text-right" 
+                                placeholder="Qty" 
                               />
-                              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
+                              <Input 
+                                value={item.unit} 
+                                onChange={e => updateLineItem(catIndex, itemIndex, 'unit', e.target.value)} 
+                                className="w-16 border-gray-200" 
+                                placeholder="Unit" 
+                              />
+                              <span className="text-gray-400">×</span>
+                              <Input 
+                                type="number" 
+                                value={item.cost_per_unit} 
+                                onChange={e => updateLineItem(catIndex, itemIndex, 'cost_per_unit', parseFloat(e.target.value) || 0)} 
+                                className="w-24 border-gray-200 text-right" 
+                                placeholder="Cost" 
+                              />
+                              <div className="w-24 relative">
+                                <Input 
+                                  type="number" 
+                                  value={item.markup_percentage} 
+                                  onChange={e => updateLineItem(catIndex, itemIndex, 'markup_percentage', parseFloat(e.target.value) || 0)} 
+                                  className="w-full border-gray-200 text-right pr-6" 
+                                  placeholder="Markup" 
+                                />
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
+                              </div>
+                              <div className="w-24 text-right font-bold text-gray-900">${itemTotal}</div>
+                              <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 ml-1">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </div>
-                            <div className="w-24 text-right font-bold text-gray-900">${itemTotal}</div>
-                            <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 ml-1">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Input 
+                              value={item.note || ''} 
+                              onChange={e => updateLineItem(catIndex, itemIndex, 'note', e.target.value)} 
+                              placeholder="Add a note (optional)..." 
+                              className="flex-1 text-sm border-gray-200 bg-gray-50 h-8" 
+                            />
+                            <Label className="flex items-center gap-2 text-xs font-medium text-gray-600 min-w-[120px] cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={item.show_note || false} 
+                                onChange={e => updateLineItem(catIndex, itemIndex, 'show_note', e.target.checked)} 
+                                className="w-3 h-3 text-blue-600 rounded border-gray-300"
+                              />
+                              Show note on PDF
+                            </Label>
                           </div>
                         </div>
                       );
