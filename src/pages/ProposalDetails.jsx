@@ -77,8 +77,16 @@ export default function ProposalDetails() {
   // Calculate item display price with evenly distributed markup
   const getDisplayCost = (item) => {
     const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0) / 100);
-    const itemDistMarkup = totalLineItems > 0 ? totals.distMarkup / totalLineItems : 0;
+    if (item.exclude_from_markup) return itemSub;
+    const itemDistMarkup = totals.totalLineItemsForMarkup > 0 ? totals.distMarkup / totals.totalLineItemsForMarkup : 0;
     return itemSub + itemDistMarkup;
+  };
+
+  const formatDateString = (dateStr) => {
+    if (!dateStr) return '';
+    if (dateStr.toLowerCase() === 'tbd') return 'TBD';
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString();
   };
 
   return (
