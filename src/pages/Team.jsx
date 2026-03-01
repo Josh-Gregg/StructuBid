@@ -41,6 +41,17 @@ export default function TeamPage() {
     setIsInviting(true);
     try {
       await base44.users.inviteUser(inviteEmail, inviteRole);
+      
+      const appUrl = window.location.origin;
+      const body = `Hello,\n\nYou have been invited to join the Great White Construction app as a ${inviteRole.replace('_', ' ')}.\n\nPlease click the link below to sign in or sign up:\n${appUrl}\n\nThank you!`;
+      
+      await base44.integrations.Core.SendEmail({
+        to: inviteEmail,
+        subject: "Invitation to Great White Construction App",
+        body: body,
+        from_name: "Great White Construction"
+      });
+
       toast.success(`Invitation sent to ${inviteEmail}`);
       setInviteEmail('');
       fetchData(); // Refresh list to show new user
