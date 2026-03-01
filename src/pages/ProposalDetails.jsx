@@ -181,7 +181,7 @@ export default function ProposalDetails() {
           <div className="flex-1 flex flex-col justify-center">
             <div className="uppercase tracking-widest text-blue-600 font-bold text-sm mb-4">{proposal.cover_title || 'Project Proposal'}</div>
             <h1 className="text-5xl md:text-6xl font-black text-blue-900 leading-tight mb-8">
-              {proposal.project_type?.replace(/_/g, ' ')}
+              {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
             </h1>
             
             <div className="w-24 h-1.5 bg-blue-600 mb-12"></div>

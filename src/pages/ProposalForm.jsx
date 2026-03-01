@@ -23,7 +23,7 @@ export default function ProposalForm() {
   const defaultState = {
     client_name: '', company_name: '', client_address: '', client_phone: '', client_email: '', referral_source: '', project_number: `PRJ-${Date.now().toString().slice(-6)}`,
     project_type: 'residential_remodel', project_address: '', property_owner: '', scope_of_work: '', executive_summary: '',
-    cover_title: 'Project Proposal', cover_photo_url: '',
+    cover_title: 'Project Proposal', cover_subtitle: '', cover_photo_url: '',
     schedule_start_date: '', schedule_end_date: '', milestones: [], categories: [], hide_markups: false,
     overall_markup_percentage: 0, tax_amount: 0, tax_type: 'percentage', discount_amount: 0, discount_type: 'percentage',
     contingency_percentage: 10, assumptions: '', terms_and_conditions_url: '', attachments: [], status: 'draft', change_orders: []
@@ -209,6 +209,10 @@ export default function ProposalForm() {
                 <Input value={form.cover_title} onChange={e => updateForm('cover_title', e.target.value)} placeholder="e.g. Project Proposal" className="bg-gray-50 border-gray-200 focus:bg-white" />
               </div>
               <div className="space-y-2">
+                <Label className="font-bold text-gray-700">Cover Sheet Subtitle</Label>
+                <Input value={form.cover_subtitle} onChange={e => updateForm('cover_subtitle', e.target.value)} placeholder="e.g. Custom Home Build (Defaults to project type)" className="bg-gray-50 border-gray-200 focus:bg-white" />
+              </div>
+              <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700">Cover Photo</Label>
                 <div className="flex items-center gap-3">
                   <Input type="file" accept="image/*" onChange={handlePhotoUpload} className="bg-gray-50 border-gray-200 focus:bg-white" />
