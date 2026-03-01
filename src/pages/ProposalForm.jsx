@@ -146,7 +146,7 @@ export default function ProposalForm() {
   const totals = computeTotals(form);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-20 animate-in fade-in">
+    <div className="max-w-[120rem] mx-auto px-4 space-y-8 pb-20 animate-in fade-in">
       <div className="flex items-center justify-between sticky top-0 bg-[#F3F4F6] pt-4 pb-4 z-10 border-b border-gray-200 mb-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full bg-white shadow-sm border border-gray-200">
@@ -287,37 +287,49 @@ export default function ProposalForm() {
                       const itemTotalWithOverallMarkup = itemSub + itemDistMarkup;
 
                       return (
-                        <div key={itemIndex} className="flex flex-col gap-2 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
-                          <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
-                            <Input 
-                              value={item.description} 
-                              onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
-                              placeholder="Description" 
-                              className="flex-1 min-w-[200px] border-gray-200" 
-                            />
-                            <div className="flex items-center gap-2">
+                        <div key={itemIndex} className="flex flex-col gap-3 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                          <div className="flex flex-wrap lg:flex-nowrap items-end gap-4">
+                            <div className="flex-1 min-w-[250px] space-y-1.5">
+                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Item Description</Label>
+                              <Input 
+                                value={item.description} 
+                                onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
+                                placeholder="Description" 
+                                className="border-gray-200" 
+                              />
+                            </div>
+                            <div className="w-24 space-y-1.5">
+                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Quantity</Label>
                               <Input 
                                 type="number" 
                                 value={item.quantity} 
                                 onChange={e => updateLineItem(catIndex, itemIndex, 'quantity', parseFloat(e.target.value) || 0)} 
-                                className="w-20 border-gray-200 text-right" 
+                                className="border-gray-200 text-right" 
                                 placeholder="Qty" 
                               />
+                            </div>
+                            <div className="w-20 space-y-1.5">
+                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Unit</Label>
                               <Input 
                                 value={item.unit} 
                                 onChange={e => updateLineItem(catIndex, itemIndex, 'unit', e.target.value)} 
-                                className="w-16 border-gray-200" 
+                                className="border-gray-200" 
                                 placeholder="Unit" 
                               />
-                              <span className="text-gray-400">×</span>
+                            </div>
+                            <div className="w-32 space-y-1.5">
+                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Cost / Unit</Label>
                               <Input 
                                 type="number" 
                                 value={item.cost_per_unit} 
                                 onChange={e => updateLineItem(catIndex, itemIndex, 'cost_per_unit', parseFloat(e.target.value) || 0)} 
-                                className="w-24 border-gray-200 text-right" 
+                                className="border-gray-200 text-right" 
                                 placeholder="Cost" 
                               />
-                              <div className="w-24 relative">
+                            </div>
+                            <div className="w-28 space-y-1.5">
+                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Markup %</Label>
+                              <div className="relative">
                                 <Input 
                                   type="number" 
                                   value={item.markup_percentage} 
@@ -327,12 +339,17 @@ export default function ProposalForm() {
                                 />
                                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
                               </div>
-                              <div className="w-24 text-right flex flex-col justify-center">
-                                <span className="font-bold text-gray-900" title="Cost (Without Overall Markup)">${itemSub.toFixed(2)}</span>
-                                <span className="text-[10px] text-blue-600 font-semibold" title="Cost (With Overall Markup)">w/ mkp: ${itemTotalWithOverallMarkup.toFixed(2)}</span>
+                            </div>
+                            <div className="w-32 text-right flex flex-col justify-end pb-1 space-y-1">
+                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider text-right mb-1">Subtotal</Label>
+                              <div className="flex flex-col justify-center">
+                                <span className="font-bold text-gray-900 text-lg" title="Cost (Without Overall Markup)">${itemSub.toFixed(2)}</span>
+                                <span className="text-[10px] text-blue-600 font-semibold leading-tight" title="Cost (With Overall Markup)">w/ mkp: ${itemTotalWithOverallMarkup.toFixed(2)}</span>
                               </div>
-                              <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 ml-1">
-                                <Trash2 className="w-4 h-4" />
+                            </div>
+                            <div className="pb-1">
+                              <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 h-10 w-10">
+                                <Trash2 className="w-5 h-5" />
                               </Button>
                             </div>
                           </div>
