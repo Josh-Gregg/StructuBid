@@ -361,7 +361,8 @@ export default function ProposalDetails() {
           {proposal.assumptions && (
             <div className="mb-16">
               <h2 className="text-xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Assumptions & Exclusions</h2>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm">{proposal.assumptions}</p>
+              <div className="prose prose-sm prose-blue max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: proposal.assumptions }}>
+              </div>
             </div>
           )}
 

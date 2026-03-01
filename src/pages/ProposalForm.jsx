@@ -415,7 +415,7 @@ export default function ProposalForm() {
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700">Assumptions, Exclusions & Clarifications</Label>
-                <Textarea value={form.assumptions} onChange={e => updateForm('assumptions', e.target.value)} rows={4} className="bg-gray-50 border-gray-200" />
+                <ReactQuill theme="snow" value={form.assumptions} onChange={val => updateForm('assumptions', val)} className="bg-white" />
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700 flex items-center gap-2">
@@ -527,6 +527,13 @@ export default function ProposalForm() {
           </div>
         </div>
 
+      </div>
+
+      <div className="flex justify-end mt-8 border-t border-gray-200 pt-8">
+        <Button onClick={handleSave} disabled={isSaving} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md font-bold px-8 py-6 text-lg w-full md:w-auto">
+          <Save className="w-5 h-5 mr-2" />
+          {isSaving ? 'Saving...' : 'Save Proposal'}
+        </Button>
       </div>
     </div>
   );
