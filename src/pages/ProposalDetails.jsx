@@ -193,15 +193,18 @@ export default function ProposalDetails() {
                 <p className="text-xl font-bold">{proposal.client_name}</p>
                 {proposal.company_name && <p className="text-gray-700">{proposal.company_name}</p>}
                 <p className="text-gray-600">{proposal.client_address}</p>
+                <div className="mt-6">
+                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Proposal Number</p>
+                  <p className="font-medium text-[#042950]">#{proposal.project_number}</p>
+                </div>
               </div>
               <div>
                 <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-2">Project Location</p>
                 <p className="text-lg font-medium">{proposal.project_address}</p>
                 
-                <div className="mt-8">
-                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Date & Proposal #</p>
+                <div className="mt-6">
+                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Date</p>
                   <p className="font-medium">{new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  <p className="font-medium text-[#042950]">#{proposal.project_number}</p>
                 </div>
               </div>
             </div>
@@ -219,8 +222,7 @@ export default function ProposalDetails() {
 
           <div className="mb-16">
             <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Scope of Work</h2>
-            <div className="prose prose-blue max-w-none text-gray-700">
-              <p className="whitespace-pre-wrap leading-relaxed">{proposal.scope_of_work}</p>
+            <div className="prose prose-blue max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}>
             </div>
           </div>
 
@@ -231,13 +233,13 @@ export default function ProposalDetails() {
                 {proposal.schedule_start_date && (
                   <div>
                     <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
-                    <p className="text-lg font-medium">{new Date(proposal.schedule_start_date).toLocaleDateString()}</p>
+                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
                   </div>
                 )}
                 {proposal.schedule_end_date && (
                   <div>
                     <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
-                    <p className="text-lg font-medium">{new Date(proposal.schedule_end_date).toLocaleDateString()}</p>
+                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
                   </div>
                 )}
               </div>
@@ -376,6 +378,7 @@ export default function ProposalDetails() {
             <div className="grid grid-cols-2 gap-16">
               <div>
                 <div className="border-b border-gray-400 h-10 mb-2"></div>
+                <p className="text-[10px] text-gray-400 italic mb-1">(Contractor Signature)</p>
                 <p className="text-sm font-bold text-gray-900">George Gregg</p>
                 <p className="text-xs text-gray-500">Great White Construction</p>
                 <div className="flex gap-2 mt-4 text-sm text-gray-500">
@@ -385,6 +388,7 @@ export default function ProposalDetails() {
               </div>
               <div>
                 <div className="border-b border-gray-400 h-10 mb-2"></div>
+                <p className="text-[10px] text-gray-400 italic mb-1">(Client Signature)</p>
                 <p className="text-sm font-bold text-gray-900">{proposal.client_name}</p>
                 <p className="text-xs text-gray-500">Client</p>
                 <div className="flex gap-2 mt-4 text-sm text-gray-500">

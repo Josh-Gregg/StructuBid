@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -242,7 +244,7 @@ export default function ProposalForm() {
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700">Scope of Work *</Label>
-                <Textarea value={form.scope_of_work} onChange={e => updateForm('scope_of_work', e.target.value)} rows={6} className="bg-gray-50 border-gray-200 focus:bg-white resize-y" placeholder="Detailed description..." />
+                <ReactQuill theme="snow" value={form.scope_of_work} onChange={val => updateForm('scope_of_work', val)} className="bg-white" />
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700">Executive Summary</Label>
@@ -405,11 +407,11 @@ export default function ProposalForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="font-bold text-gray-700">Start Date</Label>
-                <Input type="date" value={form.schedule_start_date} onChange={e => updateForm('schedule_start_date', e.target.value)} className="bg-gray-50 border-gray-200" />
+                <Input type="text" placeholder="e.g. YYYY-MM-DD or TBD" value={form.schedule_start_date} onChange={e => updateForm('schedule_start_date', e.target.value)} className="bg-gray-50 border-gray-200" />
               </div>
               <div className="space-y-2">
                 <Label className="font-bold text-gray-700">End Date</Label>
-                <Input type="date" value={form.schedule_end_date} onChange={e => updateForm('schedule_end_date', e.target.value)} className="bg-gray-50 border-gray-200" />
+                <Input type="text" placeholder="e.g. YYYY-MM-DD or TBD" value={form.schedule_end_date} onChange={e => updateForm('schedule_end_date', e.target.value)} className="bg-gray-50 border-gray-200" />
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700">Assumptions, Exclusions & Clarifications</Label>
