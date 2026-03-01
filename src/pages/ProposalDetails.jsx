@@ -168,7 +168,7 @@ export default function ProposalDetails() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-full -z-10 print:hidden"></div>
           
           <header className="flex justify-between items-start mb-24">
-            <Logo className="scale-125 origin-top-left" />
+            <Logo className="w-64" />
             <div className="text-right text-sm text-gray-600 space-y-1">
               <p className="font-bold text-gray-900">Great White Construction</p>
               <p>2470 S Zephyr St</p>
