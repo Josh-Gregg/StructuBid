@@ -13,7 +13,7 @@ export default function TeamPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isInviting, setIsInviting] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState('team_member');
+  const [inviteRole, setInviteRole] = useState('user');
 
   useEffect(() => {
     fetchData();
@@ -120,7 +120,7 @@ export default function TeamPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="admin">Admin (Full Access)</SelectItem>
-                    <SelectItem value="team_member">Team Member (Create/Edit Proposals)</SelectItem>
+                    <SelectItem value="user">User (Create/Edit Proposals)</SelectItem>
                     <SelectItem value="client">Client (View/Accept Proposals)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -167,7 +167,7 @@ export default function TeamPage() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="team_member">Team Member</SelectItem>
+                          <SelectItem value="user">User</SelectItem>
                           <SelectItem value="client">Client</SelectItem>
                         </SelectContent>
                       </Select>

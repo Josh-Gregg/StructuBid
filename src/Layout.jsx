@@ -51,7 +51,7 @@ export default function Layout({ children }) {
             </Link>
           );
         })}
-        {['admin', 'team_member'].includes(user?.role) && (
+        {['admin', 'user'].includes(user?.role) && (
           <div className="pt-4 mt-4 border-t border-gray-100">
             <Link
               to={createPageUrl('ProposalForm')}

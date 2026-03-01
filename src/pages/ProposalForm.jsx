@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Trash2, Save, ArrowLeft, Calculator } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
+import { toast } from 'sonner';
 
 export default function ProposalForm() {
   const navigate = useNavigate();
@@ -41,6 +42,21 @@ export default function ProposalForm() {
         setForm({ ...defaultState, ...data });
         setIsLoading(false);
       });
+
+      const unsubscribe = base44.entities.Proposal.subscribe((event) => {
+        if (event.type === 'update' && event.id === id) {
+          setForm(prev => {
+            // Only update if it's actually different to avoid resetting active typing unnecessarily,
+            // though for full real-time we merge the new data.
+            toast('Proposal was updated by another collaborator', {
+              description: 'The latest changes have been loaded.',
+              icon: <Save className="w-4 h-4 text-blue-500" />
+            });
+            return { ...prev, ...event.data };
+          });
+        }
+      });
+      return () => unsubscribe();
     }
   }, [id]);
 

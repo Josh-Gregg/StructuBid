@@ -55,7 +55,7 @@ export default function Proposals() {
           <p className="text-gray-500 mt-1">Manage all your estimates and proposals</p>
         </div>
         
-        {['admin', 'team_member'].includes(user?.role) && (
+        {['admin', 'user'].includes(user?.role) && (
           <Link
             to={createPageUrl('ProposalForm')}
             className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-white bg-blue-700 hover:bg-blue-800 transition-colors shadow-md"
