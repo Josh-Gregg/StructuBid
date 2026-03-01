@@ -85,7 +85,7 @@ export default function ProposalDetails() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto animate-in fade-in">
+    <div className="max-w-5xl mx-auto animate-in fade-in print:max-w-none print:m-0 print:p-0">
       {/* Action Bar (Hidden in Print) */}
       <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8 print:hidden sticky top-4 z-10">
         <div className="flex items-center gap-4">
@@ -161,7 +161,7 @@ export default function ProposalDetails() {
       )}
 
       {/* Printable Proposal Area */}
-      <div id="printable-proposal" className="bg-white shadow-xl rounded-none md:rounded-2xl overflow-hidden text-gray-900 print:shadow-none mx-auto max-w-[800px] border border-gray-200 print:border-none mb-20">
+      <div id="printable-proposal" className="bg-white shadow-xl rounded-none md:rounded-2xl overflow-hidden text-gray-900 print:shadow-none mx-auto max-w-[800px] print:max-w-none print:m-0 border border-gray-200 print:border-none mb-20 print:mb-0">
         
         {/* Cover Page */}
         <div className="p-12 md:p-20 min-h-[1050px] flex flex-col relative" style={{pageBreakAfter: 'always'}}>
