@@ -72,15 +72,12 @@ export default function ProposalDetails() {
   if (!proposal || !user) return <div className="p-8">Loading...</div>;
 
   const totals = computeTotals(proposal);
+  const totalLineItems = proposal.categories?.reduce((acc, cat) => acc + (cat.line_items?.length || 0), 0) || 0;
   
-  // Calculate item display price with distributed markup if needed
+  // Calculate item display price with evenly distributed markup
   const getDisplayCost = (item) => {
     const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0) / 100);
-    if (!proposal.hide_markups) return itemSub;
-    
-    // Distribute overall markup evenly
-    const ratio = totals.subtotal > 0 ? itemSub / totals.subtotal : 0;
-    const itemDistMarkup = totals.distMarkup * ratio;
+    const itemDistMarkup = totalLineItems > 0 ? totals.distMarkup / totalLineItems : 0;
     return itemSub + itemDistMarkup;
   };
 
@@ -164,7 +161,7 @@ export default function ProposalDetails() {
       <div id="printable-proposal" className="bg-white shadow-xl rounded-none md:rounded-2xl overflow-hidden text-gray-900 print:shadow-none mx-auto max-w-[800px] print:max-w-none print:m-0 border border-gray-200 print:border-none mb-20 print:mb-0">
         
         {/* Cover Page */}
-        <div className="p-12 md:p-16 min-h-[800px] flex flex-col relative" style={{pageBreakAfter: 'always'}}>
+        <div className="p-12 md:p-16 min-h-[1000px] flex flex-col relative" style={{pageBreakAfter: 'always'}}>
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-full -z-10 print:hidden"></div>
           
           <header className="flex justify-between items-start mb-12">
@@ -211,19 +208,15 @@ export default function ProposalDetails() {
             </div>
           </div>
 
-          <div className="pt-12 border-t border-gray-200 mt-auto flex justify-between items-center">
+          <div className="pt-12 border-t border-gray-200 mt-auto flex justify-start items-center">
             <div>
               <p className="text-sm text-gray-500">Proposal Number: <span className="font-bold text-gray-900">{proposal.project_number}</span></p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-500">Estimated Total</p>
-              <p className="text-2xl font-black text-blue-900">${totals.grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</p>
             </div>
           </div>
         </div>
 
         {/* Content Pages */}
-        <div className="p-12 md:p-16 bg-white min-h-[800px] flex flex-col" style={{pageBreakAfter: 'always'}}>
+        <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col" style={{pageBreakAfter: 'always'}}>
           {proposal.executive_summary && (
             <div className="mb-16">
               <h2 className="text-2xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Executive Summary</h2>
@@ -264,7 +257,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* Estimate Section */}
-        <div className="p-12 md:p-16 bg-white min-h-[800px] flex flex-col" style={{pageBreakAfter: 'always'}}>
+        <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col" style={{pageBreakAfter: 'always'}}>
           <h2 className="text-2xl font-black text-blue-900 mb-8 pb-2 border-b-2 border-blue-100">Estimate</h2>
           
           <div className="space-y-8">
@@ -274,7 +267,7 @@ export default function ProposalDetails() {
               const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
 
               return (
-                <div key={i} className="mb-6">
+                <div key={i} className="mb-6 break-inside-avoid">
                   <h3 className="text-lg font-bold text-gray-900 bg-gray-50 p-3 rounded-t-lg border border-gray-200 border-b-0 flex justify-between">
                     <span>{cat.name}</span>
                     <span>${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
@@ -304,7 +297,7 @@ export default function ProposalDetails() {
                           <td className="py-3 px-3 text-right text-gray-600 align-top">{item.quantity} {item.unit}</td>
                           {!proposal.hide_markups && (
                             <>
-                              <td className="py-3 px-3 text-right text-gray-600 align-top">${(item.cost_per_unit || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+                              <td className="py-3 px-3 text-right text-gray-600 align-top">${(getDisplayCost(item) / (item.quantity || 1)).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
                               <td className="py-3 px-3 text-right font-medium text-gray-900 align-top">${getDisplayCost(item).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
                             </>
                           )}
@@ -321,15 +314,8 @@ export default function ProposalDetails() {
             <div className="w-full max-w-sm space-y-3">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>${proposal.hide_markups ? totals.totalWithMarkup.toLocaleString(undefined, {minimumFractionDigits:2}) : totals.subtotal.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                <span>${totals.totalWithMarkup.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
               </div>
-              
-              {!proposal.hide_markups && totals.distMarkup > 0 && (
-                <div className="flex justify-between text-gray-600">
-                  <span>Markup ({proposal.overall_markup_percentage}%)</span>
-                  <span>${totals.distMarkup.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-                </div>
-              )}
 
               {totals.discount > 0 && (
                 <div className="flex justify-between text-red-600">
@@ -372,7 +358,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* Assumptions & Signatures Page */}
-        <div className="p-12 md:p-16 bg-white min-h-[800px] flex flex-col">
+        <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col">
           {proposal.assumptions && (
             <div className="mb-16">
               <h2 className="text-xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Assumptions & Exclusions</h2>
