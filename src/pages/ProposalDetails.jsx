@@ -164,10 +164,10 @@ export default function ProposalDetails() {
       <div id="printable-proposal" className="bg-white shadow-xl rounded-none md:rounded-2xl overflow-hidden text-gray-900 print:shadow-none mx-auto max-w-[800px] print:max-w-none print:m-0 border border-gray-200 print:border-none mb-20 print:mb-0">
         
         {/* Cover Page */}
-        <div className="p-12 md:p-20 min-h-[1050px] flex flex-col relative" style={{pageBreakAfter: 'always'}}>
+        <div className="p-12 md:p-16 min-h-[800px] flex flex-col relative" style={{pageBreakAfter: 'always'}}>
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-bl-full -z-10 print:hidden"></div>
           
-          <header className="flex justify-between items-start mb-24">
+          <header className="flex justify-between items-start mb-12">
             <Logo imageClassName="h-32" />
             <div className="text-right text-sm text-gray-600 space-y-1">
               <p className="font-bold text-gray-900">Great White Construction</p>
@@ -184,10 +184,10 @@ export default function ProposalDetails() {
               {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
             </h1>
             
-            <div className="w-24 h-1.5 bg-blue-600 mb-12"></div>
+            <div className="w-24 h-1.5 bg-blue-600 mb-8"></div>
 
             {proposal.cover_photo_url && (
-              <div className="mb-12 w-full h-80 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+              <div className="mb-8 w-full h-64 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
                 <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
               </div>
             )}
@@ -223,7 +223,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* Content Pages */}
-        <div className="p-12 md:p-20 bg-white" style={{pageBreakAfter: 'always'}}>
+        <div className="p-12 md:p-16 bg-white min-h-[800px] flex flex-col" style={{pageBreakAfter: 'always'}}>
           {proposal.executive_summary && (
             <div className="mb-16">
               <h2 className="text-2xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Executive Summary</h2>
@@ -257,11 +257,15 @@ export default function ProposalDetails() {
               </div>
             </div>
           )}
+
+          <div className="mt-auto pt-12">
+            <Logo imageClassName="h-8 opacity-50 grayscale" />
+          </div>
         </div>
 
         {/* Estimate Section */}
-        <div className="p-12 md:p-20 bg-white" style={{pageBreakAfter: 'always'}}>
-          <h2 className="text-2xl font-black text-blue-900 mb-8 pb-2 border-b-2 border-blue-100">Investment Summary</h2>
+        <div className="p-12 md:p-16 bg-white min-h-[800px] flex flex-col" style={{pageBreakAfter: 'always'}}>
+          <h2 className="text-2xl font-black text-blue-900 mb-8 pb-2 border-b-2 border-blue-100">Estimate</h2>
           
           <div className="space-y-8">
             {proposal.categories?.map((cat, i) => {
@@ -361,10 +365,14 @@ export default function ProposalDetails() {
               </div>
             </div>
           </div>
+
+          <div className="mt-auto pt-12">
+            <Logo imageClassName="h-8 opacity-50 grayscale" />
+          </div>
         </div>
 
         {/* Assumptions & Signatures Page */}
-        <div className="p-12 md:p-20 bg-white">
+        <div className="p-12 md:p-16 bg-white min-h-[800px] flex flex-col">
           {proposal.assumptions && (
             <div className="mb-16">
               <h2 className="text-xl font-black text-blue-900 mb-4 pb-2 border-b-2 border-blue-100">Assumptions & Exclusions</h2>
@@ -407,6 +415,14 @@ export default function ProposalDetails() {
                 </Button>
               </div>
             )}
+            
+            <p className="mt-8 text-sm text-gray-500">
+              Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
+            </p>
+          </div>
+
+          <div className="mt-auto pt-12">
+            <Logo imageClassName="h-8 opacity-50 grayscale" />
           </div>
         </div>
 
