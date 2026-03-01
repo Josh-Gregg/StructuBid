@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,20 +10,6 @@
 }
 
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  #printable-proposal, #printable-proposal * {
-    visibility: visible;
-  }
-  #printable-proposal {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
   @page {
     margin: 20mm;
   }

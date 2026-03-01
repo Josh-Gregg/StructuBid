@@ -80,31 +80,31 @@ export default function Layout({ children }) {
   return (
     <div className="min-h-screen bg-[#F3F4F6] flex">
       {/* Desktop Sidebar */}
-      <aside className="w-72 bg-white border-r border-gray-200 hidden md:flex flex-col shadow-sm z-10">
+      <aside className="w-72 bg-white border-r border-gray-200 hidden md:flex flex-col shadow-sm z-10 print:hidden">
         <SidebarContent />
       </aside>
 
       {/* Mobile Sidebar overlay */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-gray-900/50 z-40 md:hidden" onClick={() => setMobileMenuOpen(false)} />
+        <div className="fixed inset-0 bg-gray-900/50 z-40 md:hidden print:hidden" onClick={() => setMobileMenuOpen(false)} />
       )}
       
       {/* Mobile Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 w-72 bg-white flex flex-col z-50 transform transition-transform duration-300 ease-in-out md:hidden ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 w-72 bg-white flex flex-col z-50 transform transition-transform duration-300 ease-in-out md:hidden print:hidden ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <SidebarContent />
       </aside>
 
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden print:overflow-visible">
         {/* Mobile header */}
-        <header className="md:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+        <header className="md:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between print:hidden">
           <Logo className="scale-75 origin-left" />
           <button onClick={() => setMobileMenuOpen(true)} className="p-2 -mr-2 text-gray-600">
             <Menu className="w-6 h-6" />
           </button>
         </header>
         
-        <div className="flex-1 overflow-auto p-4 md:p-8">
-          <div className="max-w-7xl mx-auto">
+        <div className="flex-1 overflow-auto p-4 md:p-8 print:overflow-visible print:p-0">
+          <div className="max-w-7xl mx-auto print:max-w-none print:m-0">
             {children}
           </div>
         </div>
