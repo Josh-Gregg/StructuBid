@@ -8,6 +8,32 @@ import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 
+function PrintSection({ title, children, className="" }) {
+  return (
+    <div className={`relative ${className}`}>
+      <div className="print:absolute print:top-0 print:left-0 print:right-0 print:z-10 bg-white" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+        <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">{title}</h2>
+      </div>
+      <table className="w-full border-collapse block print:table">
+        <thead className="hidden print:table-header-group">
+          <tr>
+            <th className="text-left font-normal p-0 align-top">
+              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20 bg-white" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>{title} (Cont.)</h2>
+            </th>
+          </tr>
+        </thead>
+        <tbody className="block print:table-row-group">
+          <tr className="block print:table-row">
+            <td className="p-0 align-top block print:table-cell w-full">
+              {children}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function ProposalDetails() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -174,7 +200,7 @@ export default function ProposalDetails() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#042950]/10 rounded-bl-full -z-10 print:hidden"></div>
           
           <header className="flex justify-between items-start mb-12">
-            <Logo imageClassName="h-32" />
+            <Logo imageClassName="h-48 md:h-56 object-contain" />
             <div className="text-right text-sm text-gray-600 space-y-1">
               <p className="font-bold text-gray-900">Great White Construction</p>
               <p>2470 S Zephyr St</p>
@@ -223,21 +249,18 @@ export default function ProposalDetails() {
         {/* Content Pages */}
         <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col" style={{pageBreakAfter: 'always'}}>
           {proposal.executive_summary && (
-            <div className="mb-16">
-              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Executive Summary</h2>
+            <PrintSection title="Executive Summary" className="mb-16">
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
-            </div>
+            </PrintSection>
           )}
 
-          <div className="mb-16">
-            <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Scope of Work</h2>
+          <PrintSection title="Scope of Work" className="mb-16">
             <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}>
             </div>
-          </div>
+          </PrintSection>
 
           {(proposal.schedule_start_date || proposal.schedule_end_date) && (
-            <div className="mb-16">
-              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Schedule</h2>
+            <PrintSection title="Schedule" className="mb-16">
               <div className="flex gap-12">
                 {proposal.schedule_start_date && (
                   <div>
@@ -252,7 +275,7 @@ export default function ProposalDetails() {
                   </div>
                 )}
               </div>
-            </div>
+            </PrintSection>
           )}
 
 
@@ -269,13 +292,23 @@ export default function ProposalDetails() {
               const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
 
               return (
-                <div key={i} className="mb-6 break-inside-avoid">
-                  <h3 className="text-lg font-bold text-gray-900 bg-gray-50 p-3 rounded-t-lg border border-gray-200 border-b-0 flex justify-between">
-                    <span>{cat.name}</span>
-                    <span>${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
-                  </h3>
+                <div key={i} className="mb-6 break-inside-auto relative">
+                  <div className="print:absolute print:top-0 print:left-0 print:right-0 print:z-10 bg-white rounded-t-lg print:rounded-none overflow-hidden" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                    <h3 className="text-lg font-bold text-gray-900 bg-gray-50 p-3 border border-gray-200 border-b-0 flex justify-between print:border-b" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', margin: 0 }}>
+                      <span>{cat.name}</span>
+                      <span>${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                    </h3>
+                  </div>
                   <table className="w-full text-sm border border-gray-200">
                     <thead className="bg-white border-b border-gray-200 text-gray-500">
+                      <tr className="hidden print:table-row bg-gray-50 border-b border-gray-200" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                        <th colSpan={proposal.hide_markups ? 2 : 4} className="p-3 text-left text-lg font-bold text-gray-900">
+                           <div className="flex justify-between">
+                             <span>{cat.name} (Cont.)</span>
+                             <span>${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                           </div>
+                        </th>
+                      </tr>
                       <tr>
                         <th className="py-2 px-3 text-left font-semibold">Description</th>
                         <th className="py-2 px-3 text-right font-semibold w-24">Qty</th>
@@ -319,19 +352,15 @@ export default function ProposalDetails() {
                 <span>${totals.totalWithMarkup.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
               </div>
 
-              {totals.discount > 0 && (
-                <div className="flex justify-between text-red-600">
-                  <span>Discount</span>
-                  <span>-${totals.discount.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-                </div>
-              )}
+              <div className={`flex justify-between ${totals.discount > 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                <span>Discount</span>
+                <span>-${(totals.discount || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+              </div>
 
-              {totals.tax > 0 && (
-                <div className="flex justify-between text-gray-600">
-                  <span>Tax</span>
-                  <span>${totals.tax.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-                </div>
-              )}
+              <div className="flex justify-between text-gray-600">
+                <span>Tax</span>
+                <span>${(totals.tax || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+              </div>
 
               {totals.contingency > 0 && (
                 <div className="flex justify-between text-gray-600">
@@ -360,15 +389,13 @@ export default function ProposalDetails() {
         {/* Assumptions & Signatures Page */}
         <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col">
           {proposal.assumptions && (
-            <div className="mb-16">
-              <h2 className="text-xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Assumptions & Exclusions</h2>
+            <PrintSection title="Assumptions & Exclusions" className="mb-16">
               <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: proposal.assumptions }}>
               </div>
-            </div>
+            </PrintSection>
           )}
 
-          <div className="mb-16">
-            <h2 className="text-xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Attachments</h2>
+          <PrintSection title="Attachments" className="mb-16">
             {proposal.attachments && proposal.attachments.length > 0 ? (
               <div className="space-y-6">
                 {proposal.attachments.map((att, idx) => (
@@ -381,7 +408,7 @@ export default function ProposalDetails() {
             ) : (
               <p className="text-gray-700 text-sm">No attachments provided.</p>
             )}
-          </div>
+          </PrintSection>
 
           <div className="mt-20">
             <h2 className="text-xl font-black text-[#042950] mb-12">Acceptance & Signatures</h2>
