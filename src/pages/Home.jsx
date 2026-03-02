@@ -9,6 +9,9 @@ import { computeTotals } from '../components/proposalUtils';
 import { toast } from 'sonner';
 
 export default function Home() {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const { data: user } = useQuery({
     queryKey: ['user'],
     queryFn: () => base44.auth.me()
@@ -18,6 +21,59 @@ export default function Home() {
     queryKey: ['proposals'],
     queryFn: () => base44.entities.Proposal.list('-created_date', 100)
   });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }) => base44.entities.Proposal.update(id, { status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['proposals'] });
+      toast.success('Status updated successfully');
+    },
+    onError: () => {
+      toast.error('Failed to update status');
+    }
+  });
+
+  const deleteProposalMutation = useMutation({
+    mutationFn: (id) => base44.entities.Proposal.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['proposals'] });
+      toast.success('Proposal deleted successfully');
+    },
+    onError: () => {
+      toast.error('Failed to delete proposal');
+    }
+  });
+
+  const copyProposalMutation = useMutation({
+    mutationFn: async (proposal) => {
+      const { id, created_date, updated_date, created_by, ...copyData } = proposal;
+      copyData.project_number = `${copyData.project_number}-COPY`;
+      copyData.status = 'draft';
+      return await base44.entities.Proposal.create(copyData);
+    },
+    onSuccess: (newProposal) => {
+      queryClient.invalidateQueries({ queryKey: ['proposals'] });
+      toast.success('Proposal copied successfully');
+      navigate(createPageUrl(`ProposalForm?id=${newProposal.id}`));
+    },
+    onError: () => {
+      toast.error('Failed to copy proposal');
+    }
+  });
+
+  const handleStatusChange = (id, newStatus) => {
+    updateStatusMutation.mutate({ id, status: newStatus });
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this proposal? This action cannot be undone.')) {
+      deleteProposalMutation.mutate(id);
+    }
+  };
+
+  const handleCopy = (proposal) => {
+    copyProposalMutation.mutate(proposal);
+  };
 
   if (isLoading || !user) return <div className="animate-pulse flex space-x-4"><div className="flex-1 space-y-6 py-1"><div className="h-4 bg-gray-200 rounded w-1/4"></div><div className="space-y-3"><div className="grid grid-cols-3 gap-4"><div className="h-24 bg-gray-200 rounded col-span-1"></div><div className="h-24 bg-gray-200 rounded col-span-1"></div><div className="h-24 bg-gray-200 rounded col-span-1"></div></div></div></div></div>;
 
