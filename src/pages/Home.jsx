@@ -1,11 +1,12 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { FileText, DollarSign, Percent, TrendingUp, ChevronRight } from 'lucide-react';
+import { FileText, DollarSign, Percent, TrendingUp, ChevronRight, Copy, Trash2 } from 'lucide-react';
 import { computeTotals } from '../components/proposalUtils';
+import { toast } from 'sonner';
 
 export default function Home() {
   const { data: user } = useQuery({
