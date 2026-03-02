@@ -14,7 +14,12 @@ export function computeTotals(proposal) {
     });
   });
   
-  const distMarkup = markupableSubtotal * ((proposal.overall_markup_percentage || 0) / 100);
+  let distMarkup = 0;
+  if (proposal.overall_markup_type === 'flat') {
+    distMarkup = proposal.overall_markup_percentage || 0;
+  } else {
+    distMarkup = markupableSubtotal * ((proposal.overall_markup_percentage || 0) / 100);
+  }
   const totalWithMarkup = subtotal + distMarkup;
   
   let discount = proposal.discount_amount || 0;

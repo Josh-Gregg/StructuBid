@@ -36,7 +36,7 @@ export default function ProposalForm() {
     project_type: 'residential_remodel', project_address: '', property_owner: '', scope_of_work: '', executive_summary: '',
     cover_title: 'Project Proposal', cover_subtitle: '', cover_photo_url: '',
     schedule_start_date: '', schedule_end_date: '', milestones: [], categories: [], hide_markups: false,
-    overall_markup_percentage: 0, tax_amount: 0, tax_type: 'percentage', discount_amount: 0, discount_type: 'percentage',
+    overall_markup_percentage: 0, overall_markup_type: 'percentage', tax_amount: 0, tax_type: 'percentage', discount_amount: 0, discount_type: 'percentage',
     contingency_percentage: 10, assumptions: '', terms_and_conditions_url: '', attachments: [], status: 'draft', change_orders: []
   };
 
@@ -402,8 +402,19 @@ export default function ProposalForm() {
             <div className="space-y-8">
               {form.categories?.map((cat, catIndex) => (
                 <div key={catIndex} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-blue-900">{cat.name}</h3>
+                  <div className="flex items-center justify-between mb-4 gap-4">
+                    <Input 
+                      value={cat.name} 
+                      onChange={e => {
+                        lastEditTimeRef.current = Date.now();
+                        setForm(prev => {
+                          const newCategories = [...(prev.categories || [])];
+                          newCategories[catIndex] = { ...newCategories[catIndex], name: e.target.value };
+                          return { ...prev, categories: newCategories };
+                        });
+                      }}
+                      className="text-lg font-bold text-blue-900 bg-transparent border-transparent hover:border-gray-200 focus:border-blue-500 focus:bg-white h-auto py-1 px-2 -ml-2"
+                    />
                     <div className="flex gap-2">
                       <Button variant="ghost" size="sm" onClick={() => removeCategory(catIndex)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
                         <Trash2 className="w-4 h-4" />
@@ -608,14 +619,28 @@ export default function ProposalForm() {
                 <span className="font-bold">${totals.subtotal.toFixed(2)}</span>
               </div>
               
-              <div className="space-y-1">
-                <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Overall Markup (%)</Label>
-                <Input 
-                  type="number" 
-                  value={form.overall_markup_percentage} 
-                  onChange={e => updateForm('overall_markup_percentage', parseFloat(e.target.value) || 0)} 
-                  className="bg-blue-800 border-blue-700 text-white h-9" 
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Overall Markup</Label>
+                  <Input 
+                    type="number" 
+                    value={form.overall_markup_percentage} 
+                    onChange={e => updateForm('overall_markup_percentage', parseFloat(e.target.value) || 0)} 
+                    className="bg-blue-800 border-blue-700 text-white h-9" 
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Type</Label>
+                  <Select value={form.overall_markup_type || 'percentage'} onValueChange={v => updateForm('overall_markup_type', v)}>
+                    <SelectTrigger className="bg-blue-800 border-blue-700 text-white h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="percentage">%</SelectItem>
+                      <SelectItem value="flat">$ Flat</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="flex justify-between items-center text-blue-100 text-sm pt-2 border-t border-blue-800">
