@@ -231,7 +231,7 @@ export default function ProposalDetails() {
 
           <div className="mb-16">
             <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Scope of Work</h2>
-            <div className="prose prose-blue max-w-none text-gray-700" dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}>
+            <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}>
             </div>
           </div>
 
