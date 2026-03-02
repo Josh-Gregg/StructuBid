@@ -28,7 +28,7 @@ export default function ProposalForm() {
   const [cropImageSrc, setCropImageSrc] = useState(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState('');
   const initialLoadRef = useRef(true);
-  const isOwnSaveRef = useRef(false);
+  const lastEditTimeRef = useRef(0);
 
   const defaultState = {
     client_name: '', company_name: '', client_address: '', client_phone: '', client_email: '', referral_source: '', project_number: `PRJ-${Date.now().toString().slice(-6)}`,
@@ -44,17 +44,14 @@ export default function ProposalForm() {
   useEffect(() => {
     if (!id || initialLoadRef.current) return;
     
-    setAutoSaveStatus('Saving...');
     const timer = setTimeout(async () => {
+      setAutoSaveStatus('Saving...');
       try {
-        isOwnSaveRef.current = true;
         await base44.entities.Proposal.update(id, form);
         setAutoSaveStatus('Saved');
         setTimeout(() => setAutoSaveStatus(''), 2000);
-        setTimeout(() => { isOwnSaveRef.current = false; }, 1000);
       } catch (err) {
         setAutoSaveStatus('Failed to save');
-        isOwnSaveRef.current = false;
       }
     }, 2000);
 
@@ -72,7 +69,8 @@ export default function ProposalForm() {
       });
 
       const unsubscribe = base44.entities.Proposal.subscribe((event) => {
-        if (event.type === 'update' && event.id === id && !isOwnSaveRef.current) {
+        if (event.type === 'update' && event.id === id) {
+          if (Date.now() - lastEditTimeRef.current < 10000) return;
           setForm(prev => {
             toast('Proposal was updated by another collaborator', {
               description: 'The latest changes have been loaded.',
@@ -89,10 +87,12 @@ export default function ProposalForm() {
   }, [id]);
 
   const updateForm = (field, value) => {
+    lastEditTimeRef.current = Date.now();
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
   const addAttachment = () => {
+    lastEditTimeRef.current = Date.now();
     setForm(prev => ({
       ...prev,
       attachments: [...(prev.attachments || []), { name: '', description: '' }]
@@ -114,6 +114,7 @@ export default function ProposalForm() {
   const addCategory = () => {
     const name = window.prompt("Enter category name (e.g. Materials, Labor):");
     if (name) {
+      lastEditTimeRef.current = Date.now();
       setForm(prev => ({
         ...prev,
         categories: [...(prev.categories || []), { name, line_items: [] }]
@@ -123,6 +124,7 @@ export default function ProposalForm() {
 
   const removeCategory = (catIndex) => {
     if(window.confirm("Remove this category and all its items?")) {
+      lastEditTimeRef.current = Date.now();
       setForm(prev => ({
         ...prev,
         categories: prev.categories.filter((_, i) => i !== catIndex)
@@ -194,6 +196,7 @@ export default function ProposalForm() {
         }
       }
       if (changed) {
+        lastEditTimeRef.current = Date.now();
         setForm(updatedForm);
         toast.success("Spell check complete! Issues were fixed.");
       } else {
@@ -212,7 +215,6 @@ export default function ProposalForm() {
       return;
     }
     setIsSaving(true);
-    isOwnSaveRef.current = true;
     try {
       if (id) {
         await base44.entities.Proposal.update(id, form);
@@ -226,7 +228,6 @@ export default function ProposalForm() {
       alert("Failed to save proposal");
     } finally {
       setIsSaving(false);
-      setTimeout(() => { isOwnSaveRef.current = false; }, 1000);
     }
   };
 
