@@ -488,31 +488,36 @@ export default function ProposalForm() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <Input 
-                              value={item.note || ''} 
-                              onChange={e => updateLineItem(catIndex, itemIndex, 'note', e.target.value)} 
-                              placeholder="Add a note (optional)..." 
-                              className="flex-1 text-sm border-gray-200 bg-gray-50 h-8" 
-                            />
-                            <Label className="flex items-center gap-2 text-xs font-medium text-gray-600 min-w-[120px] cursor-pointer">
-                              <input 
-                                type="checkbox" 
-                                checked={item.show_note || false} 
-                                onChange={e => updateLineItem(catIndex, itemIndex, 'show_note', e.target.checked)} 
-                                className="w-3 h-3 text-blue-600 rounded border-gray-300"
+                          <div className="flex flex-col gap-3 mt-2 border-t border-gray-50 pt-4">
+                            <div className="w-full space-y-1.5">
+                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Item Note (Optional)</Label>
+                              <Textarea 
+                                value={item.note || ''} 
+                                onChange={e => updateLineItem(catIndex, itemIndex, 'note', e.target.value)} 
+                                placeholder="Add a detailed note..." 
+                                className="w-full text-sm border-gray-200 bg-gray-50 min-h-[60px] resize-y" 
                               />
-                              Show note on PDF
-                            </Label>
-                            <Label className="flex items-center gap-2 text-xs font-medium text-gray-600 min-w-[150px] cursor-pointer ml-4">
-                              <input 
-                                type="checkbox" 
-                                checked={item.exclude_from_markup || false} 
-                                onChange={e => updateLineItem(catIndex, itemIndex, 'exclude_from_markup', e.target.checked)} 
-                                className="w-3 h-3 text-blue-600 rounded border-gray-300"
-                              />
-                              Exclude from overall markup
-                            </Label>
+                            </div>
+                            <div className="flex items-center gap-6">
+                              <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={item.show_note || false} 
+                                  onChange={e => updateLineItem(catIndex, itemIndex, 'show_note', e.target.checked)} 
+                                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                />
+                                Show note on PDF proposal
+                              </Label>
+                              <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={item.exclude_from_markup || false} 
+                                  onChange={e => updateLineItem(catIndex, itemIndex, 'exclude_from_markup', e.target.checked)} 
+                                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                />
+                                Exclude from overall markup
+                              </Label>
+                            </div>
                           </div>
                         </div>
                       );
