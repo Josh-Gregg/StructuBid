@@ -428,102 +428,94 @@ export default function ProposalForm() {
                       const itemTotalWithOverallMarkup = itemSub + itemDistMarkup;
 
                       return (
-                        <div key={itemIndex} className="flex flex-col gap-5 bg-white p-5 rounded-lg shadow-sm border border-gray-100 relative pt-8">
-                          <div className="absolute top-2 right-2">
-                            <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 h-8 w-8">
+                        <div key={itemIndex} className="flex flex-col gap-3 bg-white p-4 rounded-lg shadow-sm border border-gray-100 relative pt-5">
+                          <div className="absolute top-1 right-1">
+                            <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 h-7 w-7">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
 
-                          {/* Top Row: Description */}
-                          <div className="w-full space-y-1.5 pr-8">
-                            <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Item Description</Label>
-                            <Input 
-                              value={item.description} 
-                              onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
-                              placeholder="Description" 
-                              className="border-gray-200" 
-                            />
-                          </div>
-
-                          {/* Bottom Row: Numbers */}
-                          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                            <div className="space-y-1.5">
-                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Quantity</Label>
+                          <div className="flex flex-col md:flex-row gap-3 pr-6">
+                            <div className="flex-1 space-y-1">
+                              <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Description</Label>
                               <Input 
-                                type="number" 
-                                value={item.quantity} 
-                                onChange={e => updateLineItem(catIndex, itemIndex, 'quantity', parseFloat(e.target.value) || 0)} 
-                                className="border-gray-200 text-right" 
-                                placeholder="Qty" 
+                                value={item.description} 
+                                onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
+                                placeholder="Item Description" 
+                                className="border-gray-200 h-8 text-sm" 
                               />
                             </div>
-                            <div className="space-y-1.5">
-                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Unit</Label>
-                              <Input 
-                                value={item.unit} 
-                                onChange={e => updateLineItem(catIndex, itemIndex, 'unit', e.target.value)} 
-                                className="border-gray-200" 
-                                placeholder="Unit" 
-                              />
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Cost / Unit</Label>
-                              <Input 
-                                type="number" 
-                                value={item.cost_per_unit} 
-                                onChange={e => updateLineItem(catIndex, itemIndex, 'cost_per_unit', parseFloat(e.target.value) || 0)} 
-                                className="border-gray-200 text-right" 
-                                placeholder="Cost" 
-                              />
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Markup %</Label>
-                              <div className="relative">
+                            
+                            <div className="flex flex-wrap md:flex-nowrap gap-2">
+                              <div className="space-y-1 w-16">
+                                <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-center block">Qty</Label>
+                                <Input 
+                                  type="number" 
+                                  value={item.quantity} 
+                                  onChange={e => updateLineItem(catIndex, itemIndex, 'quantity', parseFloat(e.target.value) || 0)} 
+                                  className="border-gray-200 text-center px-1 h-8 text-sm" 
+                                />
+                              </div>
+                              <div className="space-y-1 w-16">
+                                <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-center block">Unit</Label>
+                                <Input 
+                                  value={item.unit} 
+                                  onChange={e => updateLineItem(catIndex, itemIndex, 'unit', e.target.value)} 
+                                  className="border-gray-200 text-center px-1 h-8 text-sm" 
+                                />
+                              </div>
+                              <div className="space-y-1 w-20">
+                                <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-right block">Cost</Label>
+                                <Input 
+                                  type="number" 
+                                  value={item.cost_per_unit} 
+                                  onChange={e => updateLineItem(catIndex, itemIndex, 'cost_per_unit', parseFloat(e.target.value) || 0)} 
+                                  className="border-gray-200 text-right px-2 h-8 text-sm" 
+                                />
+                              </div>
+                              <div className="space-y-1 w-16">
+                                <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-right block">Mkp %</Label>
                                 <Input 
                                   type="number" 
                                   value={item.markup_percentage} 
                                   onChange={e => updateLineItem(catIndex, itemIndex, 'markup_percentage', parseFloat(e.target.value) || 0)} 
-                                  className="w-full border-gray-200 text-right pr-6" 
-                                  placeholder="Markup" 
+                                  className="border-gray-200 text-right px-1 h-8 text-sm" 
                                 />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
                               </div>
-                            </div>
-                            <div className="space-y-1.5 flex flex-col justify-center">
-                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Subtotal</Label>
-                              <div className="flex flex-col">
-                                <span className="font-bold text-gray-900 text-lg" title="Cost (Without Overall Markup)">${itemSub.toFixed(2)}</span>
-                                <span className="text-[10px] text-blue-600 font-semibold leading-tight" title="Cost (With Overall Markup)">w/ mkp: ${itemTotalWithOverallMarkup.toFixed(2)}</span>
+                              <div className="space-y-1 w-24 flex flex-col justify-end pb-0.5">
+                                <div className="flex flex-col text-right">
+                                  <span className="font-bold text-gray-900 text-base leading-none" title="Cost (Without Overall Markup)">${itemSub.toFixed(2)}</span>
+                                  <span className="text-[9px] text-blue-600 font-semibold leading-tight mt-0.5" title="Cost (With Overall Markup)">w/ mkp: ${itemTotalWithOverallMarkup.toFixed(2)}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-3 mt-2 border-t border-gray-50 pt-4">
-                            <div className="w-full space-y-1.5">
-                              <Label className="text-xs text-gray-500 font-bold uppercase tracking-wider">Item Note (Optional)</Label>
+                          <div className="flex flex-col gap-2 mt-1 border-t border-gray-50 pt-2">
+                            <div className="w-full space-y-1">
+                              <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Item Note (Optional)</Label>
                               <Textarea 
                                 value={item.note || ''} 
                                 onChange={e => updateLineItem(catIndex, itemIndex, 'note', e.target.value)} 
                                 placeholder="Add a detailed note..." 
-                                className="w-full text-sm border-gray-200 bg-gray-50 min-h-[60px] resize-y" 
+                                className="w-full text-xs border-gray-200 bg-gray-50 min-h-[40px] h-10 resize-y py-1 px-2" 
                               />
                             </div>
-                            <div className="flex items-center gap-6">
-                              <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                            <div className="flex items-center gap-4">
+                              <Label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 cursor-pointer">
                                 <input 
                                   type="checkbox" 
                                   checked={item.show_note || false} 
                                   onChange={e => updateLineItem(catIndex, itemIndex, 'show_note', e.target.checked)} 
-                                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                  className="w-3.5 h-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                 />
-                                Show note on PDF proposal
+                                Show note on PDF
                               </Label>
-                              <Label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                              <Label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 cursor-pointer">
                                 <input 
                                   type="checkbox" 
                                   checked={item.exclude_from_markup || false} 
                                   onChange={e => updateLineItem(catIndex, itemIndex, 'exclude_from_markup', e.target.checked)} 
-                                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                  className="w-3.5 h-3.5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                 />
                                 Exclude from overall markup
                               </Label>
