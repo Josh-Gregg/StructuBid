@@ -260,7 +260,7 @@ export default function ProposalForm() {
   const totals = computeTotals(form);
 
   return (
-    <div className="max-w-[120rem] mx-auto px-4 space-y-8 pb-20 animate-in fade-in">
+    <div className="max-w-[120rem] mx-auto px-4 space-y-8 pb-40 animate-in fade-in">
       <div className="flex items-center justify-between sticky top-0 bg-[#F3F4F6] pt-4 pb-4 z-10 border-b border-gray-200 mb-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full bg-white shadow-sm border border-gray-200">
