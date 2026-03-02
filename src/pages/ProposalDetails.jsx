@@ -6,6 +6,7 @@ import { Printer, Mail, Edit, ArrowLeft, Download, PlusCircle, Trash2 } from 'lu
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
+import 'react-quill/dist/quill.snow.css';
 
 export default function ProposalDetails() {
   const navigate = useNavigate();
