@@ -29,6 +29,7 @@ export default function ProposalForm() {
   const [autoSaveStatus, setAutoSaveStatus] = useState('');
   const initialLoadRef = useRef(true);
   const isOwnSaveRef = useRef(false);
+  const lastEditTimeRef = useRef(0);
 
   const defaultState = {
     client_name: '', company_name: '', client_address: '', client_phone: '', client_email: '', referral_source: '', project_number: `PRJ-${Date.now().toString().slice(-6)}`,
@@ -44,8 +45,8 @@ export default function ProposalForm() {
   useEffect(() => {
     if (!id || initialLoadRef.current) return;
     
-    setAutoSaveStatus('Saving...');
     const timer = setTimeout(async () => {
+      setAutoSaveStatus('Saving...');
       try {
         isOwnSaveRef.current = true;
         await base44.entities.Proposal.update(id, form);
@@ -56,7 +57,7 @@ export default function ProposalForm() {
         setAutoSaveStatus('Failed to save');
         isOwnSaveRef.current = false;
       }
-    }, 2000);
+    }, 30000);
 
     return () => clearTimeout(timer);
   }, [form, id]);
@@ -73,13 +74,15 @@ export default function ProposalForm() {
 
       const unsubscribe = base44.entities.Proposal.subscribe((event) => {
         if (event.type === 'update' && event.id === id && !isOwnSaveRef.current) {
-          setForm(prev => {
-            toast('Proposal was updated by another collaborator', {
-              description: 'The latest changes have been loaded.',
-              icon: <Save className="w-4 h-4 text-blue-500" />
+          if (Date.now() - lastEditTimeRef.current > 10000) {
+            setForm(prev => {
+              toast('Proposal was updated by another collaborator', {
+                description: 'The latest changes have been loaded.',
+                icon: <Save className="w-4 h-4 text-blue-500" />
+              });
+              return { ...prev, ...event.data };
             });
-            return { ...prev, ...event.data };
-          });
+          }
         }
       });
       return () => unsubscribe();
@@ -89,6 +92,7 @@ export default function ProposalForm() {
   }, [id]);
 
   const updateForm = (field, value) => {
+    lastEditTimeRef.current = Date.now();
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
