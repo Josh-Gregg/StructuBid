@@ -529,6 +529,14 @@ export default function ProposalForm() {
                 </div>
               ))}
             </div>
+            
+            {form.categories?.length > 0 && (
+              <div className="mt-8 pt-6 border-t border-gray-100 flex justify-center">
+                <Button onClick={addCategory} variant="outline" className="font-bold border-gray-300 w-full max-w-sm">
+                  <Plus className="w-4 h-4 mr-2" /> Add Another Category
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Attachments Section */}
