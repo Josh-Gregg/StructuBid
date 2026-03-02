@@ -137,23 +137,37 @@ export default function ProposalForm() {
   };
 
   const addLineItem = (catIndex) => {
-    const newCategories = [...form.categories];
-    newCategories[catIndex].line_items.push({
-      description: '', quantity: 1, unit: 'ea', cost_per_unit: 0, markup_percentage: 0, note: '', show_note: false
+    lastEditTimeRef.current = Date.now();
+    setForm(prev => {
+      const newCategories = [...(prev.categories || [])];
+      newCategories[catIndex] = { ...newCategories[catIndex] };
+      newCategories[catIndex].line_items = [...(newCategories[catIndex].line_items || [])];
+      newCategories[catIndex].line_items.push({
+        description: '', quantity: 1, unit: 'ea', cost_per_unit: 0, markup_percentage: 0, note: '', show_note: false
+      });
+      return { ...prev, categories: newCategories };
     });
-    updateForm('categories', newCategories);
   };
 
   const updateLineItem = (catIndex, itemIndex, field, value) => {
-    const newCategories = [...form.categories];
-    newCategories[catIndex].line_items[itemIndex][field] = value;
-    updateForm('categories', newCategories);
+    lastEditTimeRef.current = Date.now();
+    setForm(prev => {
+      const newCategories = [...(prev.categories || [])];
+      newCategories[catIndex] = { ...newCategories[catIndex] };
+      newCategories[catIndex].line_items = [...(newCategories[catIndex].line_items || [])];
+      newCategories[catIndex].line_items[itemIndex] = { ...newCategories[catIndex].line_items[itemIndex], [field]: value };
+      return { ...prev, categories: newCategories };
+    });
   };
 
   const removeLineItem = (catIndex, itemIndex) => {
-    const newCategories = [...form.categories];
-    newCategories[catIndex].line_items = newCategories[catIndex].line_items.filter((_, i) => i !== itemIndex);
-    updateForm('categories', newCategories);
+    lastEditTimeRef.current = Date.now();
+    setForm(prev => {
+      const newCategories = [...(prev.categories || [])];
+      newCategories[catIndex] = { ...newCategories[catIndex] };
+      newCategories[catIndex].line_items = newCategories[catIndex].line_items.filter((_, i) => i !== itemIndex);
+      return { ...prev, categories: newCategories };
+    });
   };
 
   const handlePhotoSelect = (e) => {
