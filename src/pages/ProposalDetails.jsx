@@ -410,9 +410,9 @@ export default function ProposalDetails() {
             )}
           </PrintSection>
 
-          <div className="mt-20">
-            <h2 className="text-xl font-black text-[#042950] mb-12">Acceptance & Signatures</h2>
-            <div className="grid grid-cols-2 gap-16">
+          <div className="mt-20 break-inside-avoid print:break-inside-avoid">
+            <PrintSection title="Acceptance & Signatures">
+            <div className="grid grid-cols-2 gap-16 mt-8">
               <div>
                 <div className="border-b border-gray-400 h-10 mb-2"></div>
                 <p className="text-[10px] text-gray-400 italic mb-1">(Contractor Signature)</p>
