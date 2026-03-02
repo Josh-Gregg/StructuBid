@@ -10,47 +10,35 @@
 }
 
 /* Definitively fix ReactQuill flat list numbering bug */
-.ql-editor ol {
-  counter-reset: list-0 !important;
-}
-.ql-editor ol > li:not([class*="ql-indent-"]) {
-  counter-increment: list-0 !important;
+.ql-editor ol li {
   counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important;
 }
-.ql-editor ol > li.ql-indent-1 {
-  counter-increment: list-1 !important;
+.ql-editor ol li.ql-indent-1 {
   counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important;
 }
-.ql-editor ol > li.ql-indent-2 {
-  counter-increment: list-2 !important;
+.ql-editor ol li.ql-indent-2 {
   counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important;
 }
-.ql-editor ol > li.ql-indent-3 {
-  counter-increment: list-3 !important;
+.ql-editor ol li.ql-indent-3 {
   counter-reset: list-4 list-5 list-6 list-7 list-8 list-9 !important;
 }
-.ql-editor ol > li.ql-indent-4 {
-  counter-increment: list-4 !important;
+.ql-editor ol li.ql-indent-4 {
   counter-reset: list-5 list-6 list-7 list-8 list-9 !important;
 }
-.ql-editor ol > li.ql-indent-5 {
-  counter-increment: list-5 !important;
+.ql-editor ol li.ql-indent-5 {
   counter-reset: list-6 list-7 list-8 list-9 !important;
 }
-.ql-editor ol > li.ql-indent-6 {
-  counter-increment: list-6 !important;
+.ql-editor ol li.ql-indent-6 {
   counter-reset: list-7 list-8 list-9 !important;
 }
-.ql-editor ol > li.ql-indent-7 {
-  counter-increment: list-7 !important;
+.ql-editor ol li.ql-indent-7 {
   counter-reset: list-8 list-9 !important;
 }
-.ql-editor ol > li.ql-indent-8 {
-  counter-increment: list-8 !important;
+.ql-editor ol li.ql-indent-8 {
   counter-reset: list-9 !important;
 }
-.ql-editor ol > li.ql-indent-9 {
-  counter-increment: list-9 !important;
+.ql-editor ol li.ql-indent-9 {
+  counter-reset: none !important;
 }
 
 @media print {
