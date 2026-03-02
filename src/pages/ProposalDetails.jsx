@@ -446,6 +446,7 @@ export default function ProposalDetails() {
             <p className="mt-8 text-sm text-gray-500">
               Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
             </p>
+            </PrintSection>
           </div>
 
 
