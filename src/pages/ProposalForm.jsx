@@ -199,22 +199,22 @@ export default function ProposalForm() {
     toast("Running AI spell check on text fields...", { icon: '✨' });
     try {
       const fieldsToCheck = ['executive_summary', 'scope_of_work', 'assumptions'];
-      let updatedForm = { ...form };
-      let changed = false;
+      let updates = {};
       
       for (const field of fieldsToCheck) {
-        if (updatedForm[field] && updatedForm[field].trim().length > 0) {
+        if (form[field] && form[field].trim().length > 0) {
           const res = await base44.integrations.Core.InvokeLLM({
-            prompt: `You are an expert proofreader. Fix any spelling and grammar errors in the following text. Do NOT change the formatting or HTML tags if present. Only return the corrected text, without any conversational remarks.\n\nText:\n${updatedForm[field]}`
+            prompt: `You are an expert proofreader. Fix any spelling and grammar errors in the following text. Do NOT change the formatting or HTML tags if present. Only return the corrected text, without any conversational remarks.\n\nText:\n${form[field]}`
           });
-          if (res && res !== updatedForm[field]) {
-            updatedForm[field] = res;
-            changed = true;
+          if (res && res !== form[field]) {
+            updates[field] = res;
           }
         }
       }
-      if (changed) {
-        setForm(updatedForm);
+      
+      if (Object.keys(updates).length > 0) {
+        lastEditTimeRef.current = Date.now();
+        setForm(prev => ({ ...prev, ...updates }));
         toast.success("Spell check complete! Issues were fixed.");
       } else {
         toast.success("Spell check complete! No issues found.");
