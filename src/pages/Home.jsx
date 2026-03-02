@@ -204,10 +204,31 @@ export default function Home() {
                     <td className="px-6 py-4 text-right font-black text-gray-900">
                       ${computeTotals(p).grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <Link to={createPageUrl(`ProposalDetails?id=${p.id}`)} className="inline-flex items-center justify-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-blue-700 transition-colors shadow-sm">
-                        View
-                      </Link>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <Link to={createPageUrl(`ProposalDetails?id=${p.id}`)} className="inline-flex items-center justify-center px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-blue-700 transition-colors shadow-sm">
+                          View
+                        </Link>
+                        
+                        {user.role !== 'client' && (
+                          <>
+                            <button 
+                              onClick={() => handleCopy(p)}
+                              className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Copy Proposal"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(p.id)}
+                              className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                              title="Delete Proposal"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
