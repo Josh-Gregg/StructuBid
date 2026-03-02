@@ -383,7 +383,7 @@ export default function ProposalDetails() {
             </div>
           </div>
 
-
+          </PrintSection>
         </div>
 
         {/* Assumptions & Signatures Page */}
