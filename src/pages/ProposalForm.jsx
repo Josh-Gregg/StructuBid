@@ -12,6 +12,7 @@ import { Plus, Trash2, Save, ArrowLeft, Calculator } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
 import { toast } from 'sonner';
+import ImageCropper from '../components/ImageCropper';
 
 export default function ProposalForm() {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ export default function ProposalForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState(null);
 
   const defaultState = {
     client_name: '', company_name: '', client_address: '', client_phone: '', client_email: '', referral_source: '', project_number: `PRJ-${Date.now().toString().slice(-6)}`,
@@ -122,12 +125,22 @@ export default function ProposalForm() {
     updateForm('categories', newCategories);
   };
 
-  const handlePhotoUpload = async (e) => {
+  const handlePhotoSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      setCropImageSrc(reader.result?.toString() || '');
+      setCropModalOpen(true);
+    });
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const handleCropComplete = async (croppedFile) => {
     setIsSaving(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const { file_url } = await base44.integrations.Core.UploadFile({ file: croppedFile });
       updateForm('cover_photo_url', file_url);
     } catch (err) {
       alert("Failed to upload photo");
@@ -252,7 +265,7 @@ export default function ProposalForm() {
               <div className="space-y-2 md:col-span-2">
                 <Label className="font-bold text-gray-700">Cover Photo</Label>
                 <div className="flex items-center gap-3">
-                  <Input type="file" accept="image/*" onChange={handlePhotoUpload} className="bg-gray-50 border-gray-200 focus:bg-white" />
+                  <Input type="file" accept="image/*" onChange={handlePhotoSelect} className="bg-gray-50 border-gray-200 focus:bg-white" />
                   {form.cover_photo_url && (
                     <img src={form.cover_photo_url} alt="Cover Preview" className="h-10 w-10 object-cover rounded shadow-sm" />
                   )}
@@ -572,6 +585,13 @@ export default function ProposalForm() {
           {isSaving ? 'Saving...' : 'Save Proposal'}
         </Button>
       </div>
+
+      <ImageCropper 
+        open={cropModalOpen} 
+        onOpenChange={setCropModalOpen} 
+        imageSrc={cropImageSrc} 
+        onCropComplete={handleCropComplete} 
+      />
     </div>
   );
 }
