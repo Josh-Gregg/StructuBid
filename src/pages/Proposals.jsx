@@ -124,9 +124,28 @@ export default function Proposals() {
                   </td>
                   <td className="px-6 py-4 text-gray-600 font-medium">{new Date(p.created_date).toLocaleDateString()}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${statusColors[p.status || 'draft']}`}>
-                      {p.status || 'draft'}
-                    </span>
+                    {user.role === 'client' ? (
+                      <span className={`px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${statusColors[p.status || 'draft']}`}>
+                        {p.status || 'draft'}
+                      </span>
+                    ) : (
+                      <select 
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider cursor-pointer border-0 outline-none focus:ring-2 focus:ring-blue-500 appearance-none ${statusColors[p.status || 'draft']}`}
+                        value={p.status || 'draft'}
+                        onChange={(e) => {
+                          base44.entities.Proposal.update(p.id, { status: e.target.value }).then(() => {
+                            // We could invalidate queries here, but letting the realtime subscription or refetch handle it is also fine.
+                            // To be clean, since we don't have useQueryClient here, we'll just reload or let React Query refetch on focus.
+                          });
+                        }}
+                      >
+                        <option value="draft">DRAFT</option>
+                        <option value="sent">SENT</option>
+                        <option value="accepted">ACCEPTED</option>
+                        <option value="rejected">REJECTED</option>
+                        <option value="completed">COMPLETED</option>
+                      </select>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-right font-black text-gray-900">
                     ${computeTotals(p).grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
