@@ -22,6 +22,7 @@ export default function ProposalForm() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const [user, setUser] = useState(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [cropImageSrc, setCropImageSrc] = useState(null);
@@ -173,6 +174,38 @@ export default function ProposalForm() {
     }
   };
 
+  const handleSpellCheck = async () => {
+    setIsChecking(true);
+    toast("Running AI spell check on text fields...", { icon: '✨' });
+    try {
+      const fieldsToCheck = ['executive_summary', 'scope_of_work', 'assumptions'];
+      let updatedForm = { ...form };
+      let changed = false;
+      
+      for (const field of fieldsToCheck) {
+        if (updatedForm[field] && updatedForm[field].trim().length > 0) {
+          const res = await base44.integrations.Core.InvokeLLM({
+            prompt: `You are an expert proofreader. Fix any spelling and grammar errors in the following text. Do NOT change the formatting or HTML tags if present. Only return the corrected text, without any conversational remarks.\n\nText:\n${updatedForm[field]}`
+          });
+          if (res && res !== updatedForm[field]) {
+            updatedForm[field] = res;
+            changed = true;
+          }
+        }
+      }
+      if (changed) {
+        setForm(updatedForm);
+        toast.success("Spell check complete! Issues were fixed.");
+      } else {
+        toast.success("Spell check complete! No issues found.");
+      }
+    } catch (e) {
+      toast.error("Spell check failed");
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!form.client_name || !form.client_email || !form.project_address) {
       alert("Please fill in required fields: Client Name, Email, Project Address");
@@ -183,10 +216,12 @@ export default function ProposalForm() {
     try {
       if (id) {
         await base44.entities.Proposal.update(id, form);
+        toast.success("Proposal saved successfully");
       } else {
-        await base44.entities.Proposal.create(form);
+        const newProposal = await base44.entities.Proposal.create(form);
+        toast.success("Proposal created successfully");
+        navigate(createPageUrl(`ProposalForm?id=${newProposal.id}`), { replace: true });
       }
-      navigate(createPageUrl('Proposals'));
     } catch (e) {
       alert("Failed to save proposal");
     } finally {
@@ -215,6 +250,9 @@ export default function ProposalForm() {
               {autoSaveStatus}
             </span>
           )}
+          <Button onClick={handleSpellCheck} disabled={isChecking || isSaving} variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 font-bold px-4">
+            ✨ {isChecking ? 'Checking...' : 'AI Spell Check'}
+          </Button>
           <Button onClick={handleSave} disabled={isSaving} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md font-bold px-6">
             <Save className="w-4 h-4 mr-2" />
             {isSaving ? 'Saving...' : 'Save Proposal'}
@@ -619,7 +657,10 @@ export default function ProposalForm() {
 
       </div>
 
-      <div className="flex justify-end mt-8 border-t border-gray-200 pt-8">
+      <div className="flex justify-end gap-4 mt-8 border-t border-gray-200 pt-8">
+        <Button onClick={handleSpellCheck} disabled={isChecking || isSaving} variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl font-bold px-8 py-6 text-lg w-full md:w-auto">
+          ✨ {isChecking ? 'Checking...' : 'AI Spell Check'}
+        </Button>
         <Button onClick={handleSave} disabled={isSaving} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md font-bold px-8 py-6 text-lg w-full md:w-auto">
           <Save className="w-5 h-5 mr-2" />
           {isSaving ? 'Saving...' : 'Save Proposal'}
