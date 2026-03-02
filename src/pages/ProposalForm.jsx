@@ -25,6 +25,9 @@ export default function ProposalForm() {
   const [user, setUser] = useState(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [cropImageSrc, setCropImageSrc] = useState(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState('');
+  const initialLoadRef = useRef(true);
+  const isOwnSaveRef = useRef(false);
 
   const defaultState = {
     client_name: '', company_name: '', client_address: '', client_phone: '', client_email: '', referral_source: '', project_number: `PRJ-${Date.now().toString().slice(-6)}`,
@@ -38,19 +41,38 @@ export default function ProposalForm() {
   const [form, setForm] = useState(defaultState);
 
   useEffect(() => {
+    if (!id || initialLoadRef.current) return;
+    
+    setAutoSaveStatus('Saving...');
+    const timer = setTimeout(async () => {
+      try {
+        isOwnSaveRef.current = true;
+        await base44.entities.Proposal.update(id, form);
+        setAutoSaveStatus('Saved');
+        setTimeout(() => setAutoSaveStatus(''), 2000);
+        setTimeout(() => { isOwnSaveRef.current = false; }, 1000);
+      } catch (err) {
+        setAutoSaveStatus('Failed to save');
+        isOwnSaveRef.current = false;
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [form, id]);
+
+  useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
     if (id) {
       setIsLoading(true);
       base44.entities.Proposal.get(id).then(data => {
         setForm({ ...defaultState, ...data });
         setIsLoading(false);
+        setTimeout(() => { initialLoadRef.current = false; }, 500);
       });
 
       const unsubscribe = base44.entities.Proposal.subscribe((event) => {
-        if (event.type === 'update' && event.id === id) {
+        if (event.type === 'update' && event.id === id && !isOwnSaveRef.current) {
           setForm(prev => {
-            // Only update if it's actually different to avoid resetting active typing unnecessarily,
-            // though for full real-time we merge the new data.
             toast('Proposal was updated by another collaborator', {
               description: 'The latest changes have been loaded.',
               icon: <Save className="w-4 h-4 text-blue-500" />
@@ -60,6 +82,8 @@ export default function ProposalForm() {
         }
       });
       return () => unsubscribe();
+    } else {
+      initialLoadRef.current = false;
     }
   }, [id]);
 
@@ -155,6 +179,7 @@ export default function ProposalForm() {
       return;
     }
     setIsSaving(true);
+    isOwnSaveRef.current = true;
     try {
       if (id) {
         await base44.entities.Proposal.update(id, form);
@@ -166,6 +191,7 @@ export default function ProposalForm() {
       alert("Failed to save proposal");
     } finally {
       setIsSaving(false);
+      setTimeout(() => { isOwnSaveRef.current = false; }, 1000);
     }
   };
 
@@ -183,10 +209,17 @@ export default function ProposalForm() {
           </Button>
           <h1 className="text-2xl font-black text-gray-900">{id ? 'Edit Proposal' : 'New Proposal'}</h1>
         </div>
-        <Button onClick={handleSave} disabled={isSaving} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md font-bold px-6">
-          <Save className="w-4 h-4 mr-2" />
-          {isSaving ? 'Saving...' : 'Save Proposal'}
-        </Button>
+        <div className="flex items-center gap-4">
+          {autoSaveStatus && (
+            <span className="text-sm font-medium text-gray-500 animate-in fade-in">
+              {autoSaveStatus}
+            </span>
+          )}
+          <Button onClick={handleSave} disabled={isSaving} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md font-bold px-6">
+            <Save className="w-4 h-4 mr-2" />
+            {isSaving ? 'Saving...' : 'Save Proposal'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
