@@ -263,7 +263,14 @@ export default function ProposalForm() {
                 <Input value={form.cover_subtitle} onChange={e => updateForm('cover_subtitle', e.target.value)} placeholder="e.g. Custom Home Build (Defaults to project type)" className="bg-gray-50 border-gray-200 focus:bg-white" />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <Label className="font-bold text-gray-700">Cover Photo</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="font-bold text-gray-700">Cover Photo</Label>
+                  {form.cover_photo_url && (
+                    <Button variant="ghost" size="sm" onClick={() => updateForm('cover_photo_url', '')} className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-2">
+                      <Trash2 className="w-4 h-4 mr-1" /> Remove Photo
+                    </Button>
+                  )}
+                </div>
                 <div className="flex items-center gap-3">
                   <Input type="file" accept="image/*" onChange={handlePhotoSelect} className="bg-gray-50 border-gray-200 focus:bg-white" />
                   {form.cover_photo_url && (
