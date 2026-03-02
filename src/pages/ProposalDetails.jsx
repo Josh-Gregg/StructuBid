@@ -283,9 +283,9 @@ export default function ProposalDetails() {
 
         {/* Estimate Section */}
         <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col" style={{pageBreakAfter: 'always'}}>
-          <h2 className="text-2xl font-black text-[#042950] mb-8 pb-2 border-b-2 border-[#042950]/20">Estimate</h2>
+          <PrintSection title="Estimate" className="flex-1">
           
-          <div className="space-y-8">
+          <div className="space-y-8 mt-4">
             {proposal.categories?.map((cat, i) => {
               if (!cat.line_items?.length) return null;
               
