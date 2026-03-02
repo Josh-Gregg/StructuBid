@@ -284,8 +284,7 @@ export default function ProposalForm() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
+      <div className="max-w-5xl mx-auto space-y-8 pb-32">
           
           {/* Section 1: Client Details */}
           <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
@@ -603,120 +602,119 @@ export default function ProposalForm() {
             </div>
           </div>
 
-        </div>
+      </div>
 
-        {/* Sidebar: Calculations */}
-        <div className="space-y-6">
-          <div className="bg-blue-900 text-white p-6 rounded-2xl shadow-lg sticky top-24">
-            <div className="flex items-center gap-2 mb-6">
+      {/* Fixed Footer: Calculations */}
+      <div className="fixed bottom-0 left-0 right-0 bg-blue-900 text-white border-t border-blue-800 z-50 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.3)]">
+        <div className="max-w-[120rem] mx-auto px-4 py-4">
+          <div className="flex flex-col xl:flex-row items-center justify-between gap-4 xl:gap-8">
+            <div className="flex items-center gap-2 mb-2 xl:mb-0 hidden md:flex">
               <Calculator className="w-5 h-5 text-blue-300" />
-              <h2 className="text-lg font-black uppercase tracking-wider">Calculations</h2>
+              <h2 className="text-lg font-black uppercase tracking-wider whitespace-nowrap">Calculations</h2>
             </div>
             
-            <div className="space-y-4">
-              <div className="flex justify-between items-center text-blue-100 text-sm">
-                <span>Items Subtotal</span>
+            <div className="flex-1 flex flex-wrap items-center justify-center xl:justify-end gap-x-6 gap-y-3">
+              <div className="flex flex-col items-center">
+                <span className="text-blue-200 text-[10px] font-bold uppercase tracking-wider">Items Subtotal</span>
                 <span className="font-bold">${totals.subtotal.toFixed(2)}</span>
               </div>
               
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Overall Markup</Label>
-                  <Input 
-                    type="number" 
-                    value={form.overall_markup_percentage} 
-                    onChange={e => updateForm('overall_markup_percentage', parseFloat(e.target.value) || 0)} 
-                    className="bg-blue-800 border-blue-700 text-white h-9" 
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Type</Label>
-                  <Select value={form.overall_markup_type || 'percentage'} onValueChange={v => updateForm('overall_markup_type', v)}>
-                    <SelectTrigger className="bg-blue-800 border-blue-700 text-white h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="percentage">%</SelectItem>
-                      <SelectItem value="flat">$ Flat</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="h-8 w-px bg-blue-800 hidden sm:block"></div>
+
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col">
+                  <Label className="text-blue-200 text-[10px] font-bold uppercase tracking-wider mb-1">Overall Markup</Label>
+                  <div className="flex gap-1">
+                    <Input 
+                      type="number" 
+                      value={form.overall_markup_percentage} 
+                      onChange={e => updateForm('overall_markup_percentage', parseFloat(e.target.value) || 0)} 
+                      className="bg-blue-800 border-blue-700 text-white h-8 w-20 text-sm" 
+                    />
+                    <Select value={form.overall_markup_type || 'percentage'} onValueChange={v => updateForm('overall_markup_type', v)}>
+                      <SelectTrigger className="bg-blue-800 border-blue-700 text-white h-8 w-16 text-xs px-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">%</SelectItem>
+                        <SelectItem value="flat">$ Flat</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center text-blue-100 text-sm pt-2 border-t border-blue-800">
-                <span>Subtotal + Markup</span>
-                <span className="font-bold">${totals.totalWithMarkup.toFixed(2)}</span>
-              </div>
+              <div className="h-8 w-px bg-blue-800 hidden sm:block"></div>
 
-              <div className="grid grid-cols-2 gap-2 pt-2">
-                <div className="space-y-1">
-                  <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Discount</Label>
-                  <Input 
-                    type="number" 
-                    value={form.discount_amount} 
-                    onChange={e => updateForm('discount_amount', parseFloat(e.target.value) || 0)} 
-                    className="bg-blue-800 border-blue-700 text-white h-9" 
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Type</Label>
-                  <Select value={form.discount_type} onValueChange={v => updateForm('discount_type', v)}>
-                    <SelectTrigger className="bg-blue-800 border-blue-700 text-white h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="percentage">%</SelectItem>
-                      <SelectItem value="flat">$ Flat</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col">
+                  <Label className="text-blue-200 text-[10px] font-bold uppercase tracking-wider mb-1">Discount</Label>
+                  <div className="flex gap-1">
+                    <Input 
+                      type="number" 
+                      value={form.discount_amount} 
+                      onChange={e => updateForm('discount_amount', parseFloat(e.target.value) || 0)} 
+                      className="bg-blue-800 border-blue-700 text-white h-8 w-20 text-sm" 
+                    />
+                    <Select value={form.discount_type} onValueChange={v => updateForm('discount_type', v)}>
+                      <SelectTrigger className="bg-blue-800 border-blue-700 text-white h-8 w-16 text-xs px-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">%</SelectItem>
+                        <SelectItem value="flat">$ Flat</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Tax</Label>
-                  <Input 
-                    type="number" 
-                    value={form.tax_amount} 
-                    onChange={e => updateForm('tax_amount', parseFloat(e.target.value) || 0)} 
-                    className="bg-blue-800 border-blue-700 text-white h-9" 
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Type</Label>
-                  <Select value={form.tax_type} onValueChange={v => updateForm('tax_type', v)}>
-                    <SelectTrigger className="bg-blue-800 border-blue-700 text-white h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="percentage">%</SelectItem>
-                      <SelectItem value="flat">$ Flat</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="h-8 w-px bg-blue-800 hidden sm:block"></div>
+
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col">
+                  <Label className="text-blue-200 text-[10px] font-bold uppercase tracking-wider mb-1">Tax</Label>
+                  <div className="flex gap-1">
+                    <Input 
+                      type="number" 
+                      value={form.tax_amount} 
+                      onChange={e => updateForm('tax_amount', parseFloat(e.target.value) || 0)} 
+                      className="bg-blue-800 border-blue-700 text-white h-8 w-20 text-sm" 
+                    />
+                    <Select value={form.tax_type} onValueChange={v => updateForm('tax_type', v)}>
+                      <SelectTrigger className="bg-blue-800 border-blue-700 text-white h-8 w-16 text-xs px-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">%</SelectItem>
+                        <SelectItem value="flat">$ Flat</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-1 pt-2">
-                <Label className="text-blue-200 text-xs font-bold uppercase tracking-wider">Contingency (%)</Label>
+              <div className="h-8 w-px bg-blue-800 hidden sm:block"></div>
+
+              <div className="flex flex-col">
+                <Label className="text-blue-200 text-[10px] font-bold uppercase tracking-wider mb-1">Contingency (%)</Label>
                 <Input 
                   type="number" 
                   value={form.contingency_percentage} 
                   onChange={e => updateForm('contingency_percentage', parseFloat(e.target.value) || 0)} 
-                  className="bg-blue-800 border-blue-700 text-white h-9" 
+                  className="bg-blue-800 border-blue-700 text-white h-8 w-20 text-sm" 
                 />
               </div>
 
-              <div className="pt-6 mt-4 border-t border-blue-800">
-                <div className="flex justify-between items-end">
-                  <span className="text-blue-200 font-bold uppercase tracking-wider text-sm">Grand Total</span>
-                  <span className="text-3xl font-black text-white">${totals.grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
-                </div>
-              </div>
+              <div className="h-8 w-px bg-blue-800 hidden sm:block"></div>
 
+              <div className="flex flex-col items-end min-w-[120px]">
+                <span className="text-blue-200 text-[10px] font-bold uppercase tracking-wider">Grand Total</span>
+                <span className="text-2xl font-black text-white leading-none">${totals.grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+              </div>
             </div>
           </div>
         </div>
-
       </div>
 
       <div className="flex justify-end gap-4 mt-8 border-t border-gray-200 pt-8">
