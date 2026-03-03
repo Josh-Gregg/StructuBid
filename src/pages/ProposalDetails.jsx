@@ -147,6 +147,50 @@ export default function ProposalDetails() {
     return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString();
   };
 
+  // Chunking Estimate Items for Print Pagination
+  const estimatePages = [];
+  let currentPageItems = [];
+  let currentLines = 0;
+  const MAX_LINES_PER_PAGE = 22; // Approx lines that fit on a page
+
+  if (proposal.categories) {
+    proposal.categories.forEach(cat => {
+      if (!cat.line_items?.length) return;
+      
+      if (currentLines + 3 > MAX_LINES_PER_PAGE) {
+        estimatePages.push(currentPageItems);
+        currentPageItems = [];
+        currentLines = 0;
+      }
+      
+      currentPageItems.push({ type: 'category', data: cat });
+      currentLines += 2;
+      
+      cat.line_items.forEach(item => {
+        const itemLines = (item.show_note && item.note) ? 2 : 1;
+        if (currentLines + itemLines > MAX_LINES_PER_PAGE) {
+          estimatePages.push(currentPageItems);
+          currentPageItems = [];
+          currentLines = 0;
+          currentPageItems.push({ type: 'category-continued', data: cat });
+          currentLines += 2;
+        }
+        currentPageItems.push({ type: 'item', data: item, category: cat });
+        currentLines += itemLines;
+      });
+    });
+  }
+  
+  if (currentLines + 8 > MAX_LINES_PER_PAGE) {
+    estimatePages.push(currentPageItems);
+    currentPageItems = [];
+  }
+  currentPageItems.push({ type: 'totals' });
+  estimatePages.push(currentPageItems);
+
+  const totalPages = 1 + 1 + estimatePages.length + 1; // Cover + Details + Estimates + Signatures
+  let pageCounter = 2; // Start after cover
+
   return (
     <div className="max-w-5xl mx-auto animate-in fade-in print:max-w-none print:m-0 print:p-0">
       {/* Action Bar (Hidden in Print) */}
