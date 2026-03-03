@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Save, ArrowLeft, Calculator, GripVertical } from 'lucide-react';
+import { Plus, Trash2, Save, ArrowLeft, Calculator, GripVertical, Printer, BookmarkPlus, Copy } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
@@ -28,9 +28,18 @@ export default function ProposalForm() {
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [cropImageSrc, setCropImageSrc] = useState(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState('');
+  const [templates, setTemplates] = useState([]);
   const initialLoadRef = useRef(true);
   const isOwnSaveRef = useRef(false);
   const lastEditTimeRef = useRef(0);
+
+  const fetchTemplates = () => {
+    base44.entities.ProposalTemplate.list().then(setTemplates).catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
 
   const defaultState = {
     client_name: '', company_name: '', client_address: '', client_phone: '', client_email: '', referral_source: '', project_number: `PRJ-${Date.now().toString().slice(-6)}`,
@@ -268,6 +277,48 @@ export default function ProposalForm() {
     }
   };
 
+  const handleSaveAsTemplate = async () => {
+    const name = window.prompt("Enter a name for this template:");
+    if (!name) return;
+    setIsSaving(true);
+    try {
+      await base44.entities.ProposalTemplate.create({
+        name,
+        project_type: form.project_type,
+        scope_of_work: form.scope_of_work,
+        executive_summary: form.executive_summary,
+        categories: form.categories
+      });
+      toast.success("Template saved successfully");
+      fetchTemplates();
+    } catch (e) {
+      toast.error("Failed to save template");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleLoadTemplate = (templateId) => {
+    const tpl = templates.find(t => t.id === templateId);
+    if (!tpl) return;
+    if (!window.confirm(`Load template "${tpl.name}"? This will overwrite your current scope and line items.`)) return;
+    
+    lastEditTimeRef.current = Date.now();
+    const newCategories = (tpl.categories || []).map(c => ({
+      ...c,
+      line_items: (c.line_items || []).map(li => ({ ...li, _id: Math.random().toString(36).substr(2, 9) }))
+    }));
+
+    setForm(prev => ({
+      ...prev,
+      project_type: tpl.project_type || prev.project_type,
+      scope_of_work: tpl.scope_of_work || prev.scope_of_work,
+      executive_summary: tpl.executive_summary || prev.executive_summary,
+      categories: newCategories
+    }));
+    toast.success("Template loaded");
+  };
+
   const handleSave = async () => {
     if (!form.client_name || !form.client_email || !form.project_address) {
       alert("Please fill in required fields: Client Name, Email, Project Address");
@@ -306,18 +357,24 @@ export default function ProposalForm() {
           </Button>
           <h1 className="text-2xl font-black text-gray-900">{id ? 'Edit Proposal' : 'New Proposal'}</h1>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {autoSaveStatus && (
-            <span className="text-sm font-medium text-gray-500 animate-in fade-in">
+            <span className="text-sm font-medium text-gray-500 animate-in fade-in hidden md:inline">
               {autoSaveStatus}
             </span>
           )}
-          <Button onClick={handleSpellCheck} disabled={isChecking || isSaving} variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 font-bold px-4">
-            ✨ {isChecking ? 'Checking...' : 'AI Spell Check'}
+          <Button onClick={() => window.open(createPageUrl(`ProposalDetails?id=${id}`), '_blank')} disabled={!id || isSaving} variant="outline" className="border-gray-200 text-gray-700 bg-white hover:bg-gray-50 font-bold px-3">
+            <Printer className="w-4 h-4 md:mr-2" /> <span className="hidden md:inline">Print Preview</span>
           </Button>
-          <Button onClick={handleSave} disabled={isSaving} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md font-bold px-6">
-            <Save className="w-4 h-4 mr-2" />
-            {isSaving ? 'Saving...' : 'Save Proposal'}
+          <Button onClick={handleSaveAsTemplate} disabled={isSaving} variant="outline" className="border-gray-200 text-gray-700 bg-white hover:bg-gray-50 font-bold px-3">
+            <BookmarkPlus className="w-4 h-4 md:mr-2" /> <span className="hidden md:inline">Save as Template</span>
+          </Button>
+          <Button onClick={handleSpellCheck} disabled={isChecking || isSaving} variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 font-bold px-3">
+            ✨ <span className="hidden md:inline">{isChecking ? 'Checking...' : 'AI Spell Check'}</span>
+          </Button>
+          <Button onClick={handleSave} disabled={isSaving} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl shadow-md font-bold px-4">
+            <Save className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">{isSaving ? 'Saving...' : 'Save Proposal'}</span>
           </Button>
         </div>
       </div>
@@ -423,11 +480,51 @@ export default function ProposalForm() {
 
           {/* Section 3: Line Items */}
           <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+            <datalist id="common-tasks">
+              <option value="Demolition" />
+              <option value="Wood Framing" />
+              <option value="Metal Framing" />
+              <option value="Hang & Finish Drywall" />
+              <option value="Interior Painting" />
+              <option value="Exterior Painting" />
+              <option value="Hardwood Flooring" />
+              <option value="Carpet Installation" />
+              <option value="Trim & Millwork" />
+              <option value="Cabinetry" />
+              <option value="Countertops" />
+              <option value="Plumbing Rough-in" />
+              <option value="Plumbing Fixtures" />
+              <option value="Electrical Rough-in" />
+              <option value="Electrical Fixtures" />
+              <option value="HVAC Ductwork" />
+              <option value="HVAC Equipment" />
+              <option value="Concrete Footings" />
+              <option value="Slab on Grade" />
+              <option value="Asphalt Shingle Roofing" />
+              <option value="Drop Ceiling Grid & Tiles" />
+              <option value="Final Cleaning" />
+            </datalist>
+
+            <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-100 pb-4 mb-6 gap-4">
               <h2 className="text-lg font-black text-gray-900 uppercase tracking-wider">Line-Item Costs</h2>
-              <Button onClick={addCategory} variant="outline" size="sm" className="font-bold border-gray-300">
-                <Plus className="w-4 h-4 mr-2" /> Add Category
-              </Button>
+              <div className="flex items-center gap-3">
+                {templates.length > 0 && (
+                  <Select onValueChange={handleLoadTemplate}>
+                    <SelectTrigger className="w-[200px] border-gray-300">
+                      <Copy className="w-4 h-4 mr-2 text-gray-500" />
+                      <SelectValue placeholder="Load Template..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {templates.map(t => (
+                        <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+                <Button onClick={addCategory} variant="outline" size="sm" className="font-bold border-gray-300">
+                  <Plus className="w-4 h-4 mr-2" /> Add Category
+                </Button>
+              </div>
             </div>
 
             {(!form.categories || form.categories.length === 0) && (
@@ -492,41 +589,44 @@ export default function ProposalForm() {
                                       <div className="flex flex-col md:flex-row gap-3 pr-6 pl-4 md:pl-6">
                                         <div className="flex-1 space-y-1">
                                           <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Description</Label>
-                              <Input 
-                                value={item.description} 
-                                onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
-                                placeholder="Item Description" 
-                                className="border-gray-200 h-8 text-sm" 
-                              />
-                            </div>
-                            
-                            <div className="flex flex-wrap md:flex-nowrap gap-2">
-                              <div className="space-y-1 w-16">
-                                <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-center block">Qty</Label>
-                                <Input 
-                                  type="number" 
-                                  value={item.quantity} 
-                                  onChange={e => updateLineItem(catIndex, itemIndex, 'quantity', parseFloat(e.target.value) || 0)} 
-                                  className="border-gray-200 text-center px-1 h-8 text-sm" 
-                                />
-                              </div>
-                              <div className="space-y-1 w-16">
-                                <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-center block">Unit</Label>
-                                <Input 
-                                  value={item.unit} 
-                                  onChange={e => updateLineItem(catIndex, itemIndex, 'unit', e.target.value)} 
-                                  className="border-gray-200 text-center px-1 h-8 text-sm" 
-                                />
-                              </div>
-                              <div className="space-y-1 w-20">
-                                <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-right block">Cost</Label>
-                                <Input 
-                                  type="number" 
-                                  value={item.cost_per_unit} 
-                                  onChange={e => updateLineItem(catIndex, itemIndex, 'cost_per_unit', parseFloat(e.target.value) || 0)} 
-                                  className="border-gray-200 text-right px-2 h-8 text-sm" 
-                                />
-                              </div>
+                                          <Input 
+                                            list="common-tasks"
+                                            value={item.description} 
+                                            onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
+                                            placeholder="Item Description" 
+                                            className="border-gray-200 h-8 text-sm" 
+                                          />
+                                        </div>
+
+                                        <div className="flex flex-wrap md:flex-nowrap gap-2">
+                                          <div className="space-y-1 w-16">
+                                            <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-center block">Qty</Label>
+                                            <Input 
+                                              type="number" 
+                                              value={item.quantity} 
+                                              onChange={e => updateLineItem(catIndex, itemIndex, 'quantity', parseFloat(e.target.value) || 0)} 
+                                              className="border-gray-200 text-center px-1 h-8 text-sm" 
+                                            />
+                                          </div>
+                                          <div className="space-y-1 w-16">
+                                            <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-center block">Unit</Label>
+                                            <Input 
+                                              value={item.unit} 
+                                              onChange={e => updateLineItem(catIndex, itemIndex, 'unit', e.target.value.toUpperCase())} 
+                                              className="border-gray-200 text-center px-1 h-8 text-sm uppercase" 
+                                            />
+                                          </div>
+                                          <div className="space-y-1 w-20">
+                                            <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-right block">Cost</Label>
+                                            <Input 
+                                              type="number" 
+                                              step="0.01"
+                                              value={item.cost_per_unit} 
+                                              onChange={e => updateLineItem(catIndex, itemIndex, 'cost_per_unit', parseFloat(e.target.value) || 0)}
+                                              onBlur={e => updateLineItem(catIndex, itemIndex, 'cost_per_unit', Math.round((parseFloat(e.target.value) || 0) * 100) / 100)}
+                                              className="border-gray-200 text-right px-2 h-8 text-sm" 
+                                            />
+                                          </div>
                               <div className="space-y-1 w-16">
                                 <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider text-right block">Mkp %</Label>
                                 <Input 
