@@ -47,7 +47,7 @@ export default function ProposalForm() {
     cover_title: 'Project Proposal', cover_subtitle: '', cover_photo_url: '',
     schedule_start_date: '', schedule_end_date: '', milestones: [], categories: [], hide_markups: false,
     overall_markup_percentage: 0, overall_markup_type: 'percentage', tax_amount: 0, tax_type: 'percentage', discount_amount: 0, discount_type: 'percentage',
-    contingency_percentage: 10, assumptions: '', terms_and_conditions_url: '', attachments: [], status: 'draft', change_orders: []
+    contingency_percentage: 10, round_up_type: 'none', assumptions: '', terms_and_conditions_url: '', attachments: [], status: 'draft', change_orders: []
   };
 
   const [form, setForm] = useState(defaultState);
@@ -287,7 +287,8 @@ export default function ProposalForm() {
         project_type: form.project_type,
         scope_of_work: form.scope_of_work,
         executive_summary: form.executive_summary,
-        categories: form.categories
+        categories: form.categories,
+        round_up_type: form.round_up_type
       });
       toast.success("Template saved successfully");
       fetchTemplates();
@@ -314,7 +315,8 @@ export default function ProposalForm() {
       project_type: tpl.project_type || prev.project_type,
       scope_of_work: tpl.scope_of_work || prev.scope_of_work,
       executive_summary: tpl.executive_summary || prev.executive_summary,
-      categories: newCategories
+      categories: newCategories,
+      round_up_type: tpl.round_up_type || prev.round_up_type
     }));
     toast.success("Template loaded");
   };
@@ -857,6 +859,23 @@ export default function ProposalForm() {
                   onChange={e => updateForm('contingency_percentage', parseFloat(e.target.value) || 0)} 
                   className="bg-blue-800 border-blue-700 text-white h-8 w-20 text-sm" 
                 />
+              </div>
+
+              <div className="h-8 w-px bg-blue-800 hidden sm:block"></div>
+
+              <div className="flex flex-col">
+                <Label className="text-blue-200 text-[10px] font-bold uppercase tracking-wider mb-1">Round Up</Label>
+                <Select value={form.round_up_type || 'none'} onValueChange={v => updateForm('round_up_type', v)}>
+                  <SelectTrigger className="bg-blue-800 border-blue-700 text-white h-8 w-24 text-xs px-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="dollar">Nearest $1</SelectItem>
+                    <SelectItem value="ten">Nearest $10</SelectItem>
+                    <SelectItem value="hundred">Nearest $100</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="h-8 w-px bg-blue-800 hidden sm:block"></div>
