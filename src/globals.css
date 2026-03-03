@@ -43,6 +43,12 @@
 
 @media print {
   @page {
-    margin: 20mm;
+    margin: 0;
+    size: letter;
+  }
+  body {
+    background: white;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
