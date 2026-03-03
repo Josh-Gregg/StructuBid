@@ -324,7 +324,7 @@ export default function ProposalDetails() {
         </PaperSheet>
 
         {/* Content Pages */}
-        <PaperSheet headerTitle="Project Details" footerText="Great White Construction" pageNum={2} totalPages={4} proposal={proposal}>
+        <PaperSheet headerTitle="Project Details" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal} strictHeight={false}>
           {proposal.executive_summary && (
             <PrintSection title="Executive Summary" className="mb-16">
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
