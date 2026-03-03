@@ -271,7 +271,7 @@ export default function ProposalDetails() {
       <div id="printable-proposal" className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl print:bg-white py-12 print:py-0 text-gray-900 print:rounded-none">
         
         {/* Cover Page */}
-        <PaperSheet hideHeaderFooter={true} pageNum={1} totalPages={4} proposal={proposal}>
+        <PaperSheet hideHeaderFooter={true} pageNum={1} totalPages={totalPages} proposal={proposal} strictHeight={true}>
           <div className="p-12 md:p-16 flex-1 flex flex-col relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#042950]/10 rounded-bl-full -z-10 print:hidden"></div>
           
