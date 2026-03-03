@@ -93,7 +93,7 @@ export default function ProposalDetails() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto animate-in fade-in print:max-w-none print:m-0 print:p-0 bg-white md:shadow-lg md:my-8 rounded-lg min-h-screen">
+    <div className="max-w-5xl mx-auto animate-in fade-in print:max-w-none print:w-full print:m-0 print:p-0 bg-white md:shadow-lg md:my-8 rounded-lg min-h-screen">
       {/* Action Bar (Hidden in Print) */}
       <div className="preview-controls flex items-center justify-between bg-white p-4 border-b border-gray-200 mb-8 sticky top-0 z-10 rounded-t-lg">
         <div className="flex items-center gap-4">
