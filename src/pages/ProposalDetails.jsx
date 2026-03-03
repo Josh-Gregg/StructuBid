@@ -8,7 +8,84 @@ import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 
+function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal }) {
+  if (hideHeaderFooter) {
+    return (
+      <div className="w-[8.5in] min-h-[11in] bg-white relative flex flex-col shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto box-border print-page" 
+           style={{ pageBreakAfter: 'always' }}>
+        {children}
+      </div>
+    );
+  }
 
+  return (
+    <div className="w-[8.5in] min-h-[11in] bg-white relative shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto box-border print-page flex flex-col" 
+         style={{ pageBreakAfter: 'always' }}>
+      <table className="w-full border-collapse m-0 p-0 flex flex-col print:table flex-1">
+        <thead className="flex-shrink-0 block print:table-header-group">
+          <tr className="block print:table-row">
+            <td className="p-0 align-top block print:table-cell">
+              <div className="h-[1in] bg-[#042950] text-white flex items-center justify-between px-20 shrink-0" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                <h2 className="text-xl font-bold tracking-wider uppercase">{headerTitle}</h2>
+                <div className="text-right">
+                  <div className="font-bold text-sm">{proposal.client_name}</div>
+                  <div className="text-white/80 text-xs text-right">#{proposal.project_number}</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </thead>
+        <tbody className="flex-1 flex flex-col print:table-row-group">
+          <tr className="flex-1 flex flex-col print:table-row">
+            <td className="p-0 align-top flex-1 flex flex-col print:table-cell">
+              <div className="px-20 py-12 pb-10 flex flex-col flex-1">
+                {children}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot className="flex-shrink-0 block print:table-footer-group">
+          <tr className="block print:table-row">
+            <td className="p-0 align-bottom block print:table-cell">
+              <div className="h-[0.75in] border-t-4 border-[#042950] bg-gray-100 flex items-center justify-between px-20 shrink-0 mt-auto" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                <div className="text-[#042950] font-black text-sm uppercase tracking-wider">{footerText || 'Great White Construction'}</div>
+                <div className="text-[#042950] font-bold text-sm">
+                  Page {pageNum} of {totalPages}
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  );
+}
+
+function PrintSection({ title, children, className="" }) {
+  return (
+    <div className={`relative ${className}`}>
+      <div className="print:absolute print:top-0 print:left-0 print:right-0 print:z-10 bg-white" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+        <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">{title}</h2>
+      </div>
+      <table className="w-full border-collapse block print:table">
+        <thead className="hidden print:table-header-group">
+          <tr>
+            <th className="text-left font-normal p-0 align-top">
+              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20 bg-white" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>{title} (Cont.)</h2>
+            </th>
+          </tr>
+        </thead>
+        <tbody className="block print:table-row-group">
+          <tr className="block print:table-row">
+            <td className="p-0 align-top block print:table-cell w-full">
+              {children}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export default function ProposalDetails() {
   const navigate = useNavigate();
