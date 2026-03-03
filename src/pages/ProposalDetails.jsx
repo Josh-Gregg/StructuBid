@@ -169,14 +169,14 @@ export default function ProposalDetails() {
       )}
 
       {/* Printable Proposal Area */}
-      <div className="print-content px-8 md:px-16 pb-16 pt-8 print:p-0">
+      <div className="print-content px-8 md:px-16 pb-16 pt-8 print:p-0 print:w-full print:box-border">
         
         {/* Cover Page */}
-        <div className="section min-h-[900px] flex flex-col relative print:min-h-0 print:h-[10in] print:page-break-after-always">
+        <div className="section min-h-[900px] flex flex-col relative print:min-h-0 print:h-[9in] print:page-break-after-always print:overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#042950]/10 rounded-bl-full -z-10 no-print"></div>
           
-          <header className="flex justify-between items-start mb-16 pt-8">
-            <Logo imageClassName="h-40 md:h-48 object-contain" />
+          <header className="flex justify-between items-start mb-8 md:mb-16 pt-8 print:pt-0">
+            <Logo imageClassName="h-32 md:h-48 print:h-32 object-contain" />
             <div className="text-right text-sm text-gray-600 space-y-1 mt-4">
               <p className="font-bold text-gray-900 text-base">Great White Construction</p>
               <p>2470 S Zephyr St</p>
