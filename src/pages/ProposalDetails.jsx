@@ -8,33 +8,55 @@ import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 
-function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal, strictHeight = false }) {
-  return (
-    <div className={`w-[8.5in] ${strictHeight ? 'h-[11in] overflow-hidden' : 'min-h-[11in]'} bg-white relative flex flex-col shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto box-border print-page`} 
-         style={{ pageBreakAfter: 'always', pageBreakInside: 'avoid' }}>
-      
-      {!hideHeaderFooter && (
-        <div className="h-[1in] bg-[#042950] text-white flex items-center justify-between px-12 shrink-0" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-          <h2 className="text-xl font-bold tracking-wider uppercase">{headerTitle}</h2>
-          <div className="text-right">
-            <div className="font-bold text-sm">{proposal.client_name}</div>
-            <div className="text-white/80 text-xs text-right">#{proposal.project_number}</div>
-          </div>
-        </div>
-      )}
-
-      <div className={`flex-1 flex flex-col ${hideHeaderFooter ? '' : 'px-12 py-10 pb-8'}`}>
+function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal }) {
+  if (hideHeaderFooter) {
+    return (
+      <div className="w-[8.5in] min-h-[11in] bg-white relative flex flex-col shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto box-border print-page" 
+           style={{ pageBreakAfter: 'always' }}>
         {children}
       </div>
+    );
+  }
 
-      {!hideHeaderFooter && (
-        <div className="h-[0.75in] border-t-4 border-[#042950] bg-gray-100 flex items-center justify-between px-12 shrink-0 mt-auto" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-          <div className="text-[#042950] font-black text-sm uppercase tracking-wider">{footerText || 'Great White Construction'}</div>
-          <div className="text-[#042950] font-bold text-sm">
-            Page {pageNum} of {totalPages}
-          </div>
-        </div>
-      )}
+  return (
+    <div className="w-[8.5in] min-h-[11in] bg-white relative shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto box-border print-page flex flex-col" 
+         style={{ pageBreakAfter: 'always' }}>
+      <table className="w-full border-collapse m-0 p-0 flex flex-col print:table flex-1">
+        <thead className="flex-shrink-0 block print:table-header-group">
+          <tr className="block print:table-row">
+            <td className="p-0 align-top block print:table-cell">
+              <div className="h-[1in] bg-[#042950] text-white flex items-center justify-between px-12 shrink-0" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                <h2 className="text-xl font-bold tracking-wider uppercase">{headerTitle}</h2>
+                <div className="text-right">
+                  <div className="font-bold text-sm">{proposal.client_name}</div>
+                  <div className="text-white/80 text-xs text-right">#{proposal.project_number}</div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </thead>
+        <tbody className="flex-1 flex flex-col print:table-row-group">
+          <tr className="flex-1 flex flex-col print:table-row">
+            <td className="p-0 align-top flex-1 flex flex-col print:table-cell">
+              <div className="px-12 py-10 pb-8 flex flex-col flex-1">
+                {children}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot className="flex-shrink-0 block print:table-footer-group">
+          <tr className="block print:table-row">
+            <td className="p-0 align-bottom block print:table-cell">
+              <div className="h-[0.75in] border-t-4 border-[#042950] bg-gray-100 flex items-center justify-between px-12 shrink-0 mt-auto" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                <div className="text-[#042950] font-black text-sm uppercase tracking-wider">{footerText || 'Great White Construction'}</div>
+                <div className="text-[#042950] font-bold text-sm">
+                  Page {pageNum} of {totalPages}
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   );
 }
@@ -271,7 +293,7 @@ export default function ProposalDetails() {
       <div id="printable-proposal" className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl print:bg-white py-12 print:py-0 text-gray-900 print:rounded-none">
         
         {/* Cover Page */}
-        <PaperSheet hideHeaderFooter={true} pageNum={1} totalPages={totalPages} proposal={proposal} strictHeight={true}>
+        <PaperSheet hideHeaderFooter={true} pageNum={1} totalPages={totalPages} proposal={proposal}>
           <div className="p-12 md:p-16 flex-1 flex flex-col relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#042950]/10 rounded-bl-full -z-10 print:hidden"></div>
           
@@ -324,7 +346,7 @@ export default function ProposalDetails() {
         </PaperSheet>
 
         {/* Content Pages */}
-        <PaperSheet headerTitle="Project Details" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal} strictHeight={false}>
+        <PaperSheet headerTitle="Project Details" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal}>
           {proposal.executive_summary && (
             <PrintSection title="Executive Summary" className="mb-16">
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
@@ -358,7 +380,7 @@ export default function ProposalDetails() {
 
         {/* Estimate Section */}
         {estimatePages.map((pageItems, pageIndex) => (
-          <PaperSheet key={`est-${pageIndex}`} strictHeight={true} headerTitle="Project Estimate" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal}>
+          <PaperSheet key={`est-${pageIndex}`} headerTitle="Project Estimate" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal}>
             <div className="flex-1">
               <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Estimate {pageIndex > 0 ? '(Cont.)' : ''}</h2>
               <table className="w-full text-sm border-collapse">
@@ -467,7 +489,7 @@ export default function ProposalDetails() {
         ))}
 
         {/* Assumptions & Signatures Page */}
-        <PaperSheet headerTitle="Assumptions & Signatures" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal} strictHeight={true}>
+        <PaperSheet headerTitle="Assumptions & Signatures" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal}>
           {proposal.assumptions && (
             <PrintSection title="Assumptions & Exclusions" className="mb-16">
               <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: proposal.assumptions }}>
