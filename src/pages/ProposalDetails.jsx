@@ -264,15 +264,15 @@ export default function ProposalDetails() {
         <div className="mt-16 print:mt-12 print:page-break-before-always">
           <h2 className="text-3xl font-black text-[#042950] mb-8 pb-3 border-b-2 border-[#042950]/20">Project Estimate</h2>
           
-          <table className="bid-table w-full text-sm border-collapse mb-8">
+          <table className="bid-table w-full text-sm border-collapse mb-8 print:text-xs">
             <thead className="bg-[#042950] text-white">
               <tr>
-                <th className="py-3 px-4 text-left font-bold border-b-2 border-[#042950]">Description</th>
-                <th className="py-3 px-4 text-right font-bold w-24 border-b-2 border-[#042950]">Qty</th>
+                <th className="py-3 px-4 print:px-2 text-left font-bold border-b-2 border-[#042950]">Description</th>
+                <th className="py-3 px-4 print:px-2 text-right font-bold w-20 md:w-24 border-b-2 border-[#042950]">Qty</th>
                 {!proposal.hide_markups && (
                   <>
-                    <th className="py-3 px-4 text-right font-bold w-32 border-b-2 border-[#042950]">Unit Cost</th>
-                    <th className="py-3 px-4 text-right font-bold w-32 border-b-2 border-[#042950]">Total</th>
+                    <th className="py-3 px-4 print:px-2 text-right font-bold w-24 md:w-32 border-b-2 border-[#042950]">Unit Cost</th>
+                    <th className="py-3 px-4 print:px-2 text-right font-bold w-24 md:w-32 border-b-2 border-[#042950]">Total</th>
                   </>
                 )}
               </tr>
@@ -285,7 +285,7 @@ export default function ProposalDetails() {
                 return (
                   <React.Fragment key={i}>
                     <tr className="bg-gray-100 font-bold border-b border-gray-300 bid-group">
-                      <td colSpan={proposal.hide_markups ? 2 : 4} className="py-3 px-4 text-lg text-gray-900" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                      <td colSpan={proposal.hide_markups ? 2 : 4} className="py-3 px-4 print:px-2 text-base md:text-lg text-gray-900" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
                         <div className="flex justify-between items-center">
                           <span>{cat.name}</span>
                           <span className="text-[#042950]">${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
@@ -294,17 +294,17 @@ export default function ProposalDetails() {
                     </tr>
                     {cat.line_items.map((item, j) => (
                       <tr key={j} className="border-b border-gray-200">
-                        <td className="py-3 px-4 text-gray-800 align-top">
+                        <td className="py-3 px-4 print:px-2 text-gray-800 align-top">
                           <div className="font-medium">{item.description}</div>
                           {item.show_note && item.note && (
                             <div className="text-xs text-gray-500 mt-1 italic leading-relaxed">{item.note}</div>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-right text-gray-600 align-top">{item.quantity} <span className="text-xs">{item.unit}</span></td>
+                        <td className="py-3 px-4 print:px-2 text-right text-gray-600 align-top">{item.quantity} <span className="text-[10px] md:text-xs">{item.unit}</span></td>
                         {!proposal.hide_markups && (
                           <>
-                            <td className="py-3 px-4 text-right text-gray-600 align-top">${(getDisplayCost(item) / (item.quantity || 1)).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
-                            <td className="py-3 px-4 text-right font-bold text-gray-900 align-top">${getDisplayCost(item).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+                            <td className="py-3 px-4 print:px-2 text-right text-gray-600 align-top">${(getDisplayCost(item) / (item.quantity || 1)).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+                            <td className="py-3 px-4 print:px-2 text-right font-bold text-gray-900 align-top">${getDisplayCost(item).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
                           </>
                         )}
                       </tr>
