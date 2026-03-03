@@ -365,7 +365,7 @@ export default function ProposalForm() {
               {autoSaveStatus}
             </span>
           )}
-          <Button onClick={() => window.open(createPageUrl(`ProposalDetails?id=${id}`), '_blank')} disabled={!id || isSaving} variant="outline" className="border-gray-200 text-gray-700 bg-white hover:bg-gray-50 font-bold px-3">
+          <Button onClick={() => navigate(createPageUrl(`ProposalDetails?id=${id}`))} disabled={!id || isSaving} variant="outline" className="border-gray-200 text-gray-700 bg-white hover:bg-gray-50 font-bold px-3">
             <Printer className="w-4 h-4 md:mr-2" /> <span className="hidden md:inline">Print Preview</span>
           </Button>
           <Button onClick={handleSaveAsTemplate} disabled={isSaving} variant="outline" className="border-gray-200 text-gray-700 bg-white hover:bg-gray-50 font-bold px-3">

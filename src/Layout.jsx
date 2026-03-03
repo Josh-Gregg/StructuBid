@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import Logo from './components/Logo';
-import { LayoutDashboard, FileText, PlusCircle, LogOut, Menu, Users } from 'lucide-react';
+import { LayoutDashboard, FileText, PlusCircle, LogOut, Menu, Users, BookmarkPlus } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 export default function Layout({ children }) {
@@ -21,6 +21,7 @@ export default function Layout({ children }) {
   const navItems = [
     { name: 'Dashboard', path: 'Home', icon: LayoutDashboard },
     { name: 'Proposals', path: 'Proposals', icon: FileText },
+    { name: 'Templates', path: 'Templates', icon: BookmarkPlus },
     ...(user?.role === 'admin' ? [{ name: 'Team', path: 'Team', icon: Users }] : []),
   ];
 
