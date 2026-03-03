@@ -462,7 +462,7 @@ export default function ProposalDetails() {
         </PaperSheet>
 
         {/* Assumptions & Signatures Page */}
-        <PaperSheet headerTitle="Assumptions & Signatures" footerText="Great White Construction" pageNum={4} totalPages={4} proposal={proposal}>
+        <PaperSheet headerTitle="Assumptions & Signatures" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal} strictHeight={true}>
           {proposal.assumptions && (
             <PrintSection title="Assumptions & Exclusions" className="mb-16">
               <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: proposal.assumptions }}>
