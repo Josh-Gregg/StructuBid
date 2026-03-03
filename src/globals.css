@@ -51,4 +51,10 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+  .print-page {
+    height: 11in !important;
+    max-height: 11in !important;
+    page-break-after: always !important;
+    page-break-inside: avoid !important;
+  }
 }
