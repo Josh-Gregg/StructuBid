@@ -279,11 +279,11 @@ export default function ProposalDetails() {
         
         {/* Cover Page */}
         <PaperSheet hideHeaderFooter={true} pageNum={1} totalPages={totalPages} proposal={proposal}>
-          <div className="p-16 md:p-20 flex-1 flex flex-col relative">
+          <div className="p-10 md:p-16 flex-1 flex flex-col relative justify-between">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#042950]/10 rounded-bl-full -z-10 print:hidden"></div>
           
-          <header className="flex justify-between items-start mb-12">
-            <Logo imageClassName="h-48 md:h-56 object-contain" />
+          <header className="flex justify-between items-start mb-6 shrink-0">
+            <Logo imageClassName="h-32 md:h-40 object-contain" />
             <div className="text-right text-sm text-gray-600 space-y-1">
               <p className="font-bold text-gray-900">Great White Construction</p>
               <p>2470 S Zephyr St</p>
@@ -293,34 +293,34 @@ export default function ProposalDetails() {
             </div>
           </header>
 
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="uppercase tracking-widest text-[#042950] font-bold text-sm mb-4">{proposal.cover_title || 'Project Proposal'}</div>
-            <h1 className="text-5xl md:text-6xl font-black text-[#042950] leading-tight mb-8">
+          <div className="flex-1 flex flex-col justify-center min-h-0">
+            <div className="uppercase tracking-widest text-[#042950] font-bold text-sm mb-2 shrink-0">{proposal.cover_title || 'Project Proposal'}</div>
+            <h1 className="text-4xl md:text-5xl font-black text-[#042950] leading-tight mb-6 shrink-0">
               {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
             </h1>
 
             {proposal.cover_photo_url && (
-              <div className="mb-8 w-full h-64 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+              <div className="mb-6 w-full h-48 md:h-64 rounded-2xl overflow-hidden shadow-lg border border-gray-200 shrink-0">
                 <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-12 mb-8 mt-auto">
+            <div className="grid grid-cols-2 gap-8 mt-auto shrink-0 pb-4">
               <div>
-                <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-2">Prepared For</p>
+                <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Prepared For</p>
                 <p className="text-xl font-bold">{proposal.client_name}</p>
                 {proposal.company_name && <p className="text-gray-700">{proposal.company_name}</p>}
                 <p className="text-gray-600">{proposal.client_address}</p>
-                <div className="mt-6">
+                <div className="mt-4">
                   <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Proposal Number</p>
                   <p className="font-medium text-[#042950]">#{proposal.project_number}</p>
                 </div>
               </div>
               <div>
-                <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-2">Project Location</p>
+                <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Project Location</p>
                 <p className="text-lg font-medium">{proposal.project_address}</p>
                 
-                <div className="mt-6">
+                <div className="mt-4">
                   <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Date</p>
                   <p className="font-medium">{new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </div>
