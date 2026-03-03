@@ -429,7 +429,7 @@ export default function ProposalDetails() {
 
       </div>
 
-      <footer className="page-footer">
+      <footer className="page-footer mt-16 py-8 border-t border-gray-200 text-center text-sm text-gray-500">
         Great White Construction • 2470 S Zephyr St, Lakewood, CO 80227 • 303-908-5421
       </footer>
     </div>
