@@ -8,6 +8,37 @@ import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 
+function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal }) {
+  return (
+    <div className="w-full max-w-[8.5in] sm:w-[8.5in] min-h-[11in] bg-white relative flex flex-col shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto" 
+         style={{ pageBreakAfter: 'always' }}>
+      
+      {!hideHeaderFooter && (
+        <div className="h-[1in] bg-[#042950] text-white flex items-center justify-between px-12 shrink-0" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+          <h2 className="text-xl font-bold tracking-wider uppercase">{headerTitle}</h2>
+          <div className="text-right">
+            <div className="font-bold text-sm">{proposal.client_name}</div>
+            <div className="text-white/80 text-xs text-right">#{proposal.project_number}</div>
+          </div>
+        </div>
+      )}
+
+      <div className={`flex-1 flex flex-col ${hideHeaderFooter ? '' : 'px-12 py-10 pb-8'}`}>
+        {children}
+      </div>
+
+      {!hideHeaderFooter && (
+        <div className="h-[0.75in] border-t-4 border-[#042950] bg-gray-100 flex items-center justify-between px-12 shrink-0 mt-auto" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+          <div className="text-[#042950] font-black text-sm uppercase tracking-wider">{footerText || 'Great White Construction'}</div>
+          <div className="text-[#042950] font-bold text-sm">
+            Page {pageNum} of {totalPages}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PrintSection({ title, children, className="" }) {
   return (
     <div className={`relative ${className}`}>
@@ -193,10 +224,11 @@ export default function ProposalDetails() {
       )}
 
       {/* Printable Proposal Area */}
-      <div id="printable-proposal" className="bg-white shadow-xl rounded-none md:rounded-2xl overflow-hidden text-gray-900 print:shadow-none mx-auto max-w-[800px] print:max-w-none print:m-0 border border-gray-200 print:border-none mb-20 print:mb-0">
+      <div id="printable-proposal" className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl print:bg-white py-12 print:py-0 text-gray-900 print:rounded-none">
         
         {/* Cover Page */}
-        <div className="p-12 md:p-16 min-h-[1000px] flex flex-col relative" style={{pageBreakAfter: 'always'}}>
+        <PaperSheet hideHeaderFooter={true} pageNum={1} totalPages={4} proposal={proposal}>
+          <div className="p-12 md:p-16 flex-1 flex flex-col relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#042950]/10 rounded-bl-full -z-10 print:hidden"></div>
           
           <header className="flex justify-between items-start mb-12">
@@ -222,7 +254,7 @@ export default function ProposalDetails() {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-12 mb-8">
+            <div className="grid grid-cols-2 gap-12 mb-8 mt-auto">
               <div>
                 <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-2">Prepared For</p>
                 <p className="text-xl font-bold">{proposal.client_name}</p>
@@ -244,10 +276,11 @@ export default function ProposalDetails() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        </PaperSheet>
 
         {/* Content Pages */}
-        <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col" style={{pageBreakAfter: 'always'}}>
+        <PaperSheet headerTitle="Project Details" footerText="Great White Construction" pageNum={2} totalPages={4} proposal={proposal}>
           {proposal.executive_summary && (
             <PrintSection title="Executive Summary" className="mb-16">
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
@@ -277,12 +310,10 @@ export default function ProposalDetails() {
               </div>
             </PrintSection>
           )}
-
-
-        </div>
+        </PaperSheet>
 
         {/* Estimate Section */}
-        <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col" style={{pageBreakAfter: 'always'}}>
+        <PaperSheet headerTitle="Project Estimate" footerText="Great White Construction" pageNum={3} totalPages={4} proposal={proposal}>
           <PrintSection title="Estimate" className="flex-1">
           
           <div className="space-y-8 mt-4">
@@ -384,10 +415,10 @@ export default function ProposalDetails() {
           </div>
 
           </PrintSection>
-        </div>
+        </PaperSheet>
 
         {/* Assumptions & Signatures Page */}
-        <div className="p-12 md:p-16 bg-white min-h-[1000px] flex flex-col">
+        <PaperSheet headerTitle="Assumptions & Signatures" footerText="Great White Construction" pageNum={4} totalPages={4} proposal={proposal}>
           {proposal.assumptions && (
             <PrintSection title="Assumptions & Exclusions" className="mb-16">
               <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: proposal.assumptions }}>
@@ -448,9 +479,7 @@ export default function ProposalDetails() {
               </p>
             </PrintSection>
           </div>
-
-
-        </div>
+        </PaperSheet>
 
       </div>
     </div>
