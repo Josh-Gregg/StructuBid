@@ -357,47 +357,44 @@ export default function ProposalDetails() {
         </PaperSheet>
 
         {/* Estimate Section */}
-        <PaperSheet headerTitle="Project Estimate" footerText="Great White Construction" pageNum={3} totalPages={4} proposal={proposal}>
-          <PrintSection title="Estimate" className="flex-1">
-          
-          <div className="space-y-8 mt-4">
-            {proposal.categories?.map((cat, i) => {
-              if (!cat.line_items?.length) return null;
-              
-              const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
-
-              return (
-                <div key={i} className="mb-6 break-inside-auto relative">
-                  <div className="print:absolute print:top-0 print:left-0 print:right-0 print:z-10 bg-white rounded-t-lg print:rounded-none overflow-hidden" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-                    <h3 className="text-lg font-bold text-gray-900 bg-gray-50 p-3 border border-gray-200 border-b-0 flex justify-between print:border-b" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact', margin: 0 }}>
-                      <span>{cat.name}</span>
-                      <span>${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
-                    </h3>
-                  </div>
-                  <table className="w-full text-sm border border-gray-200">
-                    <thead className="bg-white border-b border-gray-200 text-gray-500">
-                      <tr className="hidden print:table-row bg-gray-50 border-b border-gray-200" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-                        <th colSpan={proposal.hide_markups ? 2 : 4} className="p-3 text-left text-lg font-bold text-gray-900">
-                           <div className="flex justify-between">
-                             <span>{cat.name} (Cont.)</span>
-                             <span>${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
-                           </div>
-                        </th>
-                      </tr>
-                      <tr>
-                        <th className="py-2 px-3 text-left font-semibold">Description</th>
-                        <th className="py-2 px-3 text-right font-semibold w-24">Qty</th>
-                        {!proposal.hide_markups && (
-                           <>
-                            <th className="py-2 px-3 text-right font-semibold w-24">Unit Cost</th>
-                            <th className="py-2 px-3 text-right font-semibold w-32">Total</th>
-                           </>
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {cat.line_items.map((item, j) => (
-                        <tr key={j}>
+        {estimatePages.map((pageItems, pageIndex) => (
+          <PaperSheet key={`est-${pageIndex}`} strictHeight={true} headerTitle="Project Estimate" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal}>
+            <div className="flex-1">
+              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Estimate {pageIndex > 0 ? '(Cont.)' : ''}</h2>
+              <table className="w-full text-sm border-collapse">
+                <tbody>
+                  {pageItems.map((pi, i) => {
+                    if (pi.type === 'category' || pi.type === 'category-continued') {
+                      const cat = pi.data;
+                      const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
+                      return (
+                        <React.Fragment key={i}>
+                          <tr>
+                            <td colSpan={proposal.hide_markups ? 2 : 4} className="pt-6 pb-2">
+                              <h3 className="text-lg font-bold text-gray-900 bg-gray-50 p-3 border border-gray-200 flex justify-between" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                                <span>{cat.name} {pi.type === 'category-continued' ? '(Cont.)' : ''}</span>
+                                <span>${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                              </h3>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-gray-200 text-gray-500 font-semibold bg-white text-left">
+                            <th className="py-2 px-3 text-left font-semibold">Description</th>
+                            <th className="py-2 px-3 text-right font-semibold w-24">Qty</th>
+                            {!proposal.hide_markups && (
+                              <>
+                                <th className="py-2 px-3 text-right font-semibold w-24">Unit Cost</th>
+                                <th className="py-2 px-3 text-right font-semibold w-32">Total</th>
+                              </>
+                            )}
+                          </tr>
+                        </React.Fragment>
+                      );
+                    }
+                    
+                    if (pi.type === 'item') {
+                      const item = pi.data;
+                      return (
+                        <tr key={i} className="border-b border-gray-100 last:border-0">
                           <td className="py-3 px-3 text-gray-800 align-top">
                             <div>{item.description}</div>
                             {item.show_note && item.note && (
@@ -412,54 +409,62 @@ export default function ProposalDetails() {
                             </>
                           )}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              );
-            })}
-          </div>
+                      );
+                    }
 
-          <div className="mt-12 flex justify-end">
-            <div className="w-full max-w-sm space-y-3">
-              <div className="flex justify-between text-gray-600">
-                <span>Subtotal</span>
-                <span>${totals.totalWithMarkup.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-              </div>
+                    if (pi.type === 'totals') {
+                      return (
+                        <tr key={i}>
+                          <td colSpan={proposal.hide_markups ? 2 : 4} className="pt-12">
+                            <div className="flex justify-end">
+                              <div className="w-full max-w-sm space-y-3">
+                                <div className="flex justify-between text-gray-600">
+                                  <span>Subtotal</span>
+                                  <span>${totals.totalWithMarkup.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                </div>
 
-              <div className={`flex justify-between ${totals.discount > 0 ? 'text-red-600' : 'text-gray-600'}`}>
-                <span>Discount</span>
-                <span>-${(totals.discount || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-              </div>
+                                <div className={`flex justify-between ${totals.discount > 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                                  <span>Discount</span>
+                                  <span>-${(totals.discount || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                </div>
 
-              <div className="flex justify-between text-gray-600">
-                <span>Tax</span>
-                <span>${(totals.tax || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-              </div>
+                                <div className="flex justify-between text-gray-600">
+                                  <span>Tax</span>
+                                  <span>${(totals.tax || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                </div>
 
-              {totals.contingency > 0 && (
-                <div className="flex justify-between text-gray-600">
-                  <span>Contingency ({proposal.contingency_percentage}%)</span>
-                  <span>${totals.contingency.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-                </div>
-              )}
+                                {totals.contingency > 0 && (
+                                  <div className="flex justify-between text-gray-600">
+                                    <span>Contingency ({proposal.contingency_percentage}%)</span>
+                                    <span>${totals.contingency.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                  </div>
+                                )}
 
-              {totals.changeOrdersTotal > 0 && (
-                <div className="flex justify-between text-orange-600 font-medium pt-2 border-t border-gray-100">
-                  <span>Approved Change Orders</span>
-                  <span>${totals.changeOrdersTotal.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
-                </div>
-              )}
+                                {totals.changeOrdersTotal > 0 && (
+                                  <div className="flex justify-between text-orange-600 font-medium pt-2 border-t border-gray-100">
+                                    <span>Approved Change Orders</span>
+                                    <span>${totals.changeOrdersTotal.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                  </div>
+                                )}
 
-              <div className="flex justify-between text-xl font-black text-[#042950] pt-4 border-t-2 border-gray-900">
-                <span>Grand Total</span>
-                <span>${totals.grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
-              </div>
+                                <div className="flex justify-between text-xl font-black text-[#042950] pt-4 border-t-2 border-gray-900">
+                                  <span>Grand Total</span>
+                                  <span>${totals.grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    }
+                    
+                    return null;
+                  })}
+                </tbody>
+              </table>
             </div>
-          </div>
-
-          </PrintSection>
-        </PaperSheet>
+          </PaperSheet>
+        ))}
 
         {/* Assumptions & Signatures Page */}
         <PaperSheet headerTitle="Assumptions & Signatures" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal} strictHeight={true}>
