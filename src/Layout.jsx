@@ -94,9 +94,9 @@ export default function Layout({ children }) {
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col min-w-0 overflow-auto print:overflow-visible relative">
-        <div className="flex-1 p-4 md:p-8 print:p-0">
-          <div className="max-w-7xl mx-auto print:max-w-none print:m-0">
+      <main className="flex-1 flex flex-col min-w-0 overflow-auto print:overflow-visible print:w-full print:m-0 print:p-0 relative bg-[#F3F4F6] print:bg-white">
+        <div className="flex-1 p-4 md:p-8 print:p-0 print:m-0 print:w-full">
+          <div className="max-w-7xl mx-auto print:max-w-none print:m-0 print:w-full print:p-0">
             {children}
           </div>
         </div>
