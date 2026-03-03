@@ -187,18 +187,18 @@ export default function ProposalDetails() {
           </header>
 
           <div className="flex-1 flex flex-col justify-center">
-            <div className="uppercase tracking-widest text-[#042950] font-bold text-sm mb-4">{proposal.cover_title || 'Project Proposal'}</div>
-            <h1 className="text-5xl md:text-6xl font-black text-[#042950] leading-tight mb-12">
+            <div className="uppercase tracking-widest text-[#042950] font-bold text-sm mb-2 md:mb-4">{proposal.cover_title || 'Project Proposal'}</div>
+            <h1 className="text-5xl md:text-6xl print:text-4xl print:leading-tight font-black text-[#042950] leading-tight mb-8 md:mb-12 print:mb-6">
               {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
             </h1>
 
             {proposal.cover_photo_url && (
-              <div className="mb-12 w-full h-72 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+              <div className="mb-8 md:mb-12 print:mb-6 w-full h-72 print:h-56 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
                 <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-12 mt-auto mb-16 bg-gray-50 p-8 rounded-xl print:bg-transparent print:p-0 print:border-none border border-gray-100">
+            <div className="grid grid-cols-2 gap-8 md:gap-12 mt-auto mb-8 md:mb-16 print:mb-0 bg-gray-50 p-8 rounded-xl print:bg-transparent print:p-0 print:border-none border border-gray-100">
               <div>
                 <p className="text-sm text-[#042950] uppercase tracking-wider font-bold mb-3">Prepared For</p>
                 <p className="text-xl font-bold text-gray-900">{proposal.client_name}</p>
