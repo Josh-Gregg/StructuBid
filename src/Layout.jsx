@@ -29,7 +29,7 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen bg-[#F3F4F6] flex flex-col">
-      <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 md:px-8 print:hidden shrink-0 shadow-sm z-10">
+      <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 md:px-8 print:hidden shrink-0 shadow-sm z-10 no-print">
         <Link to={createPageUrl('Home')} className="flex items-center">
           <Logo className="scale-75 origin-left" />
         </Link>
