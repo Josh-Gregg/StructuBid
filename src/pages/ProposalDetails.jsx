@@ -8,10 +8,10 @@ import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 
-function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal }) {
+function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal, strictHeight = false }) {
   return (
-    <div className="w-full max-w-[8.5in] sm:w-[8.5in] min-h-[11in] bg-white relative flex flex-col shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto" 
-         style={{ pageBreakAfter: 'always' }}>
+    <div className={`w-[8.5in] ${strictHeight ? 'h-[11in] overflow-hidden' : 'min-h-[11in]'} bg-white relative flex flex-col shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto box-border print-page`} 
+         style={{ pageBreakAfter: 'always', pageBreakInside: 'avoid' }}>
       
       {!hideHeaderFooter && (
         <div className="h-[1in] bg-[#042950] text-white flex items-center justify-between px-12 shrink-0" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
