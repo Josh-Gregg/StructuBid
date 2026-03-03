@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Save, ArrowLeft, Calculator } from 'lucide-react';
+import { Plus, Trash2, Save, ArrowLeft, Calculator, GripVertical } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
 import { toast } from 'sonner';
@@ -67,6 +68,15 @@ export default function ProposalForm() {
     if (id) {
       setIsLoading(true);
       base44.entities.Proposal.get(id).then(data => {
+        if (data.categories) {
+          data.categories.forEach(c => {
+            if (c.line_items) {
+              c.line_items.forEach(li => {
+                if (!li._id) li._id = Math.random().toString(36).substr(2, 9);
+              });
+            }
+          });
+        }
         setForm({ ...defaultState, ...data });
         setIsLoading(false);
         setTimeout(() => { initialLoadRef.current = false; }, 500);
@@ -80,7 +90,17 @@ export default function ProposalForm() {
                 description: 'The latest changes have been loaded.',
                 icon: <Save className="w-4 h-4 text-blue-500" />
               });
-              return { ...prev, ...event.data };
+              const newData = { ...event.data };
+              if (newData.categories) {
+                newData.categories.forEach(c => {
+                  if (c.line_items) {
+                    c.line_items.forEach(li => {
+                      if (!li._id) li._id = Math.random().toString(36).substr(2, 9);
+                    });
+                  }
+                });
+              }
+              return { ...prev, ...newData };
             });
           }
         }
@@ -147,8 +167,26 @@ export default function ProposalForm() {
       newCategories[catIndex] = { ...newCategories[catIndex] };
       newCategories[catIndex].line_items = [...(newCategories[catIndex].line_items || [])];
       newCategories[catIndex].line_items.push({
+        _id: Math.random().toString(36).substr(2, 9),
         description: '', quantity: 1, unit: 'ea', cost_per_unit: 0, markup_percentage: 0, note: '', show_note: false
       });
+      return { ...prev, categories: newCategories };
+    });
+  };
+
+  const handleDragEnd = (result, catIndex) => {
+    if (!result.destination) return;
+    
+    lastEditTimeRef.current = Date.now();
+    setForm(prev => {
+      const newCategories = [...(prev.categories || [])];
+      const category = { ...newCategories[catIndex] };
+      const items = Array.from(category.line_items || []);
+      const [reorderedItem] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, reorderedItem);
+      
+      category.line_items = items;
+      newCategories[catIndex] = category;
       return { ...prev, categories: newCategories };
     });
   };
@@ -422,22 +460,38 @@ export default function ProposalForm() {
                   </div>
                   
                   <div className="space-y-3">
-                    {cat.line_items?.map((item, itemIndex) => {
-                      const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0)/100);
-                      const itemDistMarkup = (!item.exclude_from_markup && totals.totalLineItemsForMarkup > 0) ? (totals.distMarkup / totals.totalLineItemsForMarkup) : 0;
-                      const itemTotalWithOverallMarkup = itemSub + itemDistMarkup;
+                    <DragDropContext onDragEnd={(result) => handleDragEnd(result, catIndex)}>
+                      <Droppable droppableId={`category-${catIndex}`}>
+                        {(provided) => (
+                          <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
+                            {cat.line_items?.map((item, itemIndex) => {
+                              const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0)/100);
+                              const itemDistMarkup = (!item.exclude_from_markup && totals.totalLineItemsForMarkup > 0) ? (totals.distMarkup / totals.totalLineItemsForMarkup) : 0;
+                              const itemTotalWithOverallMarkup = itemSub + itemDistMarkup;
+                              const itemId = item._id || `item-fallback-${catIndex}-${itemIndex}`;
 
-                      return (
-                        <div key={itemIndex} className="flex flex-col gap-3 bg-white p-4 rounded-lg shadow-sm border border-gray-100 relative pt-5">
-                          <div className="absolute top-1 right-1">
-                            <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 h-7 w-7">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
+                              return (
+                                <Draggable key={itemId} draggableId={itemId} index={itemIndex}>
+                                  {(provided) => (
+                                    <div 
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      className="flex flex-col gap-3 bg-white p-4 rounded-lg shadow-sm border border-gray-100 relative pt-5"
+                                    >
+                                      <div className="absolute top-1 left-1" {...provided.dragHandleProps}>
+                                        <div className="p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing">
+                                          <GripVertical className="w-4 h-4" />
+                                        </div>
+                                      </div>
+                                      <div className="absolute top-1 right-1">
+                                        <Button variant="ghost" size="icon" onClick={() => removeLineItem(catIndex, itemIndex)} className="text-gray-400 hover:text-red-500 h-7 w-7">
+                                          <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                      </div>
 
-                          <div className="flex flex-col md:flex-row gap-3 pr-6">
-                            <div className="flex-1 space-y-1">
-                              <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Description</Label>
+                                      <div className="flex flex-col md:flex-row gap-3 pr-6 pl-4 md:pl-6">
+                                        <div className="flex-1 space-y-1">
+                                          <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Description</Label>
                               <Input 
                                 value={item.description} 
                                 onChange={e => updateLineItem(catIndex, itemIndex, 'description', e.target.value)} 
@@ -522,8 +576,15 @@ export default function ProposalForm() {
                             </div>
                           </div>
                         </div>
-                      );
-                    })}
+                                  )}
+                                </Draggable>
+                              );
+                            })}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </DragDropContext>
                     <Button onClick={() => addLineItem(catIndex)} variant="ghost" size="sm" className="w-full mt-2 border border-dashed border-gray-300 text-blue-600 hover:bg-blue-50 font-bold">
                       <Plus className="w-4 h-4 mr-2" /> Add Line Item
                     </Button>
