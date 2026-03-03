@@ -3,11 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import Logo from './components/Logo';
-import { LayoutDashboard, FileText, PlusCircle, LogOut, Menu, X, Users } from 'lucide-react';
+import { LayoutDashboard, FileText, PlusCircle, LogOut, Menu, Users } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 export default function Layout({ children }) {
   const [user, setUser] = React.useState(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const location = useLocation();
 
   React.useEffect(() => {
@@ -26,85 +26,75 @@ export default function Layout({ children }) {
 
   if (!user) return <div className="min-h-screen flex items-center justify-center text-gray-500">Loading...</div>;
 
-  const SidebarContent = () => (
-    <>
-      <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-        <Logo />
-        <button className="md:hidden" onClick={() => setMobileMenuOpen(false)}>
-          <X className="w-6 h-6 text-gray-500" />
-        </button>
-      </div>
-      <nav className="flex-1 p-4 space-y-2">
-        {navItems.map((item) => {
-          const isActive = location.pathname.includes(item.path) || (location.pathname === '/' && item.path === 'Home');
-          return (
-            <Link
-              key={item.path}
-              to={createPageUrl(item.path)}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
-                isActive ? 'bg-blue-50 text-blue-800 shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-            >
-              <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
-              {item.name}
-            </Link>
-          );
-        })}
-        {['admin', 'user'].includes(user?.role) && (
-          <div className="pt-4 mt-4 border-t border-gray-100">
+  return (
+    <div className="min-h-screen bg-[#F3F4F6] flex flex-col">
+      <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 md:px-8 print:hidden shrink-0 shadow-sm z-10">
+        <Link to={createPageUrl('Home')} className="flex items-center">
+          <Logo className="scale-75 origin-left" />
+        </Link>
+        
+        <div className="flex items-center gap-4">
+          {['admin', 'user'].includes(user?.role) && (
             <Link
               to={createPageUrl('ProposalForm')}
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl font-bold text-white bg-blue-700 hover:bg-blue-800 transition-colors shadow-md"
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-white bg-blue-700 hover:bg-blue-800 transition-colors shadow-sm text-sm"
             >
-              <PlusCircle className="w-5 h-5" />
+              <PlusCircle className="w-4 h-4" />
               New Proposal
             </Link>
-          </div>
-        )}
-      </nav>
-      <div className="p-4 border-t border-gray-100 bg-gray-50">
-        <div className="flex items-center justify-between px-2">
-          <div className="text-sm truncate pr-2">
-            <p className="font-bold text-gray-900 truncate">{user.full_name}</p>
-            <p className="text-gray-500 text-xs capitalize font-medium">{user.role}</p>
-          </div>
-          <button onClick={handleLogout} className="text-gray-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50" title="Logout">
-            <LogOut className="w-5 h-5" />
-          </button>
+          )}
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg outline-none transition-colors">
+              <Menu className="w-6 h-6" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 mt-2 rounded-xl shadow-lg border-gray-100">
+              <div className="px-3 py-3 bg-gray-50/50 rounded-t-xl">
+                <p className="text-sm font-bold text-gray-900 truncate">{user.full_name}</p>
+                <p className="text-xs text-gray-500 capitalize font-medium">{user.role}</p>
+              </div>
+              <DropdownMenuSeparator className="bg-gray-100 m-0" />
+              <div className="p-1.5 space-y-1">
+                {navItems.map((item) => {
+                  const isActive = location.pathname.includes(item.path) || (location.pathname === '/' && item.path === 'Home');
+                  return (
+                    <DropdownMenuItem key={item.path} asChild className={`rounded-lg cursor-pointer ${isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}`}>
+                      <Link
+                        to={createPageUrl(item.path)}
+                        className="flex items-center gap-3 px-2 py-2.5 w-full outline-none"
+                      >
+                        <item.icon className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
+                        <span className="font-semibold">{item.name}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  );
+                })}
+                {['admin', 'user'].includes(user?.role) && (
+                  <DropdownMenuItem asChild className="md:hidden rounded-lg cursor-pointer">
+                    <Link
+                      to={createPageUrl('ProposalForm')}
+                      className="flex items-center gap-3 px-2 py-2.5 w-full text-blue-700 outline-none"
+                    >
+                      <PlusCircle className="w-4 h-4" />
+                      <span className="font-semibold">New Proposal</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+              </div>
+              <DropdownMenuSeparator className="bg-gray-100 m-0" />
+              <div className="p-1.5">
+                <DropdownMenuItem onClick={handleLogout} className="rounded-lg text-red-600 cursor-pointer flex items-center gap-3 px-2 py-2.5 hover:text-red-700 hover:bg-red-50 focus:text-red-700 focus:bg-red-50 w-full outline-none">
+                  <LogOut className="w-4 h-4" />
+                  <span className="font-semibold">Logout</span>
+                </DropdownMenuItem>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </div>
-    </>
-  );
+      </header>
 
-  return (
-    <div className="min-h-screen bg-[#F3F4F6] flex">
-      {/* Desktop Sidebar */}
-      <aside className="w-72 bg-white border-r border-gray-200 hidden md:flex flex-col shadow-sm z-10 print:hidden">
-        <SidebarContent />
-      </aside>
-
-      {/* Mobile Sidebar overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 bg-gray-900/50 z-40 md:hidden print:hidden" onClick={() => setMobileMenuOpen(false)} />
-      )}
-      
-      {/* Mobile Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 w-72 bg-white flex flex-col z-50 transform transition-transform duration-300 ease-in-out md:hidden print:hidden ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <SidebarContent />
-      </aside>
-
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden print:overflow-visible">
-        {/* Mobile header */}
-        <header className="md:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between print:hidden">
-          <Logo className="scale-75 origin-left" />
-          <button onClick={() => setMobileMenuOpen(true)} className="p-2 -mr-2 text-gray-600">
-            <Menu className="w-6 h-6" />
-          </button>
-        </header>
-        
-        <div className="flex-1 overflow-auto p-4 md:p-8 print:overflow-visible print:p-0">
+      <main className="flex-1 flex flex-col min-w-0 overflow-auto print:overflow-visible relative">
+        <div className="flex-1 p-4 md:p-8 print:p-0">
           <div className="max-w-7xl mx-auto print:max-w-none print:m-0">
             {children}
           </div>
