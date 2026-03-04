@@ -124,48 +124,48 @@ export default function ProposalDetails() {
             * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
             body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background: white; }
 
-            /* Each paper sheet fills one page and auto-breaks */
             .print-page {
               width: 8.5in;
-              min-height: 11in;
+              height: 11in;
               page-break-after: always;
               break-after: page;
+              page-break-inside: avoid;
+              break-inside: avoid;
               display: flex;
               flex-direction: column;
               margin: 0;
               padding: 0;
               box-shadow: none;
-              overflow: visible;
+              overflow: hidden;
             }
             .print-page:last-child { page-break-after: avoid; break-after: avoid; }
 
-            /* Page body content area can grow as needed */
-            .print-page > div.flex-1 {
-              overflow: visible !important;
+            /* The content body between header and footer grows to fill available space */
+            .print-page > .flex-1 {
+              flex: 1 1 0%;
+              overflow: visible;
             }
 
             #printable-proposal { background: white; padding: 0; margin: 0; display: block; }
 
-            /* Quill rich text styles */
+            /* Quill rich text — preserve lists, indentation, formatting */
             .ql-editor { padding: 0 !important; }
-            .ql-editor p { margin-bottom: 0.5em; }
+            .ql-editor p { margin-bottom: 0.4em; }
             .ql-editor ol, .ql-editor ul { padding-left: 1.5em; margin-bottom: 0.5em; }
             .ql-editor ol { list-style-type: decimal; }
             .ql-editor ul { list-style-type: disc; }
-            .ql-editor li { margin-bottom: 0.25em; }
-            .ql-editor li.ql-indent-1 { padding-left: 2em; }
-            .ql-editor li.ql-indent-2 { padding-left: 4em; }
-            .ql-editor li.ql-indent-3 { padding-left: 6em; }
-            .ql-editor ol li { list-style-type: decimal; }
-            .ql-editor ol li.ql-indent-1 { list-style-type: lower-alpha; }
-            .ql-editor ol li.ql-indent-2 { list-style-type: lower-roman; }
+            .ql-editor li { margin-bottom: 0.2em; display: list-item !important; }
+            .ql-editor li.ql-indent-1 { padding-left: 1.5em; }
+            .ql-editor li.ql-indent-2 { padding-left: 3em; }
+            .ql-editor li.ql-indent-3 { padding-left: 4.5em; }
+            .ql-editor ol > li { list-style-type: decimal; }
+            .ql-editor ol > li.ql-indent-1 { list-style-type: lower-alpha; }
+            .ql-editor ol > li.ql-indent-2 { list-style-type: lower-roman; }
             .ql-editor strong { font-weight: bold; }
             .ql-editor em { font-style: italic; }
             .ql-editor u { text-decoration: underline; }
-            .ql-editor h1 { font-size: 1.5em; font-weight: bold; }
-            .ql-editor h2 { font-size: 1.25em; font-weight: bold; }
 
-            /* Tailwind utility resets for print */
+            /* Tailwind utility resets */
             .shadow-xl, .shadow-lg, .shadow-md, .shadow-sm { box-shadow: none !important; }
             .mb-12 { margin-bottom: 0 !important; }
             .rounded-2xl { border-radius: 0 !important; }
@@ -173,6 +173,7 @@ export default function ProposalDetails() {
             .py-12 { padding-top: 0 !important; padding-bottom: 0 !important; }
 
             table { width: 100%; border-collapse: collapse; }
+            td, th { break-inside: avoid; }
           </style>
         </head>
         <body>
