@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Printer, Mail, Edit, ArrowLeft, PlusCircle, Loader2 } from 'lucide-react';
+import { Printer, Mail, Edit, ArrowLeft, PlusCircle } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 // ─────────────────────────────────────────────
 // PaperSheet: represents one physical page.
