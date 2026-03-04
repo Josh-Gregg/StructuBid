@@ -151,11 +151,9 @@ function RichTextPages({ html, sectionTitle, proposal, pageCounterRef }) {
       {(pages || [html]).map((pageHtml, idx) => (
         <PaperSheet
           key={idx}
-          headerTitle={idx === 0 ? sectionTitle : `${sectionTitle} (Cont.)`}
           proposal={proposal}
         >
-          {idx === 0 && <SectionTitle title={sectionTitle} />}
-          {idx > 0 && <SectionTitle title={`${sectionTitle} (Cont.)`} />}
+          <SectionTitle title={idx === 0 ? sectionTitle : `${sectionTitle} (Cont.)`} />
           <div
             className="ql-editor p-0 text-gray-700 whitespace-normal"
             dangerouslySetInnerHTML={{ __html: pageHtml }}
