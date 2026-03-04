@@ -12,32 +12,30 @@ import jsPDF from 'jspdf';
 
 // ─────────────────────────────────────────────
 // PaperSheet: represents one physical page.
-// Screen: shows as a white card with shadow.
-// Print: renders as exactly one 8.5×11in page.
+// scrollable=true: content can exceed 11in, pdf renderer will split across pages.
+// scrollable=false (default): fixed 11in page, content clipped.
 // ─────────────────────────────────────────────
-function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal }) {
+function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal, scrollable }) {
   const pageStyle = {
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
     colorAdjust: 'exact',
   };
 
+  const baseClass = scrollable
+    ? "print-page w-[8.5in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto box-border"
+    : "print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto box-border";
+
   if (hideHeaderFooter) {
     return (
-      <div
-        className="print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto box-border"
-        style={pageStyle}
-      >
+      <div className={baseClass} style={pageStyle}>
         {children}
       </div>
     );
   }
 
   return (
-    <div
-      className="print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto box-border"
-      style={pageStyle}
-    >
+    <div className={baseClass} style={pageStyle}>
       {/* Header */}
       <div
         className="shrink-0 h-[1in] flex items-center justify-between px-16"
@@ -52,8 +50,8 @@ function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hi
         </div>
       </div>
 
-      {/* Body — flex-1 so it fills space between header and footer */}
-      <div className="flex-1 px-16 py-8 flex flex-col min-h-0">
+      {/* Body */}
+      <div className="px-16 py-8 flex flex-col">
         {children}
       </div>
 
@@ -66,7 +64,7 @@ function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hi
           {footerText || 'Great White Construction'}
         </div>
         <div className="text-sm font-bold" style={{ color: '#042950' }}>
-          Page {pageNum} of {totalPages}
+          Page {pageNum}
         </div>
       </div>
     </div>
