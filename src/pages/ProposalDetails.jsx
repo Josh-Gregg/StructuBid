@@ -673,7 +673,6 @@ export default function ProposalDetails() {
 
         {/* ── PAGE: Attachments & Signatures ────────────────── */}
         <PaperSheet
-          headerTitle="Attachments & Signatures"
           proposal={proposal}
         >
           <div className="mb-10">
