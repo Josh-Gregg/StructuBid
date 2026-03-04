@@ -416,7 +416,7 @@ export default function ProposalDetails() {
       >
 
         {/* ── PAGE 1: Cover ─────────────────────────────────── */}
-        <PaperSheet hideHeaderFooter pageNum={1} totalPages={totalPages} proposal={proposal}>
+        <PaperSheet hideHeaderFooter proposal={proposal}>
           <div className="flex-1 flex flex-col p-10 md:p-16 relative">
             <div
               className="absolute top-0 right-0 w-64 h-64 rounded-bl-full -z-10 print-hidden"
