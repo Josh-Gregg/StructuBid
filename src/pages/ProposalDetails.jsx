@@ -650,24 +650,31 @@ export default function ProposalDetails() {
           </PaperSheet>
         ))}
 
-        {/* ── PAGE: Assumptions & Signatures ────────────────── */}
+        {/* ── PAGE: Assumptions & Exclusions ────────────────── */}
+        {proposal.assumptions && (
+          <PaperSheet
+            headerTitle="Assumptions & Exclusions"
+            footerText="Great White Construction"
+            pageNum={pageCounter++}
+            totalPages={totalPages}
+            proposal={proposal}
+          >
+            <SectionTitle title="Assumptions & Exclusions" />
+            <div
+              className="ql-editor p-0 text-gray-700 whitespace-normal"
+              dangerouslySetInnerHTML={{ __html: proposal.assumptions }}
+            />
+          </PaperSheet>
+        )}
+
+        {/* ── PAGE: Attachments & Signatures ────────────────── */}
         <PaperSheet
-          headerTitle="Assumptions & Signatures"
+          headerTitle="Attachments & Signatures"
           footerText="Great White Construction"
           pageNum={pageCounter++}
           totalPages={totalPages}
           proposal={proposal}
         >
-          {proposal.assumptions && (
-            <div className="mb-10">
-              <SectionTitle title="Assumptions & Exclusions" />
-              <div
-                className="ql-editor p-0 text-gray-700 whitespace-normal"
-                dangerouslySetInnerHTML={{ __html: proposal.assumptions }}
-              />
-            </div>
-          )}
-
           <div className="mb-10">
             <SectionTitle title="Attachments" />
             {proposal.attachments && proposal.attachments.length > 0 ? (
@@ -710,7 +717,6 @@ export default function ProposalDetails() {
               </div>
             </div>
 
-            {/* Digital accept button — screen only */}
             {user.role === 'client' && proposal.status === 'sent' && (
               <div className="mt-12 text-center print-hidden">
                 <Button
