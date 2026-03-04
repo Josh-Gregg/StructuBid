@@ -476,7 +476,6 @@ export default function ProposalDetails() {
         {/* ── Scope of Work — scrollable, splits across PDF pages automatically ── */}
         <PaperSheet
           headerTitle="Scope of Work"
-          footerText="Great White Construction"
           pageNum={pageCounter++}
           totalPages={totalPages}
           proposal={proposal}
