@@ -121,60 +121,28 @@ export default function ProposalDetails() {
           <title>Proposal - ${proposal.project_number}</title>
           <style>
             @page { size: 8.5in 11in; margin: 0; }
-            * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+            * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background: white; }
-
             .print-page {
               width: 8.5in;
               height: 11in;
+              overflow: hidden;
               page-break-after: always;
               break-after: page;
-              page-break-inside: avoid;
-              break-inside: avoid;
               display: flex;
               flex-direction: column;
               margin: 0;
               padding: 0;
               box-shadow: none;
-              overflow: hidden;
             }
             .print-page:last-child { page-break-after: avoid; break-after: avoid; }
-
-            /* The content body between header and footer grows to fill available space */
-            .print-page > .flex-1 {
-              flex: 1 1 0%;
-              overflow: visible;
-            }
-
-            #printable-proposal { background: white; padding: 0; margin: 0; display: block; }
-
-            /* Quill rich text — preserve lists, indentation, formatting */
-            .ql-editor { padding: 0 !important; }
-            .ql-editor p { margin-bottom: 0.4em; }
-            .ql-editor ol, .ql-editor ul { padding-left: 1.5em; margin-bottom: 0.5em; }
-            .ql-editor ol { list-style-type: decimal; }
-            .ql-editor ul { list-style-type: disc; }
-            .ql-editor li { margin-bottom: 0.2em; display: list-item !important; }
-            .ql-editor li.ql-indent-1 { padding-left: 1.5em; }
-            .ql-editor li.ql-indent-2 { padding-left: 3em; }
-            .ql-editor li.ql-indent-3 { padding-left: 4.5em; }
-            .ql-editor ol > li { list-style-type: decimal; }
-            .ql-editor ol > li.ql-indent-1 { list-style-type: lower-alpha; }
-            .ql-editor ol > li.ql-indent-2 { list-style-type: lower-roman; }
-            .ql-editor strong { font-weight: bold; }
-            .ql-editor em { font-style: italic; }
-            .ql-editor u { text-decoration: underline; }
-
-            /* Tailwind utility resets */
+            #printable-proposal { background: white; padding: 0; margin: 0; }
+            table { width: 100%; border-collapse: collapse; }
             .shadow-xl, .shadow-lg, .shadow-md, .shadow-sm { box-shadow: none !important; }
             .mb-12 { margin-bottom: 0 !important; }
             .rounded-2xl { border-radius: 0 !important; }
-            .bg-gray-200\\/50 { background: white !important; }
-            .py-12 { padding-top: 0 !important; padding-bottom: 0 !important; }
-
-            table { width: 100%; border-collapse: collapse; }
-            td, th { break-inside: avoid; }
           </style>
+          <link rel="stylesheet" href="${window.location.origin}/src/index.css" />
         </head>
         <body>
           ${printContent.innerHTML}
@@ -183,7 +151,7 @@ export default function ProposalDetails() {
               setTimeout(function() {
                 window.print();
                 window.close();
-              }, 800);
+              }, 500);
             };
           <\/script>
         </body>
