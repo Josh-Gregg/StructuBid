@@ -502,7 +502,6 @@ export default function ProposalDetails() {
         {estimatePages.map((pageItems, pageIndex) => (
           <PaperSheet
             key={`est-${pageIndex}`}
-            headerTitle={pageIndex > 0 ? 'Project Estimate (Cont.)' : 'Project Estimate'}
             proposal={proposal}
           >
             <div className="flex-1">
