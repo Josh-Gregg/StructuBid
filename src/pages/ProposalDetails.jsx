@@ -490,45 +490,28 @@ export default function ProposalDetails() {
           </div>
         </PaperSheet>
 
-        {/* ── PAGE 2: Project Details (exec summary only) ── */}
+        {/* ── PAGE 2: Executive Summary ── */}
         {proposal.executive_summary && (
-          <PaperSheet
-            headerTitle="Project Details"
-            pageNum={pageCounter++}
-            totalPages={totalPages}
-            proposal={proposal}
-          >
-            <div className="mb-10">
-              <SectionTitle title="Executive Summary" />
-              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                {proposal.executive_summary}
-              </p>
-            </div>
+          <PaperSheet headerTitle="Project Details" proposal={proposal}>
+            <SectionTitle title="Executive Summary" />
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {proposal.executive_summary}
+            </p>
           </PaperSheet>
         )}
 
-        {/* ── Scope of Work — scrollable, splits across PDF pages automatically ── */}
-        <PaperSheet
-          headerTitle="Scope of Work"
-          pageNum={pageCounter++}
-          totalPages={totalPages}
+        {/* ── Scope of Work — auto-split across pages with Cont. heading ── */}
+        <RichTextPages
+          html={proposal.scope_of_work}
+          sectionTitle="Scope of Work"
           proposal={proposal}
-          scrollable
-        >
-          <SectionTitle title="Scope of Work" />
-          <div
-            className="ql-editor p-0 text-gray-700 whitespace-normal"
-            dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}
-          />
-        </PaperSheet>
+        />
 
         {/* ── ESTIMATE PAGES ────────────────────────────────── */}
         {estimatePages.map((pageItems, pageIndex) => (
           <PaperSheet
             key={`est-${pageIndex}`}
-            headerTitle="Project Estimate"
-            pageNum={pageCounter++}
-            totalPages={totalPages}
+            headerTitle={pageIndex > 0 ? 'Project Estimate (Cont.)' : 'Project Estimate'}
             proposal={proposal}
           >
             <div className="flex-1">
