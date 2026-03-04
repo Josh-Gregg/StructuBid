@@ -254,9 +254,9 @@ export default function ProposalDetails() {
                 </Button>
               </>
             )}
-            <Button onClick={handlePrint} disabled={isPrinting} className="bg-blue-700 hover:bg-blue-800 text-white shadow-md">
-              {isPrinting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Printer className="w-4 h-4 mr-2" />}
-              {isPrinting ? 'Generating PDF...' : 'Print PDF'}
+            <Button onClick={handlePrint} className="bg-blue-700 hover:bg-blue-800 text-white shadow-md">
+              <Printer className="w-4 h-4 mr-2" />
+              Print / Save PDF
             </Button>
           </div>
         </div>
