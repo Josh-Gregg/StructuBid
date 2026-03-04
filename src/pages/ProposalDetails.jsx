@@ -94,62 +94,8 @@ export default function ProposalDetails() {
     base44.entities.Proposal.get(id).then(setProposal);
   };
 
-  const handlePrint = async () => {
-    const container = document.getElementById('printable-proposal');
-    if (!container) return;
-    setIsPrinting(true);
-
-    try {
-      const pages = container.querySelectorAll('.print-page');
-      const pdf = new jsPDF({ unit: 'in', format: 'letter', orientation: 'portrait' });
-      const pageWidthIn = 8.5;
-      const pageHeightIn = 11;
-      const scale = 2;
-      let firstPage = true;
-
-      for (let i = 0; i < pages.length; i++) {
-        const page = pages[i];
-        const canvas = await html2canvas(page, {
-          scale,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          width: page.offsetWidth,
-          height: page.scrollHeight,
-          windowWidth: page.offsetWidth,
-          windowHeight: page.scrollHeight,
-        });
-
-        // How many 11in slices does this canvas need?
-        const canvasPageHeight = Math.round(page.offsetWidth * scale * (pageHeightIn / pageWidthIn));
-        const totalCanvasHeight = canvas.height;
-        const slices = Math.ceil(totalCanvasHeight / canvasPageHeight);
-
-        for (let s = 0; s < slices; s++) {
-          if (!firstPage) pdf.addPage();
-          firstPage = false;
-
-          const srcY = s * canvasPageHeight;
-          const srcH = Math.min(canvasPageHeight, totalCanvasHeight - srcY);
-
-          // Create a slice canvas
-          const sliceCanvas = document.createElement('canvas');
-          sliceCanvas.width = canvas.width;
-          sliceCanvas.height = canvasPageHeight;
-          const ctx = sliceCanvas.getContext('2d');
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
-          ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
-
-          const imgData = sliceCanvas.toDataURL('image/jpeg', 0.95);
-          pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthIn, pageHeightIn);
-        }
-      }
-
-      pdf.save(`Proposal-${proposal.project_number}.pdf`);
-    } finally {
-      setIsPrinting(false);
-    }
+  const handlePrint = () => {
+    window.print();
   };
 
   const handleSendEmail = async () => {
