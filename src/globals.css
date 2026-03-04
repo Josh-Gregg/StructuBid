@@ -51,10 +51,14 @@
   }
 
   /* Hide all non-printable UI */
-  .print-hidden,
   .no-print,
-  nav,
-  header {
+  .screen-only {
+    display: none !important;
+  }
+
+  /* Hide the app layout header/nav */
+  body > div > header,
+  body > div > nav {
     display: none !important;
   }
 
