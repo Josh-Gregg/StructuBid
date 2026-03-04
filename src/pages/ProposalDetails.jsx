@@ -15,7 +15,7 @@ import jsPDF from 'jspdf';
 // scrollable=true: content can exceed 11in, pdf renderer will split across pages.
 // scrollable=false (default): fixed 11in page, content clipped.
 // ─────────────────────────────────────────────
-function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal, scrollable }) {
+function PaperSheet({ children, headerTitle, pageNum, totalPages, hideHeaderFooter, proposal, scrollable }) {
   const pageStyle = {
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
