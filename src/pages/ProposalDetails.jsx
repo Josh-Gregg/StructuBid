@@ -99,6 +99,7 @@ export default function ProposalDetails() {
   const [proposal, setProposal] = useState(null);
   const [user, setUser] = useState(null);
   const [isSending, setIsSending] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
   const [newCO, setNewCO] = useState({ description: '', amount: 0 });
   const [isAddingCO, setIsAddingCO] = useState(false);
 
