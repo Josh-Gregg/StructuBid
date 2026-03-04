@@ -292,7 +292,6 @@ export default function ProposalDetails() {
   estimatePages.push(currentPageItems);
 
   const totalPages = 1 + 1 + estimatePages.length + 1; // Cover + Details + Estimates + Signatures
-  let pageCounter = 2;
 
   return (
     <div className="w-full mx-auto animate-in fade-in">
