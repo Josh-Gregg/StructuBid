@@ -40,7 +40,7 @@ function PaperSheet({ children, headerTitle, hideHeaderFooter, proposal }) {
         style={{ backgroundColor: '#042950', color: 'white', height: '1in', ...pageStyle }}
       >
         <h2 className="text-xl font-bold tracking-wider uppercase" style={{ color: 'white' }}>
-          {headerTitle}
+          Great White Construction
         </h2>
         <div className="text-right">
           <div className="font-bold text-sm" style={{ color: 'white' }}>{proposal.client_name}</div>
