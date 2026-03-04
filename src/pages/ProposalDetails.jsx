@@ -469,24 +469,45 @@ export default function ProposalDetails() {
           </div>
         </PaperSheet>
 
-        {/* ── PAGE 2+: Project Details (one section per page) ── */}
-        {proposal.executive_summary && (
-          <PaperSheet
-            headerTitle="Project Details"
-            footerText="Great White Construction"
-            pageNum={pageCounter++}
-            totalPages={totalPages}
-            proposal={proposal}
-          >
+        {/* ── PAGE 2: Project Details (exec summary + schedule) ── */}
+        <PaperSheet
+          headerTitle="Project Details"
+          footerText="Great White Construction"
+          pageNum={pageCounter++}
+          totalPages={totalPages}
+          proposal={proposal}
+        >
+          {proposal.executive_summary && (
             <div className="mb-10">
               <SectionTitle title="Executive Summary" />
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {proposal.executive_summary}
               </p>
             </div>
-          </PaperSheet>
-        )}
+          )}
 
+          {(proposal.schedule_start_date || proposal.schedule_end_date) && (
+            <div className="mb-10">
+              <SectionTitle title="Schedule" />
+              <div className="flex gap-12 mt-4">
+                {proposal.schedule_start_date && (
+                  <div>
+                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
+                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
+                  </div>
+                )}
+                {proposal.schedule_end_date && (
+                  <div>
+                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
+                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </PaperSheet>
+
+        {/* ── Scope of Work — scrollable, splits across PDF pages automatically ── */}
         <PaperSheet
           headerTitle="Scope of Work"
           footerText="Great White Construction"
@@ -501,32 +522,6 @@ export default function ProposalDetails() {
             dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}
           />
         </PaperSheet>
-
-        {(proposal.schedule_start_date || proposal.schedule_end_date) && (
-          <PaperSheet
-            headerTitle="Schedule"
-            footerText="Great White Construction"
-            pageNum={pageCounter++}
-            totalPages={totalPages}
-            proposal={proposal}
-          >
-            <SectionTitle title="Schedule" />
-            <div className="flex gap-12 mt-4">
-              {proposal.schedule_start_date && (
-                <div>
-                  <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
-                  <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
-                </div>
-              )}
-              {proposal.schedule_end_date && (
-                <div>
-                  <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
-                  <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
-                </div>
-              )}
-            </div>
-          </PaperSheet>
-        )}
 
         {/* ── ESTIMATE PAGES ────────────────────────────────── */}
         {estimatePages.map((pageItems, pageIndex) => (
