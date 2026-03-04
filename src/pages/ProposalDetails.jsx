@@ -652,8 +652,6 @@ export default function ProposalDetails() {
         {(proposal.schedule_start_date || proposal.schedule_end_date) && (
           <PaperSheet
             headerTitle="Schedule"
-            pageNum={pageCounter++}
-            totalPages={totalPages}
             proposal={proposal}
           >
             <SectionTitle title="Schedule" />
