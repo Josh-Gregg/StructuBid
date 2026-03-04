@@ -221,7 +221,7 @@ export default function ProposalDetails() {
     <div className="w-full mx-auto animate-in fade-in">
 
       {/* ── Action Bar (screen only) ───────────────────────── */}
-      <div className="max-w-5xl mx-auto no-print">
+      <div className="max-w-5xl mx-auto screen-only">
         <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8 sticky top-4 z-10">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">
