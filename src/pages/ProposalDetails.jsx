@@ -642,7 +642,6 @@ export default function ProposalDetails() {
         {/* ── Schedule (after estimate) ─────────────────────── */}
         {(proposal.schedule_start_date || proposal.schedule_end_date) && (
           <PaperSheet
-            headerTitle="Schedule"
             proposal={proposal}
           >
             <SectionTitle title="Schedule" />
