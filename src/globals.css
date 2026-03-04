@@ -40,75 +40,96 @@
   counter-reset: none !important;
 }
 
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+
 @media print {
   @page {
     size: letter portrait;
     margin: 0;
   }
 
+  /* Hide all non-printable UI */
+  .print-hidden,
+  .no-print,
+  nav,
+  button {
+    display: none !important;
+  }
+
   body {
     margin: 0;
     padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: white;
+    background: white !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 
   * {
     box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
 
-  .print-content, .section, table, img, div {
-    max-width: 100% !important;
+  /* Each paper sheet is one printed page */
+  .print-page {
+    width: 8.5in !important;
+    height: 11in !important;
+    min-height: 11in !important;
+    max-height: 11in !important;
+    overflow: hidden !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
   }
 
-  .no-print, nav, header, footer:not(.page-footer), button, .preview-controls {
-    display: none !important;
+  /* Last page should not force a blank trailing page */
+  .print-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
-  .print-content {
-    padding-bottom: 3cm; /* space for footer */
+  /* The proposal wrapper */
+  #printable-proposal {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    display: block !important;
   }
 
-  .page-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2.5cm;
-    margin: 0;
-    padding-top: 0.5cm;
-    border-top: 1px solid #999;
-    text-align: center;
-    font-size: 9pt;
-    color: #555;
+  /* Ensure colored backgrounds print */
+  .bg-\[\#042950\] {
+    background-color: #042950 !important;
   }
 
-  .page-footer::after {
-    content: "Page " counter(page) " of " counter(pages);
-    float: right;
+  .bg-gray-50 {
+    background-color: #f9fafb !important;
   }
 
-  .section, .bid-group, table.bid-table, .totals-block {
-    break-inside: avoid;
-    page-break-inside: avoid;
+  .bg-gray-100 {
+    background-color: #f3f4f6 !important;
+  }
+
+  .text-white {
+    color: white !important;
   }
 
   table {
-    width: 100%;
-    break-inside: auto;
+    width: 100% !important;
+    border-collapse: collapse !important;
   }
 
-  table thead {
-    display: table-header-group;
-  }
-
-  table tfoot {
-    display: table-footer-group;
-  }
-
-  tr, td, th {
-    break-inside: avoid;
+  td, th {
+    break-inside: avoid !important;
   }
 }
