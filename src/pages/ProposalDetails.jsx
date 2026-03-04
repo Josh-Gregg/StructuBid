@@ -672,28 +672,18 @@ export default function ProposalDetails() {
           </PaperSheet>
         )}
 
-        {/* ── PAGE: Assumptions & Exclusions — scrollable ──── */}
+        {/* ── Assumptions & Exclusions — auto-split with Cont. ── */}
         {proposal.assumptions && (
-          <PaperSheet
-            headerTitle="Assumptions & Exclusions"
-            pageNum={pageCounter++}
-            totalPages={totalPages}
+          <RichTextPages
+            html={proposal.assumptions}
+            sectionTitle="Assumptions & Exclusions"
             proposal={proposal}
-            scrollable
-          >
-            <SectionTitle title="Assumptions & Exclusions" />
-            <div
-              className="ql-editor p-0 text-gray-700 whitespace-normal"
-              dangerouslySetInnerHTML={{ __html: proposal.assumptions }}
-            />
-          </PaperSheet>
+          />
         )}
 
         {/* ── PAGE: Attachments & Signatures ────────────────── */}
         <PaperSheet
           headerTitle="Attachments & Signatures"
-          pageNum={pageCounter++}
-          totalPages={totalPages}
           proposal={proposal}
         >
           <div className="mb-10">
