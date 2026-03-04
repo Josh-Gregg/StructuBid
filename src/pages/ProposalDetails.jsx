@@ -493,6 +493,7 @@ export default function ProposalDetails() {
           pageNum={pageCounter++}
           totalPages={totalPages}
           proposal={proposal}
+          scrollable
         >
           <SectionTitle title="Scope of Work" />
           <div
