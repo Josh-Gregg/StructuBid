@@ -54,7 +54,7 @@
   .print-hidden,
   .no-print,
   nav,
-  button {
+  header {
     display: none !important;
   }
 
