@@ -421,7 +421,7 @@ export default function ProposalDetails() {
 
         {/* ── PAGE 1: Cover ─────────────────────────────────── */}
         <PaperSheet hideHeaderFooter proposal={proposal}>
-          <div className="flex flex-col h-full p-12" style={{ minHeight: '11in' }}>
+          <div className="flex flex-col p-12" style={{ height: '11in', overflow: 'hidden', boxSizing: 'border-box' }}>
 
             {/* Logo + contact */}
             <header className="flex justify-between items-start mb-8">
