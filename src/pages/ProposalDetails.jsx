@@ -112,55 +112,39 @@ export default function ProposalDetails() {
     base44.entities.Proposal.get(id).then(setProposal);
   };
 
-  const handlePrint = () => {
-    const printContent = document.getElementById('printable-proposal');
-    if (!printContent) return;
+  const handlePrint = async () => {
+    const container = document.getElementById('printable-proposal');
+    if (!container) return;
+    setIsPrinting(true);
 
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Proposal - ${proposal.project_number}</title>
-          <style>
-            @page { size: 8.5in 11in; margin: 0; }
-            * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background: white; }
-            .print-page {
-              width: 8.5in;
-              height: 11in;
-              overflow: hidden;
-              page-break-after: always;
-              break-after: page;
-              display: flex;
-              flex-direction: column;
-              margin: 0;
-              padding: 0;
-              box-shadow: none;
-            }
-            .print-page:last-child { page-break-after: avoid; break-after: avoid; }
-            #printable-proposal { background: white; padding: 0; margin: 0; }
-            table { width: 100%; border-collapse: collapse; }
-            .shadow-xl, .shadow-lg, .shadow-md, .shadow-sm { box-shadow: none !important; }
-            .mb-12 { margin-bottom: 0 !important; }
-            .rounded-2xl { border-radius: 0 !important; }
-          </style>
-          <link rel="stylesheet" href="${window.location.origin}/src/index.css" />
-        </head>
-        <body>
-          ${printContent.innerHTML}
-          <script>
-            window.onload = function() {
-              setTimeout(function() {
-                window.print();
-                window.close();
-              }, 500);
-            };
-          <\/script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
+    try {
+      const pages = container.querySelectorAll('.print-page');
+      const pdf = new jsPDF({ unit: 'in', format: 'letter', orientation: 'portrait' });
+      const pageWidthIn = 8.5;
+      const pageHeightIn = 11;
+
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i];
+        const canvas = await html2canvas(page, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: page.offsetWidth,
+          height: page.offsetHeight,
+          windowWidth: page.offsetWidth,
+          windowHeight: page.offsetHeight,
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        if (i > 0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthIn, pageHeightIn);
+      }
+
+      pdf.save(`Proposal-${proposal.project_number}.pdf`);
+    } finally {
+      setIsPrinting(false);
+    }
   };
 
   const handleSendEmail = async () => {
