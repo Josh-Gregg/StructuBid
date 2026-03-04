@@ -9,47 +9,47 @@ import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 
 // ─────────────────────────────────────────────
-// PaperSheet: represents one physical page.
-// scrollable=true: content can exceed 11in, pdf renderer will split across pages.
-// scrollable=false (default): fixed 11in page, content clipped.
+// PaperSheet: one 8.5×11in page
 // ─────────────────────────────────────────────
-function PaperSheet({ children, headerTitle, pageNum, totalPages, hideHeaderFooter, proposal, scrollable }) {
+function PaperSheet({ children, headerTitle, hideHeaderFooter, proposal }) {
   const pageStyle = {
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
     colorAdjust: 'exact',
   };
 
-  const baseClass = scrollable
-    ? "print-page w-[8.5in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto box-border"
-    : "print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto box-border";
-
   if (hideHeaderFooter) {
     return (
-      <div className={baseClass} style={pageStyle}>
+      <div
+        className="print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto"
+        style={pageStyle}
+      >
         {children}
       </div>
     );
   }
 
   return (
-    <div className={baseClass} style={pageStyle}>
+    <div
+      className="print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto"
+      style={pageStyle}
+    >
       {/* Header */}
       <div
-        className="shrink-0 h-[1in] flex items-center justify-between px-16"
-        style={{ backgroundColor: '#042950', color: 'white', ...pageStyle }}
+        className="shrink-0 flex items-center justify-between px-16"
+        style={{ backgroundColor: '#042950', color: 'white', height: '1in', ...pageStyle }}
       >
         <h2 className="text-xl font-bold tracking-wider uppercase" style={{ color: 'white' }}>
           {headerTitle}
         </h2>
         <div className="text-right">
           <div className="font-bold text-sm" style={{ color: 'white' }}>{proposal.client_name}</div>
-          <div className="text-xs text-right" style={{ color: 'rgba(255,255,255,0.8)' }}>#{proposal.project_number}</div>
+          <div className="text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>#{proposal.project_number}</div>
         </div>
       </div>
 
       {/* Body */}
-      <div className="px-16 py-8 flex flex-col">
+      <div className="px-16 py-8 flex flex-col flex-1">
         {children}
       </div>
     </div>
@@ -67,6 +67,98 @@ function SectionTitle({ title }) {
     >
       {title}
     </h2>
+  );
+}
+
+// ─────────────────────────────────────────────
+// RichTextPages: splits rich HTML content across
+// multiple PaperSheet pages with "Cont." headings.
+// Uses a hidden measuring div to compute splits.
+// ─────────────────────────────────────────────
+function RichTextPages({ html, sectionTitle, proposal, pageCounterRef }) {
+  const [pages, setPages] = React.useState(null);
+  const measureRef = React.useRef(null);
+
+  // 96 DPI: 8.5in wide, 11in tall page
+  // Header = 96px, body padding top+bottom = 64px each = 128px
+  const PAGE_BODY_HEIGHT = Math.floor(11 * 96) - 96 - 128; // ~932px usable
+  // First page also has the SectionTitle (~60px)
+  const FIRST_PAGE_BODY = PAGE_BODY_HEIGHT - 60;
+
+  React.useEffect(() => {
+    if (!measureRef.current || !html) return;
+
+    const container = measureRef.current;
+    // Get all child nodes
+    const children = Array.from(container.childNodes);
+    if (children.length === 0) {
+      setPages([html]);
+      return;
+    }
+
+    const result = [];
+    let currentPageNodes = [];
+    let currentHeight = 0;
+    let availableHeight = FIRST_PAGE_BODY;
+
+    children.forEach((node) => {
+      const h = node.getBoundingClientRect?.()?.height || 24;
+      if (currentHeight + h > availableHeight && currentPageNodes.length > 0) {
+        // Save current page
+        const div = document.createElement('div');
+        currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
+        result.push(div.innerHTML);
+        currentPageNodes = [];
+        currentHeight = 0;
+        availableHeight = PAGE_BODY_HEIGHT; // subsequent pages have no title offset
+      }
+      currentPageNodes.push(node);
+      currentHeight += h;
+    });
+
+    if (currentPageNodes.length > 0) {
+      const div = document.createElement('div');
+      currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
+      result.push(div.innerHTML);
+    }
+
+    setPages(result.length > 0 ? result : [html]);
+  }, [html]);
+
+  return (
+    <>
+      {/* Hidden measuring container */}
+      <div
+        ref={measureRef}
+        className="ql-editor"
+        style={{
+          position: 'absolute',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          width: `calc(8.5in - 8rem)`, // matches px-16 padding
+          top: 0,
+          left: 0,
+          zIndex: -9999,
+        }}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+
+      {/* Render pages once measured, fall back to single page */}
+      {(pages || [html]).map((pageHtml, idx) => (
+        <PaperSheet
+          key={idx}
+          headerTitle={idx === 0 ? sectionTitle : `${sectionTitle} (Cont.)`}
+          proposal={proposal}
+        >
+          {idx === 0 && <SectionTitle title={sectionTitle} />}
+          {idx > 0 && <SectionTitle title={`${sectionTitle} (Cont.)`} />}
+          <div
+            className="ql-editor p-0 text-gray-700 whitespace-normal"
+            dangerouslySetInnerHTML={{ __html: pageHtml }}
+          />
+        </PaperSheet>
+      ))}
+    </>
   );
 }
 
