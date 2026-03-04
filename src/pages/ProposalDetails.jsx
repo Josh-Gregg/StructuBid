@@ -667,7 +667,7 @@ export default function ProposalDetails() {
           </PaperSheet>
         ))}
 
-        {/* ── PAGE: Assumptions & Exclusions ────────────────── */}
+        {/* ── PAGE: Assumptions & Exclusions — scrollable ──── */}
         {proposal.assumptions && (
           <PaperSheet
             headerTitle="Assumptions & Exclusions"
@@ -675,6 +675,7 @@ export default function ProposalDetails() {
             pageNum={pageCounter++}
             totalPages={totalPages}
             proposal={proposal}
+            scrollable
           >
             <SectionTitle title="Assumptions & Exclusions" />
             <div
