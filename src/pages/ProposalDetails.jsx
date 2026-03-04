@@ -11,18 +11,22 @@ import 'react-quill/dist/quill.snow.css';
 // ─────────────────────────────────────────────
 // PaperSheet: one 8.5×11in page
 // ─────────────────────────────────────────────
-function PaperSheet({ children, headerTitle, hideHeaderFooter, proposal }) {
-  const pageStyle = {
+function PaperSheet({ children, hideHeaderFooter, proposal }) {
+  const exactPage = {
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
     colorAdjust: 'exact',
+    width: '8.5in',
+    height: '11in',
+    overflow: 'hidden',
+    boxSizing: 'border-box',
   };
 
   if (hideHeaderFooter) {
     return (
       <div
-        className="print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto"
-        style={pageStyle}
+        className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto"
+        style={exactPage}
       >
         {children}
       </div>
@@ -31,13 +35,13 @@ function PaperSheet({ children, headerTitle, hideHeaderFooter, proposal }) {
 
   return (
     <div
-      className="print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto"
-      style={pageStyle}
+      className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto flex flex-col"
+      style={exactPage}
     >
-      {/* Header */}
+      {/* Header — always at the very top */}
       <div
         className="shrink-0 flex items-center justify-between px-16"
-        style={{ backgroundColor: '#042950', color: 'white', height: '1in', ...pageStyle }}
+        style={{ backgroundColor: '#042950', color: 'white', height: '1in', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
       >
         <h2 className="text-xl font-bold tracking-wider uppercase" style={{ color: 'white' }}>
           Great White Construction
@@ -49,7 +53,7 @@ function PaperSheet({ children, headerTitle, hideHeaderFooter, proposal }) {
       </div>
 
       {/* Body */}
-      <div className="px-16 pt-8 pb-8 flex flex-col flex-1">
+      <div className="px-16 pt-8 pb-8">
         {children}
       </div>
     </div>
