@@ -50,16 +50,23 @@
     margin: 0;
   }
 
-  /* Hide all non-printable UI */
-  .no-print,
-  .screen-only {
-    display: none !important;
+  /* Hide EVERYTHING by default when printing */
+  body * {
+    visibility: hidden;
   }
 
-  /* Hide the app layout header/nav */
-  body > div > header,
-  body > div > nav {
-    display: none !important;
+  /* Show ONLY the printable proposal and its children */
+  #printable-proposal,
+  #printable-proposal * {
+    visibility: visible;
+  }
+
+  /* Position the printable area at top-left */
+  #printable-proposal {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
   }
 
   body {
