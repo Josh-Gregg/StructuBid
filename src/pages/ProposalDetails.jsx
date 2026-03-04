@@ -448,51 +448,63 @@ export default function ProposalDetails() {
           </div>
         </PaperSheet>
 
-        {/* ── PAGE 2: Project Details ────────────────────────── */}
-        <PaperSheet
-          headerTitle="Project Details"
-          footerText="Great White Construction"
-          pageNum={pageCounter++}
-          totalPages={totalPages}
-          proposal={proposal}
-        >
-          {proposal.executive_summary && (
+        {/* ── PAGE 2+: Project Details (one section per page) ── */}
+        {proposal.executive_summary && (
+          <PaperSheet
+            headerTitle="Project Details"
+            footerText="Great White Construction"
+            pageNum={pageCounter++}
+            totalPages={totalPages}
+            proposal={proposal}
+          >
             <div className="mb-10">
               <SectionTitle title="Executive Summary" />
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {proposal.executive_summary}
               </p>
             </div>
-          )}
+          </PaperSheet>
+        )}
 
-          <div className="mb-10">
-            <SectionTitle title="Scope of Work" />
-            <div
-              className="ql-editor p-0 text-gray-700 whitespace-normal"
-              dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}
-            />
-          </div>
-
-          {(proposal.schedule_start_date || proposal.schedule_end_date) && (
-            <div className="mb-10">
-              <SectionTitle title="Schedule" />
-              <div className="flex gap-12">
-                {proposal.schedule_start_date && (
-                  <div>
-                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
-                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
-                  </div>
-                )}
-                {proposal.schedule_end_date && (
-                  <div>
-                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
-                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+        <PaperSheet
+          headerTitle="Scope of Work"
+          footerText="Great White Construction"
+          pageNum={pageCounter++}
+          totalPages={totalPages}
+          proposal={proposal}
+        >
+          <SectionTitle title="Scope of Work" />
+          <div
+            className="ql-editor p-0 text-gray-700 whitespace-normal"
+            dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}
+          />
         </PaperSheet>
+
+        {(proposal.schedule_start_date || proposal.schedule_end_date) && (
+          <PaperSheet
+            headerTitle="Schedule"
+            footerText="Great White Construction"
+            pageNum={pageCounter++}
+            totalPages={totalPages}
+            proposal={proposal}
+          >
+            <SectionTitle title="Schedule" />
+            <div className="flex gap-12 mt-4">
+              {proposal.schedule_start_date && (
+                <div>
+                  <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
+                  <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
+                </div>
+              )}
+              {proposal.schedule_end_date && (
+                <div>
+                  <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
+                  <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
+                </div>
+              )}
+            </div>
+          </PaperSheet>
+        )}
 
         {/* ── ESTIMATE PAGES ────────────────────────────────── */}
         {estimatePages.map((pageItems, pageIndex) => (
