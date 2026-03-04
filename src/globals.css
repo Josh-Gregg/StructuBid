@@ -88,15 +88,15 @@
   /* Each paper sheet = one printed page */
   .print-page {
     width: 8.5in !important;
-    min-height: 11in !important;
+    height: 11in !important;
+    max-height: 11in !important;
     page-break-after: always !important;
     break-after: page !important;
-    display: flex !important;
-    flex-direction: column !important;
+    display: block !important;
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
-    overflow: visible !important;
+    overflow: hidden !important;
   }
 
   /* Last page should not force a blank trailing page */
