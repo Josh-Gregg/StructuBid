@@ -54,19 +54,6 @@ function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hi
       <div className="px-16 py-8 flex flex-col">
         {children}
       </div>
-
-      {/* Footer */}
-      <div
-        className="shrink-0 h-[0.75in] flex items-center justify-between px-16 border-t-4 mt-auto"
-        style={{ backgroundColor: '#f3f4f6', borderColor: '#042950', ...pageStyle }}
-      >
-        <div className="text-sm font-black uppercase tracking-wider" style={{ color: '#042950' }}>
-          {footerText || 'Great White Construction'}
-        </div>
-        <div className="text-sm font-bold" style={{ color: '#042950' }}>
-          Page {pageNum}
-        </div>
-      </div>
     </div>
   );
 }
