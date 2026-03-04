@@ -493,7 +493,6 @@ export default function ProposalDetails() {
           <PaperSheet
             key={`est-${pageIndex}`}
             headerTitle="Project Estimate"
-            footerText="Great White Construction"
             pageNum={pageCounter++}
             totalPages={totalPages}
             proposal={proposal}
