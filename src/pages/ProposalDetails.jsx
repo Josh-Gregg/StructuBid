@@ -631,11 +631,36 @@ export default function ProposalDetails() {
           </PaperSheet>
         ))}
 
+        {/* ── Schedule (after estimate) ─────────────────────── */}
+        {(proposal.schedule_start_date || proposal.schedule_end_date) && (
+          <PaperSheet
+            headerTitle="Schedule"
+            pageNum={pageCounter++}
+            totalPages={totalPages}
+            proposal={proposal}
+          >
+            <SectionTitle title="Schedule" />
+            <div className="flex gap-12 mt-4">
+              {proposal.schedule_start_date && (
+                <div>
+                  <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
+                  <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
+                </div>
+              )}
+              {proposal.schedule_end_date && (
+                <div>
+                  <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
+                  <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
+                </div>
+              )}
+            </div>
+          </PaperSheet>
+        )}
+
         {/* ── PAGE: Assumptions & Exclusions — scrollable ──── */}
         {proposal.assumptions && (
           <PaperSheet
             headerTitle="Assumptions & Exclusions"
-            footerText="Great White Construction"
             pageNum={pageCounter++}
             totalPages={totalPages}
             proposal={proposal}
