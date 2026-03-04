@@ -2,40 +2,68 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Printer, Mail, Edit, ArrowLeft, Download, PlusCircle, Trash2 } from 'lucide-react';
+import { Printer, Mail, Edit, ArrowLeft, PlusCircle } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 
+// ─────────────────────────────────────────────
+// PaperSheet: represents one physical page.
+// Screen: shows as a white card with shadow.
+// Print: renders as exactly one 8.5×11in page.
+// ─────────────────────────────────────────────
 function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hideHeaderFooter, proposal }) {
+  const pageStyle = {
+    WebkitPrintColorAdjust: 'exact',
+    printColorAdjust: 'exact',
+    colorAdjust: 'exact',
+  };
+
   if (hideHeaderFooter) {
     return (
-      <div className="w-[8.5in] min-h-[11in] print:h-[11in] overflow-hidden bg-white relative flex flex-col shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto box-border print-page" 
-           style={{ pageBreakAfter: 'always' }}>
+      <div
+        className="print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto box-border"
+        style={pageStyle}
+      >
         {children}
       </div>
     );
   }
 
   return (
-    <div className="w-[8.5in] min-h-[11in] print:h-[11in] overflow-hidden bg-white relative shadow-xl mb-12 print:shadow-none print:mb-0 shrink-0 mx-auto box-border print-page flex flex-col" 
-         style={{ pageBreakAfter: 'always' }}>
-      <div className="flex-shrink-0 h-[1in] bg-[#042950] text-white flex items-center justify-between px-16 shrink-0" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-        <h2 className="text-xl font-bold tracking-wider uppercase">{headerTitle}</h2>
+    <div
+      className="print-page w-[8.5in] min-h-[11in] bg-white flex flex-col shadow-xl mb-12 shrink-0 mx-auto box-border"
+      style={pageStyle}
+    >
+      {/* Header */}
+      <div
+        className="shrink-0 h-[1in] flex items-center justify-between px-16"
+        style={{ backgroundColor: '#042950', color: 'white', ...pageStyle }}
+      >
+        <h2 className="text-xl font-bold tracking-wider uppercase" style={{ color: 'white' }}>
+          {headerTitle}
+        </h2>
         <div className="text-right">
-          <div className="font-bold text-sm">{proposal.client_name}</div>
-          <div className="text-white/80 text-xs text-right">#{proposal.project_number}</div>
+          <div className="font-bold text-sm" style={{ color: 'white' }}>{proposal.client_name}</div>
+          <div className="text-xs text-right" style={{ color: 'rgba(255,255,255,0.8)' }}>#{proposal.project_number}</div>
         </div>
       </div>
-      
-      <div className="flex-1 px-16 py-10 flex flex-col">
+
+      {/* Body — flex-1 so it fills space between header and footer */}
+      <div className="flex-1 px-16 py-8 flex flex-col min-h-0">
         {children}
       </div>
-      
-      <div className="flex-shrink-0 h-[0.75in] border-t-4 border-[#042950] bg-gray-100 flex items-center justify-between px-16 shrink-0 mt-auto" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-        <div className="text-[#042950] font-black text-sm uppercase tracking-wider">{footerText || 'Great White Construction'}</div>
-        <div className="text-[#042950] font-bold text-sm">
+
+      {/* Footer */}
+      <div
+        className="shrink-0 h-[0.75in] flex items-center justify-between px-16 border-t-4 mt-auto"
+        style={{ backgroundColor: '#f3f4f6', borderColor: '#042950', ...pageStyle }}
+      >
+        <div className="text-sm font-black uppercase tracking-wider" style={{ color: '#042950' }}>
+          {footerText || 'Great White Construction'}
+        </div>
+        <div className="text-sm font-bold" style={{ color: '#042950' }}>
           Page {pageNum} of {totalPages}
         </div>
       </div>
@@ -43,32 +71,23 @@ function PaperSheet({ children, headerTitle, footerText, pageNum, totalPages, hi
   );
 }
 
-function PrintSection({ title, children, className="" }) {
+// ─────────────────────────────────────────────
+// SectionTitle: simple bold heading with underline
+// ─────────────────────────────────────────────
+function SectionTitle({ title }) {
   return (
-    <div className={`relative ${className}`}>
-      <div className="print:absolute print:top-0 print:left-0 print:right-0 print:z-10 bg-white" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-        <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">{title}</h2>
-      </div>
-      <table className="w-full border-collapse block print:table">
-        <thead className="hidden print:table-header-group">
-          <tr>
-            <th className="text-left font-normal p-0 align-top">
-              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20 bg-white" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>{title} (Cont.)</h2>
-            </th>
-          </tr>
-        </thead>
-        <tbody className="block print:table-row-group">
-          <tr className="block print:table-row">
-            <td className="p-0 align-top block print:table-cell w-full">
-              {children}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <h2
+      className="text-2xl font-black mb-4 pb-2 border-b-2"
+      style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}
+    >
+      {title}
+    </h2>
   );
 }
 
+// ─────────────────────────────────────────────
+// Main Component
+// ─────────────────────────────────────────────
 export default function ProposalDetails() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -99,19 +118,17 @@ export default function ProposalDetails() {
     try {
       const link = window.location.origin + createPageUrl(`ProposalDetails?id=${id}`);
       const body = `Hello ${proposal.client_name},\n\nYour proposal for ${proposal.project_address} is ready.\n\nPlease review it here: ${link}\n\nThank you,\nGreat White Construction`;
-      
       await base44.integrations.Core.SendEmail({
         to: proposal.client_email,
         subject: `Proposal from Great White Construction: ${proposal.project_number}`,
-        body: body,
-        from_name: "Great White Construction"
+        body,
+        from_name: 'Great White Construction',
       });
-      
       await base44.entities.Proposal.update(id, { status: 'sent' });
-      alert("Proposal sent successfully!");
+      alert('Proposal sent successfully!');
       fetchProposal();
     } catch (e) {
-      alert("Failed to send email");
+      alert('Failed to send email');
     } finally {
       setIsSending(false);
     }
@@ -134,13 +151,15 @@ export default function ProposalDetails() {
   if (!proposal || !user) return <div className="p-8">Loading...</div>;
 
   const totals = computeTotals(proposal);
-  const totalLineItems = proposal.categories?.reduce((acc, cat) => acc + (cat.line_items?.length || 0), 0) || 0;
-  
-  // Calculate item display price with evenly distributed markup
+  const totalLineItems =
+    proposal.categories?.reduce((acc, cat) => acc + (cat.line_items?.length || 0), 0) || 0;
+
   const getDisplayCost = (item) => {
-    const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0) / 100);
+    const itemSub =
+      (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0) / 100);
     if (item.exclude_from_markup) return itemSub;
-    const itemDistMarkup = totals.totalLineItemsForMarkup > 0 ? totals.distMarkup / totals.totalLineItemsForMarkup : 0;
+    const itemDistMarkup =
+      totals.totalLineItemsForMarkup > 0 ? totals.distMarkup / totals.totalLineItemsForMarkup : 0;
     return itemSub + itemDistMarkup;
   };
 
@@ -151,27 +170,29 @@ export default function ProposalDetails() {
     return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString();
   };
 
-  // Chunking Estimate Items for Print Pagination
+  const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // ── Pagination logic for Estimate pages ──────────────────
   const estimatePages = [];
   let currentPageItems = [];
   let currentLines = 0;
-  const MAX_LINES_PER_PAGE = 22; // Approx lines that fit on a page
+  const MAX_LINES_PER_PAGE = 22;
 
   if (proposal.categories) {
-    proposal.categories.forEach(cat => {
+    proposal.categories.forEach((cat) => {
       if (!cat.line_items?.length) return;
-      
+
       if (currentLines + 3 > MAX_LINES_PER_PAGE) {
         estimatePages.push(currentPageItems);
         currentPageItems = [];
         currentLines = 0;
       }
-      
+
       currentPageItems.push({ type: 'category', data: cat });
       currentLines += 2;
-      
-      cat.line_items.forEach(item => {
-        const itemLines = (item.show_note && item.note) ? 2 : 1;
+
+      cat.line_items.forEach((item) => {
+        const itemLines = item.show_note && item.note ? 2 : 1;
         if (currentLines + itemLines > MAX_LINES_PER_PAGE) {
           estimatePages.push(currentPageItems);
           currentPageItems = [];
@@ -184,7 +205,8 @@ export default function ProposalDetails() {
       });
     });
   }
-  
+
+  // Put totals on a new page if not enough room
   if (currentLines + 8 > MAX_LINES_PER_PAGE) {
     estimatePages.push(currentPageItems);
     currentPageItems = [];
@@ -193,13 +215,13 @@ export default function ProposalDetails() {
   estimatePages.push(currentPageItems);
 
   const totalPages = 1 + 1 + estimatePages.length + 1; // Cover + Details + Estimates + Signatures
-  let pageCounter = 2; // Start after cover
+  let pageCounter = 2;
 
   return (
-    <div className="w-full mx-auto animate-in fade-in print:max-w-none print:m-0 print:p-0">
-      
-      <div className="max-w-5xl mx-auto print:hidden">
-        {/* Action Bar (Hidden in Print) */}
+    <div className="w-full mx-auto animate-in fade-in">
+
+      {/* ── Action Bar (screen only) ───────────────────────── */}
+      <div className="print-hidden max-w-5xl mx-auto">
         <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8 sticky top-4 z-10">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full">
@@ -207,17 +229,22 @@ export default function ProposalDetails() {
             </Button>
             <div>
               <h1 className="font-bold text-gray-900">{proposal.project_number}</h1>
-              <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${
-                proposal.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                proposal.status === 'sent' ? 'bg-blue-100 text-blue-800' :
-                proposal.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
+              <span
+                className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${
+                  proposal.status === 'accepted'
+                    ? 'bg-green-100 text-green-800'
+                    : proposal.status === 'sent'
+                    ? 'bg-blue-100 text-blue-800'
+                    : proposal.status === 'rejected'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}
+              >
                 {proposal.status || 'draft'}
               </span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {user.role !== 'client' && (
               <>
@@ -231,8 +258,15 @@ export default function ProposalDetails() {
             )}
             {user.role === 'client' && proposal.status === 'sent' && (
               <>
-                <Button variant="destructive" onClick={() => handleStatusChange('rejected')}>Reject</Button>
-                <Button className="bg-green-600 hover:bg-green-700" onClick={() => handleStatusChange('accepted')}>Accept Proposal</Button>
+                <Button variant="destructive" onClick={() => handleStatusChange('rejected')}>
+                  Reject
+                </Button>
+                <Button
+                  className="bg-green-600 hover:bg-green-700"
+                  onClick={() => handleStatusChange('accepted')}
+                >
+                  Accept Proposal
+                </Button>
               </>
             )}
             <Button onClick={handlePrint} className="bg-blue-700 hover:bg-blue-800 text-white shadow-md">
@@ -241,29 +275,51 @@ export default function ProposalDetails() {
           </div>
         </div>
 
+        {/* Change Orders panel (screen only) */}
         {user.role !== 'client' && (
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-gray-900">Change Orders</h3>
-              <Button variant="ghost" size="sm" onClick={() => setIsAddingCO(!isAddingCO)} className="text-[#042950] font-bold">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsAddingCO(!isAddingCO)}
+                className="text-[#042950] font-bold"
+              >
                 <PlusCircle className="w-4 h-4 mr-2" /> Add CO
               </Button>
             </div>
-            
+
             {isAddingCO && (
               <div className="flex items-center gap-4 mb-4 bg-gray-50 p-4 rounded-lg">
-                <input className="flex-1 px-3 py-2 rounded-md border border-gray-300" placeholder="Description" value={newCO.description} onChange={e=>setNewCO({...newCO, description: e.target.value})} />
-                <input type="number" className="w-32 px-3 py-2 rounded-md border border-gray-300 text-right" placeholder="Amount" value={newCO.amount} onChange={e=>setNewCO({...newCO, amount: parseFloat(e.target.value) || 0})} />
-                <Button onClick={handleAddCO} className="bg-blue-600 text-white">Add</Button>
+                <input
+                  className="flex-1 px-3 py-2 rounded-md border border-gray-300"
+                  placeholder="Description"
+                  value={newCO.description}
+                  onChange={(e) => setNewCO({ ...newCO, description: e.target.value })}
+                />
+                <input
+                  type="number"
+                  className="w-32 px-3 py-2 rounded-md border border-gray-300 text-right"
+                  placeholder="Amount"
+                  value={newCO.amount}
+                  onChange={(e) => setNewCO({ ...newCO, amount: parseFloat(e.target.value) || 0 })}
+                />
+                <Button onClick={handleAddCO} className="bg-blue-600 text-white">
+                  Add
+                </Button>
               </div>
             )}
 
             {proposal.change_orders?.length > 0 ? (
               <div className="space-y-2">
                 {proposal.change_orders.map((co, i) => (
-                  <div key={i} className="flex justify-between p-3 bg-gray-50 rounded-lg text-sm border border-gray-100">
+                  <div
+                    key={i}
+                    className="flex justify-between p-3 bg-gray-50 rounded-lg text-sm border border-gray-100"
+                  >
                     <span className="font-medium text-gray-700">{co.description}</span>
-                    <span className="font-bold">${co.amount.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                    <span className="font-bold">${co.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                   </div>
                 ))}
               </div>
@@ -274,77 +330,117 @@ export default function ProposalDetails() {
         )}
       </div>
 
-      {/* Printable Proposal Area */}
-      <div id="printable-proposal" className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl print:bg-white py-12 print:py-0 text-gray-900 print:rounded-none">
-        
-        {/* Cover Page */}
-        <PaperSheet hideHeaderFooter={true} pageNum={1} totalPages={totalPages} proposal={proposal}>
-          <div className="p-10 md:p-16 flex-1 flex flex-col relative justify-between">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#042950]/10 rounded-bl-full -z-10 print:hidden"></div>
-          
-          <header className="flex justify-between items-start mb-6 shrink-0">
-            <Logo imageClassName="h-32 md:h-40 object-contain" />
-            <div className="text-right text-sm text-gray-600 space-y-1">
-              <p className="font-bold text-gray-900">Great White Construction</p>
-              <p>2470 S Zephyr St</p>
-              <p>Lakewood, CO 80227</p>
-              <p>303-908-5421</p>
-              <p>George@GreatWhiteGC.com</p>
-            </div>
-          </header>
+      {/* ════════════════════════════════════════════════════
+          PRINTABLE PROPOSAL — each PaperSheet = one PDF page
+          ════════════════════════════════════════════════════ */}
+      <div
+        id="printable-proposal"
+        className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl py-12 text-gray-900"
+      >
 
-          <div className="flex-1 flex flex-col justify-center min-h-0">
-            <div className="uppercase tracking-widest text-[#042950] font-bold text-sm mb-2 shrink-0">{proposal.cover_title || 'Project Proposal'}</div>
-            <h1 className="text-4xl md:text-5xl font-black text-[#042950] leading-tight mb-6 shrink-0">
-              {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
-            </h1>
+        {/* ── PAGE 1: Cover ─────────────────────────────────── */}
+        <PaperSheet hideHeaderFooter pageNum={1} totalPages={totalPages} proposal={proposal}>
+          <div className="flex-1 flex flex-col p-10 md:p-16 relative">
+            <div
+              className="absolute top-0 right-0 w-64 h-64 rounded-bl-full -z-10 print-hidden"
+              style={{ backgroundColor: 'rgba(4,41,80,0.1)' }}
+            />
 
-            {proposal.cover_photo_url && (
-              <div className="mb-6 w-full h-48 md:h-64 rounded-2xl overflow-hidden shadow-lg border border-gray-200 shrink-0">
-                <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
+            {/* Logo + contact */}
+            <header className="flex justify-between items-start mb-6 shrink-0">
+              <Logo imageClassName="h-32 md:h-40 object-contain" />
+              <div className="text-right text-sm text-gray-600 space-y-1">
+                <p className="font-bold text-gray-900">Great White Construction</p>
+                <p>2470 S Zephyr St</p>
+                <p>Lakewood, CO 80227</p>
+                <p>303-908-5421</p>
+                <p>George@GreatWhiteGC.com</p>
               </div>
-            )}
+            </header>
 
-            <div className="grid grid-cols-2 gap-8 mt-auto shrink-0 pb-4">
-              <div>
-                <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Prepared For</p>
-                <p className="text-xl font-bold">{proposal.client_name}</p>
-                {proposal.company_name && <p className="text-gray-700">{proposal.company_name}</p>}
-                <p className="text-gray-600">{proposal.client_address}</p>
-                <div className="mt-4">
-                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Proposal Number</p>
-                  <p className="font-medium text-[#042950]">#{proposal.project_number}</p>
+            {/* Hero text */}
+            <div className="flex-1 flex flex-col justify-center min-h-0">
+              <div
+                className="uppercase tracking-widest font-bold text-sm mb-2 shrink-0"
+                style={{ color: '#042950' }}
+              >
+                {proposal.cover_title || 'Project Proposal'}
+              </div>
+              <h1
+                className="text-4xl md:text-5xl font-black leading-tight mb-6 shrink-0"
+                style={{ color: '#042950' }}
+              >
+                {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
+              </h1>
+
+              {proposal.cover_photo_url && (
+                <div className="mb-6 w-full h-48 md:h-64 rounded-2xl overflow-hidden shadow-lg border border-gray-200 shrink-0">
+                  <img
+                    src={proposal.cover_photo_url}
+                    alt="Project Cover"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-8 mt-auto shrink-0 pb-4">
+                <div>
+                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Prepared For</p>
+                  <p className="text-xl font-bold">{proposal.client_name}</p>
+                  {proposal.company_name && <p className="text-gray-700">{proposal.company_name}</p>}
+                  <p className="text-gray-600">{proposal.client_address}</p>
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Proposal Number</p>
+                    <p className="font-medium" style={{ color: '#042950' }}>#{proposal.project_number}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Project Location</p>
+                  <p className="text-lg font-medium">{proposal.project_address}</p>
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Date</p>
+                    <p className="font-medium">
+                      {new Date(proposal.created_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Project Location</p>
-                <p className="text-lg font-medium">{proposal.project_address}</p>
-                
-                <div className="mt-4">
-                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Date</p>
-                  <p className="font-medium">{new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                </div>
-              </div>
             </div>
-          </div>
           </div>
         </PaperSheet>
 
-        {/* Content Pages */}
-        <PaperSheet headerTitle="Project Details" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal}>
+        {/* ── PAGE 2: Project Details ────────────────────────── */}
+        <PaperSheet
+          headerTitle="Project Details"
+          footerText="Great White Construction"
+          pageNum={pageCounter++}
+          totalPages={totalPages}
+          proposal={proposal}
+        >
           {proposal.executive_summary && (
-            <PrintSection title="Executive Summary" className="mb-16">
-              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
-            </PrintSection>
+            <div className="mb-10">
+              <SectionTitle title="Executive Summary" />
+              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                {proposal.executive_summary}
+              </p>
+            </div>
           )}
 
-          <PrintSection title="Scope of Work" className="mb-16">
-            <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}>
-            </div>
-          </PrintSection>
+          <div className="mb-10">
+            <SectionTitle title="Scope of Work" />
+            <div
+              className="ql-editor p-0 text-gray-700 whitespace-normal"
+              dangerouslySetInnerHTML={{ __html: proposal.scope_of_work }}
+            />
+          </div>
 
           {(proposal.schedule_start_date || proposal.schedule_end_date) && (
-            <PrintSection title="Schedule" className="mb-16">
+            <div className="mb-10">
+              <SectionTitle title="Schedule" />
               <div className="flex gap-12">
                 {proposal.schedule_start_date && (
                   <div>
@@ -359,32 +455,53 @@ export default function ProposalDetails() {
                   </div>
                 )}
               </div>
-            </PrintSection>
+            </div>
           )}
         </PaperSheet>
 
-        {/* Estimate Section */}
+        {/* ── ESTIMATE PAGES ────────────────────────────────── */}
         {estimatePages.map((pageItems, pageIndex) => (
-          <PaperSheet key={`est-${pageIndex}`} headerTitle="Project Estimate" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal}>
+          <PaperSheet
+            key={`est-${pageIndex}`}
+            headerTitle="Project Estimate"
+            footerText="Great White Construction"
+            pageNum={pageCounter++}
+            totalPages={totalPages}
+            proposal={proposal}
+          >
             <div className="flex-1">
-              <h2 className="text-2xl font-black text-[#042950] mb-4 pb-2 border-b-2 border-[#042950]/20">Estimate {pageIndex > 0 ? '(Cont.)' : ''}</h2>
+              <h2
+                className="text-2xl font-black mb-4 pb-2 border-b-2"
+                style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}
+              >
+                Estimate {pageIndex > 0 ? '(Cont.)' : ''}
+              </h2>
+
               <table className="w-full text-sm border-collapse">
                 <tbody>
                   {pageItems.map((pi, i) => {
                     if (pi.type === 'category' || pi.type === 'category-continued') {
                       const cat = pi.data;
-                      const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
+                      const catTotal = cat.line_items.reduce(
+                        (sum, item) => sum + getDisplayCost(item),
+                        0
+                      );
                       return (
                         <React.Fragment key={i}>
                           <tr>
-                            <td colSpan={proposal.hide_markups ? 2 : 4} className="pt-6 pb-2">
-                              <h3 className="text-lg font-bold text-gray-900 bg-gray-50 p-3 border border-gray-200 flex justify-between" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-                                <span>{cat.name} {pi.type === 'category-continued' ? '(Cont.)' : ''}</span>
-                                <span>${catTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
-                              </h3>
+                            <td colSpan={proposal.hide_markups ? 2 : 4} className="pt-5 pb-1">
+                              <div
+                                className="p-3 border border-gray-200 flex justify-between font-bold text-base text-gray-900"
+                                style={{ backgroundColor: '#f9fafb' }}
+                              >
+                                <span>
+                                  {cat.name} {pi.type === 'category-continued' ? '(Cont.)' : ''}
+                                </span>
+                                <span>${fmt(catTotal)}</span>
+                              </div>
                             </td>
                           </tr>
-                          <tr className="border-b border-gray-200 text-gray-500 font-semibold bg-white text-left">
+                          <tr className="border-b border-gray-200 text-gray-500 font-semibold">
                             <th className="py-2 px-3 text-left font-semibold">Description</th>
                             <th className="py-2 px-3 text-right font-semibold w-24">Qty</th>
                             {!proposal.hide_markups && (
@@ -397,22 +514,28 @@ export default function ProposalDetails() {
                         </React.Fragment>
                       );
                     }
-                    
+
                     if (pi.type === 'item') {
                       const item = pi.data;
                       return (
-                        <tr key={i} className="border-b border-gray-100 last:border-0">
-                          <td className="py-3 px-3 text-gray-800 align-top">
+                        <tr key={i} className="border-b border-gray-100">
+                          <td className="py-2 px-3 text-gray-800 align-top">
                             <div>{item.description}</div>
                             {item.show_note && item.note && (
                               <div className="text-xs text-gray-500 mt-1 italic">{item.note}</div>
                             )}
                           </td>
-                          <td className="py-3 px-3 text-right text-gray-600 align-top">{item.quantity} {item.unit}</td>
+                          <td className="py-2 px-3 text-right text-gray-600 align-top">
+                            {item.quantity} {item.unit}
+                          </td>
                           {!proposal.hide_markups && (
                             <>
-                              <td className="py-3 px-3 text-right text-gray-600 align-top">${(getDisplayCost(item) / (item.quantity || 1)).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
-                              <td className="py-3 px-3 text-right font-medium text-gray-900 align-top">${getDisplayCost(item).toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+                              <td className="py-2 px-3 text-right text-gray-600 align-top">
+                                ${fmt(getDisplayCost(item) / (item.quantity || 1))}
+                              </td>
+                              <td className="py-2 px-3 text-right font-medium text-gray-900 align-top">
+                                ${fmt(getDisplayCost(item))}
+                              </td>
                             </>
                           )}
                         </tr>
@@ -422,41 +545,48 @@ export default function ProposalDetails() {
                     if (pi.type === 'totals') {
                       return (
                         <tr key={i}>
-                          <td colSpan={proposal.hide_markups ? 2 : 4} className="pt-12">
+                          <td colSpan={proposal.hide_markups ? 2 : 4} className="pt-10">
                             <div className="flex justify-end">
-                              <div className="w-full max-w-sm space-y-3">
+                              <div className="w-full max-w-xs space-y-3">
                                 <div className="flex justify-between text-gray-600">
                                   <span>Subtotal</span>
-                                  <span>${totals.totalWithMarkup.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                  <span>${fmt(totals.totalWithMarkup)}</span>
                                 </div>
 
-                                <div className={`flex justify-between ${totals.discount > 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                                <div
+                                  className={`flex justify-between ${
+                                    totals.discount > 0 ? 'text-red-600' : 'text-gray-600'
+                                  }`}
+                                >
                                   <span>Discount</span>
-                                  <span>-${(totals.discount || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                  <span>-${fmt(totals.discount || 0)}</span>
                                 </div>
 
                                 <div className="flex justify-between text-gray-600">
                                   <span>Tax</span>
-                                  <span>${(totals.tax || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                  <span>${fmt(totals.tax || 0)}</span>
                                 </div>
 
                                 {totals.contingency > 0 && (
                                   <div className="flex justify-between text-gray-600">
                                     <span>Contingency ({proposal.contingency_percentage}%)</span>
-                                    <span>${totals.contingency.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                    <span>${fmt(totals.contingency)}</span>
                                   </div>
                                 )}
 
                                 {totals.changeOrdersTotal > 0 && (
                                   <div className="flex justify-between text-orange-600 font-medium pt-2 border-t border-gray-100">
                                     <span>Approved Change Orders</span>
-                                    <span>${totals.changeOrdersTotal.toLocaleString(undefined, {minimumFractionDigits:2})}</span>
+                                    <span>${fmt(totals.changeOrdersTotal)}</span>
                                   </div>
                                 )}
 
-                                <div className="flex justify-between text-xl font-black text-[#042950] pt-4 border-t-2 border-gray-900">
+                                <div
+                                  className="flex justify-between text-xl font-black pt-4 border-t-2 border-gray-900"
+                                  style={{ color: '#042950' }}
+                                >
                                   <span>Grand Total</span>
-                                  <span>${totals.grandTotal.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                                  <span>${fmt(totals.grandTotal)}</span>
                                 </div>
                               </div>
                             </div>
@@ -464,7 +594,7 @@ export default function ProposalDetails() {
                         </tr>
                       );
                     }
-                    
+
                     return null;
                   })}
                 </tbody>
@@ -473,21 +603,31 @@ export default function ProposalDetails() {
           </PaperSheet>
         ))}
 
-        {/* Assumptions & Signatures Page */}
-        <PaperSheet headerTitle="Assumptions & Signatures" footerText="Great White Construction" pageNum={pageCounter++} totalPages={totalPages} proposal={proposal}>
+        {/* ── PAGE: Assumptions & Signatures ────────────────── */}
+        <PaperSheet
+          headerTitle="Assumptions & Signatures"
+          footerText="Great White Construction"
+          pageNum={pageCounter++}
+          totalPages={totalPages}
+          proposal={proposal}
+        >
           {proposal.assumptions && (
-            <PrintSection title="Assumptions & Exclusions" className="mb-16">
-              <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: proposal.assumptions }}>
-              </div>
-            </PrintSection>
+            <div className="mb-10">
+              <SectionTitle title="Assumptions & Exclusions" />
+              <div
+                className="ql-editor p-0 text-gray-700 whitespace-normal"
+                dangerouslySetInnerHTML={{ __html: proposal.assumptions }}
+              />
+            </div>
           )}
 
-          <PrintSection title="Attachments" className="mb-16">
+          <div className="mb-10">
+            <SectionTitle title="Attachments" />
             {proposal.attachments && proposal.attachments.length > 0 ? (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {proposal.attachments.map((att, idx) => (
                   <div key={idx}>
-                    <p className="font-bold text-[#042950] text-lg">{att.name}</p>
+                    <p className="font-bold text-lg" style={{ color: '#042950' }}>{att.name}</p>
                     <p className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{att.description}</p>
                   </div>
                 ))}
@@ -495,45 +635,51 @@ export default function ProposalDetails() {
             ) : (
               <p className="text-gray-700 text-sm">No attachments provided.</p>
             )}
-          </PrintSection>
+          </div>
 
-          <div className="mt-20 break-inside-avoid print:break-inside-avoid">
-            <PrintSection title="Acceptance & Signatures">
-              <div className="grid grid-cols-2 gap-16 mt-8">
-                <div>
-                  <div className="border-b border-gray-400 h-10 mb-2"></div>
-                  <p className="text-[10px] text-gray-400 italic mb-1">(Contractor Signature)</p>
-                  <p className="text-sm font-bold text-gray-900">George Gregg</p>
-                  <p className="text-xs text-gray-500">Great White Construction</p>
-                  <div className="flex gap-2 mt-4 text-sm text-gray-500">
-                    <span className="w-8">Date:</span>
-                    <div className="border-b border-gray-400 flex-1"></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="border-b border-gray-400 h-10 mb-2"></div>
-                  <p className="text-[10px] text-gray-400 italic mb-1">(Client Signature)</p>
-                  <p className="text-sm font-bold text-gray-900">{proposal.client_name}</p>
-                  <p className="text-xs text-gray-500">Client</p>
-                  <div className="flex gap-2 mt-4 text-sm text-gray-500">
-                    <span className="w-8">Date:</span>
-                    <div className="border-b border-gray-400 flex-1"></div>
-                  </div>
+          {/* Signatures */}
+          <div className="mt-auto pt-6">
+            <SectionTitle title="Acceptance & Signatures" />
+            <div className="grid grid-cols-2 gap-16 mt-8">
+              <div>
+                <div className="border-b border-gray-400 h-10 mb-2" />
+                <p className="text-[10px] text-gray-400 italic mb-1">(Contractor Signature)</p>
+                <p className="text-sm font-bold text-gray-900">George Gregg</p>
+                <p className="text-xs text-gray-500">Great White Construction</p>
+                <div className="flex gap-2 mt-4 text-sm text-gray-500">
+                  <span className="w-8">Date:</span>
+                  <div className="border-b border-gray-400 flex-1" />
                 </div>
               </div>
-              
-              {user.role === 'client' && proposal.status === 'sent' && (
-                <div className="mt-12 text-center print:hidden">
-                  <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold px-12" onClick={() => handleStatusChange('accepted')}>
-                    Click Here to Digitally Accept
-                  </Button>
+              <div>
+                <div className="border-b border-gray-400 h-10 mb-2" />
+                <p className="text-[10px] text-gray-400 italic mb-1">(Client Signature)</p>
+                <p className="text-sm font-bold text-gray-900">{proposal.client_name}</p>
+                <p className="text-xs text-gray-500">Client</p>
+                <div className="flex gap-2 mt-4 text-sm text-gray-500">
+                  <span className="w-8">Date:</span>
+                  <div className="border-b border-gray-400 flex-1" />
                 </div>
-              )}
-              
-              <p className="mt-8 text-sm text-gray-500">
-                Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
-              </p>
-            </PrintSection>
+              </div>
+            </div>
+
+            {/* Digital accept button — screen only */}
+            {user.role === 'client' && proposal.status === 'sent' && (
+              <div className="mt-12 text-center print-hidden">
+                <Button
+                  size="lg"
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold px-12"
+                  onClick={() => handleStatusChange('accepted')}
+                >
+                  Click Here to Digitally Accept
+                </Button>
+              </div>
+            )}
+
+            <p className="mt-6 text-sm text-gray-500">
+              Upon signature, the client agrees to this proposal along with the terms, conditions for
+              the proposal and to supply the first payment for the project.
+            </p>
           </div>
         </PaperSheet>
 
