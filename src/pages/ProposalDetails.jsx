@@ -110,7 +110,54 @@ export default function ProposalDetails() {
   };
 
   const handlePrint = () => {
-    window.print();
+    const printContent = document.getElementById('printable-proposal');
+    if (!printContent) return;
+
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Proposal - ${proposal.project_number}</title>
+          <style>
+            @page { size: 8.5in 11in; margin: 0; }
+            * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background: white; }
+            .print-page {
+              width: 8.5in;
+              height: 11in;
+              overflow: hidden;
+              page-break-after: always;
+              break-after: page;
+              display: flex;
+              flex-direction: column;
+              margin: 0;
+              padding: 0;
+              box-shadow: none;
+            }
+            .print-page:last-child { page-break-after: avoid; break-after: avoid; }
+            #printable-proposal { background: white; padding: 0; margin: 0; }
+            table { width: 100%; border-collapse: collapse; }
+            .shadow-xl, .shadow-lg, .shadow-md, .shadow-sm { box-shadow: none !important; }
+            .mb-12 { margin-bottom: 0 !important; }
+            .rounded-2xl { border-radius: 0 !important; }
+          </style>
+          <link rel="stylesheet" href="${window.location.origin}/src/index.css" />
+        </head>
+        <body>
+          ${printContent.innerHTML}
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                window.close();
+              }, 500);
+            };
+          <\/script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   const handleSendEmail = async () => {
