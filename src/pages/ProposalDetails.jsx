@@ -49,7 +49,7 @@ function PaperSheet({ children, headerTitle, hideHeaderFooter, proposal }) {
       </div>
 
       {/* Body */}
-      <div className="px-16 py-8 flex flex-col flex-1">
+      <div className="px-16 pt-8 pb-8 flex flex-col flex-1">
         {children}
       </div>
     </div>
