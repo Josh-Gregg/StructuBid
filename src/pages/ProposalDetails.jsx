@@ -483,7 +483,7 @@ export default function ProposalDetails() {
 
         {/* ── PAGE 2: Executive Summary ── */}
         {proposal.executive_summary && (
-          <PaperSheet headerTitle="Project Details" proposal={proposal}>
+          <PaperSheet proposal={proposal}>
             <SectionTitle title="Executive Summary" />
             <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
               {proposal.executive_summary}
