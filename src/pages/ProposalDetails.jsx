@@ -677,7 +677,6 @@ export default function ProposalDetails() {
         {/* ── PAGE: Attachments & Signatures ────────────────── */}
         <PaperSheet
           headerTitle="Attachments & Signatures"
-          footerText="Great White Construction"
           pageNum={pageCounter++}
           totalPages={totalPages}
           proposal={proposal}
