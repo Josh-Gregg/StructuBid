@@ -88,11 +88,12 @@
   /* Each paper sheet = one printed page */
   .print-page {
     width: 8.5in !important;
-    height: 11.5in !important;
-    max-height: 11.5in !important;
+    height: 11in !important;
+    max-height: 11in !important;
     page-break-after: always !important;
     break-after: page !important;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
