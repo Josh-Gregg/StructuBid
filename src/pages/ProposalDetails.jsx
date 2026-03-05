@@ -383,7 +383,7 @@ export default function ProposalDetails() {
               boxSizing: 'border-box',
               display: 'flex',
               flexDirection: 'column',
-              padding: '0.45in 0.75in',
+              padding: '0.35in 0.65in 0.35in 0.65in',
               overflow: 'hidden',
             }}>
 
