@@ -406,7 +406,7 @@ export default function ProposalDetails() {
               )}
 
               {/* Client info grid */}
-              <div className="grid grid-cols-2 gap-8">
+              <div className="grid grid-cols-2 gap-8 mt-auto">
                 <div>
                   <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Prepared For</p>
                   <p className="text-xl font-bold">{proposal.client_name}</p>
