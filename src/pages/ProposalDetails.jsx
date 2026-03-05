@@ -48,7 +48,7 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
           <div className="text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>#{proposal.project_number}</div>
         </div>
       </div>
-      <div style={{ flex: 1, padding: '0.4in 0.65in', overflow: 'hidden' }}>
+      <div style={{ flex: 1, padding: '0.5in', overflow: 'hidden' }}>
         {children}
       </div>
     </div>
