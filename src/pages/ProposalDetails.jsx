@@ -17,7 +17,7 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
     printColorAdjust: 'exact',
     colorAdjust: 'exact',
     width: '8.5in',
-    height: '11in',
+    height: '11.5in',
     overflow: 'hidden',
     boxSizing: 'border-box',
   };
@@ -379,7 +379,7 @@ export default function ProposalDetails() {
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
             <div style={{
               width: '8.5in',
-              height: '11in',
+              height: '11.5in',
               boxSizing: 'border-box',
               display: 'flex',
               flexDirection: 'column',
