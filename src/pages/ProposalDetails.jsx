@@ -401,7 +401,7 @@ export default function ProposalDetails() {
 
               {/* Title — centered in remaining space */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <h1 style={{ color: '#042950', fontSize: '72px', fontWeight: 900, lineHeight: 1, textTransform: 'uppercase', textAlign: 'center', letterSpacing: '-0.02em', margin: 0 }}>
+                <h1 style={{ color: '#042950', fontSize: '64px', fontWeight: 900, lineHeight: 1, textTransform: 'uppercase', textAlign: 'center', letterSpacing: '-0.02em', margin: 0 }}>
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
 
