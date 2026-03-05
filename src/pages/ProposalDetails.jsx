@@ -126,6 +126,7 @@ function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
 // ─────────────────────────────────────────────
 const TABS = [
   { id: 'cover', label: 'Cover Page' },
+  { id: 'scope', label: 'Scope of Work' },
   { id: 'estimate', label: 'Estimate' },
   { id: 'supporting', label: 'Supporting Docs' },
   { id: 'signatures', label: 'Signatures' },
