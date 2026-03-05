@@ -382,12 +382,12 @@ export default function ProposalDetails() {
         <div className={activeTab === 'cover' ? '' : 'hidden print:block'}>
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
             <div style={{
-              width: '8.5in',
-              height: '11.5in',
+              width: '100%',
+              height: '100%',
               boxSizing: 'border-box',
               display: 'flex',
               flexDirection: 'column',
-              padding: '0.35in 0.65in 0.35in 0.65in',
+              padding: '0.4in 0.65in',
               overflow: 'hidden',
             }}>
 
