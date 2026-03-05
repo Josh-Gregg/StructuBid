@@ -393,9 +393,9 @@ export default function ProposalDetails() {
 
               {/* Title */}
               <div className="mb-3">
-                <div className="uppercase tracking-widest font-bold text-base mb-1" style={{ color: '#042950' }}>
+                <h1 className="font-black leading-none uppercase" style={{ color: '#042950', fontSize: '5.5rem', letterSpacing: '-0.02em' }}>
                   {proposal.cover_title || 'Project Proposal'}
-                </div>
+                </h1>
               </div>
 
               {/* Cover photo */}
