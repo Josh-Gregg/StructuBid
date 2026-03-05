@@ -380,7 +380,7 @@ export default function ProposalDetails() {
             <div className="flex flex-col p-8" style={{ height: '11in', overflow: 'hidden', boxSizing: 'border-box' }}>
 
               {/* Logo + contact */}
-              <header className="flex justify-between items-start mb-4">
+              <header className="flex justify-between items-start">
                 <Logo imageClassName="h-44 object-contain" />
                 <div className="text-right text-sm text-gray-600 space-y-1">
                   <p className="font-bold text-gray-900">Great White Construction</p>
@@ -391,22 +391,22 @@ export default function ProposalDetails() {
                 </div>
               </header>
 
-              {/* Title */}
-              <div className="mb-3">
+              {/* Title — vertically centered in remaining space */}
+              <div className="flex-1 flex flex-col items-center justify-center">
                 <h1 className="font-black leading-none uppercase text-center" style={{ color: '#042950', fontSize: '5.5rem', letterSpacing: '-0.02em' }}>
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
+
+                {/* Cover photo */}
+                {proposal.cover_photo_url && (
+                  <div className="mt-6 w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200" style={{ height: '2.2in' }}>
+                    <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
+                  </div>
+                )}
               </div>
 
-              {/* Cover photo */}
-              {proposal.cover_photo_url && (
-                <div className="mb-3 w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200" style={{ height: '2.2in' }}>
-                  <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
-                </div>
-              )}
-
               {/* Client info grid */}
-              <div className="grid grid-cols-2 gap-8 mt-auto">
+              <div className="grid grid-cols-2 gap-8">
                 <div>
                   <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Prepared For</p>
                   <p className="text-xl font-bold">{proposal.client_name}</p>
