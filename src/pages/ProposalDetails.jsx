@@ -392,7 +392,7 @@ export default function ProposalDetails() {
               </header>
 
               {/* Title — vertically centered in remaining space */}
-              <div className="flex-1 flex flex-col items-center justify-center">
+              <div className="flex-1 flex flex-col items-center justify-center" style={{ paddingBottom: '3in' }}>
                 <h1 className="font-black leading-none uppercase text-center" style={{ color: '#042950', fontSize: '5.5rem', letterSpacing: '-0.02em' }}>
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
