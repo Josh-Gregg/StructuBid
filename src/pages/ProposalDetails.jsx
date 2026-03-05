@@ -48,7 +48,8 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
           <div className="text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>#{proposal.project_number}</div>
         </div>
       </div>
-      <div style={{ flex: 1, padding: '1in', overflow: 'hidden' }}>
+      {/* BUG FIX: Added className="paper-body" so @media print can override overflow:hidden via CSS */}
+      <div className="paper-body" style={{ flex: 1, padding: '1in', overflow: 'hidden' }}>
         {children}
       </div>
     </div>
@@ -228,14 +229,12 @@ export default function ProposalDetails() {
   const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   // ── Pagination logic for Estimate pages
-  // Page body = 11in - 2in margins = 9in = 864px at 96dpi
-  // Reserve space: title row ~40px, totals block ~160px, header row ~32px, category row ~52px
-  const PAGE_HEIGHT_PX = 864;
-  const TITLE_HEIGHT = 40;       // "Estimate" heading
-  const TOTALS_HEIGHT = 180;     // totals block reservation
-  const CATEGORY_HEIGHT = 84;    // category header + column header row
-  const ITEM_HEIGHT = 36;        // one line item row
-  const ITEM_WITH_NOTE_HEIGHT = 54; // line item + note row
+  const PAGE_HEIGHT_PX = 800;
+  const TITLE_HEIGHT = 40;
+  const TOTALS_HEIGHT = 240;
+  const CATEGORY_HEIGHT = 90;
+  const ITEM_HEIGHT = 56;
+  const ITEM_WITH_NOTE_HEIGHT = 96;
 
   const estimatePages = [];
   let currentPageItems = [];
@@ -251,7 +250,6 @@ export default function ProposalDetails() {
     proposal.categories.forEach((cat) => {
       if (!cat.line_items?.length) return;
 
-      // If category header doesn't fit, start new page
       if (usedHeight + CATEGORY_HEIGHT + ITEM_HEIGHT > PAGE_HEIGHT_PX) {
         flushPage();
       }
@@ -271,7 +269,6 @@ export default function ProposalDetails() {
     });
   }
 
-  // Totals block — push to new page if it won't fit
   if (usedHeight + TOTALS_HEIGHT > PAGE_HEIGHT_PX) {
     flushPage();
   }
@@ -482,7 +479,9 @@ export default function ProposalDetails() {
         <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
           {estimatePages.map((pageItems, pageIndex) => (
             <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
-              <div style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+              {/* BUG FIX: Added className="estimate-content" so @media print can override
+                  overflow:hidden and height:100% which were clipping content in print mode */}
+              <div className="estimate-content" style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
                 <h2 className="text-2xl font-black mb-4 pb-2 border-b-2" style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}>
                   Estimate {pageIndex > 0 ? '(Cont.)' : ''}
                 </h2>
