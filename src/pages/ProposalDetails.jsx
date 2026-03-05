@@ -378,8 +378,10 @@ export default function ProposalDetails() {
         <div className={activeTab === 'cover' ? '' : 'hidden print:block'}>
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
             <div className="flex flex-col p-8" style={{ height: '11in', overflow: 'hidden', boxSizing: 'border-box' }}>
-              <header className="flex justify-between items-start mb-6">
-                <Logo imageClassName="h-28 object-contain" />
+
+              {/* Logo + contact */}
+              <header className="flex justify-between items-start mb-4">
+                <Logo imageClassName="h-44 object-contain" />
                 <div className="text-right text-sm text-gray-600 space-y-1">
                   <p className="font-bold text-gray-900">Great White Construction</p>
                   <p>2470 S Zephyr St</p>
@@ -389,22 +391,22 @@ export default function ProposalDetails() {
                 </div>
               </header>
 
-              <div className="mb-2">
-                <div className="uppercase tracking-widest font-bold text-sm mb-2" style={{ color: '#042950' }}>
+              {/* Title */}
+              <div className="mb-3">
+                <div className="uppercase tracking-widest font-bold text-base mb-1" style={{ color: '#042950' }}>
                   {proposal.cover_title || 'Project Proposal'}
                 </div>
-                <h1 className="text-5xl font-black leading-tight" style={{ color: '#042950' }}>
-                  {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
-                </h1>
               </div>
 
+              {/* Cover photo */}
               {proposal.cover_photo_url && (
-                <div className="mb-4 w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200" style={{ height: '2.2in' }}>
+                <div className="mb-3 w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200" style={{ height: '2.2in' }}>
                   <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-8 mt-auto">
+              {/* Client info grid */}
+              <div className="grid grid-cols-2 gap-8">
                 <div>
                   <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Prepared For</p>
                   <p className="text-xl font-bold">{proposal.client_name}</p>
@@ -426,6 +428,7 @@ export default function ProposalDetails() {
                   </div>
                 </div>
               </div>
+
             </div>
           </PaperSheet>
         </div>
