@@ -420,7 +420,7 @@ export default function ProposalDetails() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', flexShrink: 0 }}>
                 <div>
                   <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Prepared For</p>
-                  <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827', margin: '0 0 2px 0' }}>{proposal.client_name}</p>
+                  <p style={{ fontSize: '16px', fontWeight: 'bold', color: '#111827', margin: '0 0 2px 0' }}>{proposal.client_name}</p>
                   {proposal.company_name && <p style={{ color: '#374151', margin: '0 0 2px 0' }}>{proposal.company_name}</p>}
                   <p style={{ color: '#6b7280', margin: 0 }}>{proposal.client_address}</p>
                   <div style={{ marginTop: '12px' }}>
