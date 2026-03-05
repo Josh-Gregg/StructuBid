@@ -61,14 +61,6 @@
     visibility: visible;
   }
 
-  /* Position the printable area at top-left */
-  #printable-proposal {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-  }
-
   body {
     margin: 0;
     padding: 0;
@@ -85,11 +77,51 @@
     color-adjust: exact !important;
   }
 
-  /* Each paper sheet = one printed page */
+  /*
+   * BUG FIX 1 + 2 + 3: #printable-proposal positioning
+   *
+   * OLD: position: absolute — this removes the element from normal document
+   * flow, which breaks page-break-after on child .print-page elements in
+   * Chrome/Edge. Pages would either all stack on page 1 or render blank pages.
+   *
+   * FIX: position: static so the browser's print engine sees a normal block
+   * flow and correctly applies page breaks after each .print-page child.
+   */
+  #printable-proposal {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    display: block !important;
+  }
+
+  /*
+   * BUG FIX 4 + 5: .print-page height and overflow
+   *
+   * OLD: height: 11in + overflow: hidden — this hard-clips any content that
+   * spills even 1px over the JS-estimated page boundary. The JS estimation
+   * uses fixed pixel heights (36px/item) that don't account for text wrapping,
+   * so almost every estimate with longer descriptions gets content silently cut.
+   *
+   * FIX: height: auto + overflow: visible — the browser handles page sizing
+   * via @page { size: 8.5in 11in } and page-break-after: always. Each
+   * .print-page becomes a natural block that breaks to the next page after
+   * itself. No content is ever clipped.
+   *
+   * The on-screen preview still shows 11in sheets with overflow:hidden because
+   * those styles are applied via inline style (which only affects screen).
+   * The !important here only applies inside @media print.
+   */
   .print-page {
     width: 8.5in !important;
-    height: 11in !important;
-    max-height: 11in !important;
+    height: auto !important;         /* Was 11in — was clipping overflowed content */
+    max-height: none !important;     /* Was 11in — same problem */
+    min-height: 0 !important;
+    overflow: visible !important;    /* Was hidden — was silently hiding clipped content */
     page-break-after: always !important;
     break-after: page !important;
     display: flex !important;
@@ -97,22 +129,29 @@
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
-    overflow: hidden !important;
   }
 
-  /* Last page should not force a blank trailing page */
+  /* Last page: don't force a blank trailing page */
   .print-page:last-child {
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
 
-  /* The proposal wrapper */
-  #printable-proposal {
-    background: white !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    display: block !important;
+  /*
+   * BUG FIX 6: Inner content body overflow
+   *
+   * The PaperSheet body div and estimate content div both have
+   * overflow: hidden as inline styles. In print we want visible so that
+   * if pagination places slightly too much on one page it renders rather
+   * than silently disappearing.
+   *
+   * CSS !important overrides inline styles per the cascade spec.
+   */
+  .paper-body,
+  .estimate-content {
+    overflow: visible !important;
+    height: auto !important;
+    flex: 0 0 auto !important; /* Don't try to stretch to fill a now-auto parent */
   }
 
   /* Ensure colored backgrounds print */
