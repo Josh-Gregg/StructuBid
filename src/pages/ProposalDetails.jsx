@@ -3,25 +3,26 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Printer, Mail, Edit, ArrowLeft, PlusCircle, Layers, FileSpreadsheet } from 'lucide-react';
-import * as XLSX from 'xlsx';
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
+import * as XLSX from 'xlsx';
 
 // ─────────────────────────────────────────────
 // PaperSheet: one 8.5×11in page
 // ─────────────────────────────────────────────
 function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
+  // HEIGHT/OVERFLOW MOVED TO CSS CLASS "paper-sheet-screen" so that @media print
+  // can override them cleanly. Inline styles beat !important in Chrome's print
+  // engine for height, causing each page to consume a full 11in on paper even
+  // when content ends at 60% — leaving large blank gaps at the top of every
+  // continuation page. By moving height constraints to a class, the print CSS
+  // can set height:auto and overflow:visible without fighting inline specificity.
   const pageStyle = {
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
     colorAdjust: 'exact',
-    width: '8.5in',
-    minHeight: '11in',
-    maxHeight: '11in',
-    height: '11in',
-    overflow: 'hidden',
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
@@ -29,14 +30,14 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
 
   if (hideHeaderFooter) {
     return (
-      <div className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
+      <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
         {children}
       </div>
     );
   }
 
   return (
-    <div className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
+    <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
       <div
         className="shrink-0 flex items-center justify-between px-16"
         style={{ backgroundColor: '#042950', color: 'white', height: '0.75in', minHeight: '0.75in', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
@@ -49,8 +50,7 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
           <div className="text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>#{proposal.project_number}</div>
         </div>
       </div>
-      {/* BUG FIX: Added className="paper-body" so @media print can override overflow:hidden via CSS */}
-      <div className="paper-body" style={{ flex: 1, padding: '1in', overflow: 'hidden' }}>
+      <div style={{ flex: 1, padding: '1in', overflow: 'hidden' }}>
         {children}
       </div>
     </div>
@@ -156,83 +156,6 @@ export default function ProposalDetails() {
     base44.entities.Proposal.get(id).then(setProposal);
   };
 
-  const handleExportExcel = () => {
-    const wb = XLSX.utils.book_new();
-    const rows = [];
-
-    // Header info
-    rows.push(['Project Proposal - Great White Construction']);
-    rows.push(['Project #', proposal.project_number]);
-    rows.push(['Client', proposal.client_name]);
-    rows.push(['Project Address', proposal.project_address]);
-    rows.push(['Date', new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })]);
-    rows.push([]);
-
-    // Column headers
-    if (proposal.hide_markups) {
-      rows.push(['Description', 'Qty', 'Unit']);
-    } else {
-      rows.push(['Description', 'Qty', 'Unit', 'Unit Cost', 'Total']);
-    }
-
-    proposal.categories?.forEach((cat) => {
-      if (!cat.line_items?.length) return;
-      const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
-      // Category header row
-      rows.push([cat.name, '', '', '', `$${fmt(catTotal)}`]);
-
-      cat.line_items.forEach((item) => {
-        const displayCost = getDisplayCost(item);
-        const unitCost = displayCost / (item.quantity || 1);
-        if (proposal.hide_markups) {
-          rows.push([item.description, item.quantity, item.unit]);
-          if (item.show_note && item.note) rows.push([`  Note: ${item.note}`]);
-        } else {
-          rows.push([item.description, item.quantity, item.unit, unitCost, displayCost]);
-          if (item.show_note && item.note) rows.push([`  Note: ${item.note}`]);
-        }
-      });
-      rows.push([]); // spacer
-    });
-
-    // Totals
-    rows.push([]);
-    rows.push(['Subtotal', '', '', '', totals.totalWithMarkup]);
-    rows.push(['Discount', '', '', '', -(totals.discount || 0)]);
-    rows.push(['Tax', '', '', '', totals.tax || 0]);
-    if (totals.contingency > 0) {
-      rows.push([`Contingency (${proposal.contingency_percentage}%)`, '', '', '', totals.contingency]);
-    }
-    if (totals.changeOrdersTotal > 0) {
-      rows.push(['Approved Change Orders', '', '', '', totals.changeOrdersTotal]);
-    }
-    rows.push(['GRAND TOTAL', '', '', '', totals.grandTotal]);
-
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-
-    // Column widths
-    ws['!cols'] = [{ wch: 50 }, { wch: 8 }, { wch: 10 }, { wch: 14 }, { wch: 16 }];
-
-    // Format currency cells in the Total column (col index 4)
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    for (let R = range.s.r; R <= range.e.r; R++) {
-      const cell = ws[XLSX.utils.encode_cell({ r: R, c: 4 })];
-      if (cell && typeof cell.v === 'number') {
-        cell.t = 'n';
-        cell.z = '"$"#,##0.00';
-      }
-      // Also format unit cost col (col 3)
-      const cell3 = ws[XLSX.utils.encode_cell({ r: R, c: 3 })];
-      if (cell3 && typeof cell3.v === 'number') {
-        cell3.t = 'n';
-        cell3.z = '"$"#,##0.00';
-      }
-    }
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Estimate');
-    XLSX.writeFile(wb, `Estimate_${proposal.project_number || 'proposal'}.xlsx`);
-  };
-
   // Print only the active section
   const handlePrintSection = () => {
     const allPages = document.querySelectorAll('.print-page');
@@ -306,13 +229,76 @@ export default function ProposalDetails() {
 
   const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  const handleExportExcel = () => {
+    const wb = XLSX.utils.book_new();
+    const rows = [];
+
+    rows.push(['Project Proposal - Great White Construction']);
+    rows.push(['Project #', proposal.project_number]);
+    rows.push(['Client', proposal.client_name]);
+    rows.push(['Project Address', proposal.project_address]);
+    rows.push(['Date', new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })]);
+    rows.push([]);
+
+    if (proposal.hide_markups) {
+      rows.push(['Description', 'Qty', 'Unit']);
+    } else {
+      rows.push(['Description', 'Qty', 'Unit', 'Unit Cost', 'Total']);
+    }
+
+    proposal.categories?.forEach((cat) => {
+      if (!cat.line_items?.length) return;
+      const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
+      rows.push([cat.name, '', '', '', `$${fmt(catTotal)}`]);
+
+      cat.line_items.forEach((item) => {
+        const displayCost = getDisplayCost(item);
+        const unitCost = displayCost / (item.quantity || 1);
+        if (proposal.hide_markups) {
+          rows.push([item.description, item.quantity, item.unit]);
+          if (item.show_note && item.note) rows.push([`  Note: ${item.note}`]);
+        } else {
+          rows.push([item.description, item.quantity, item.unit, unitCost, displayCost]);
+          if (item.show_note && item.note) rows.push([`  Note: ${item.note}`]);
+        }
+      });
+      rows.push([]);
+    });
+
+    rows.push([]);
+    rows.push(['Subtotal', '', '', '', totals.totalWithMarkup]);
+    rows.push(['Discount', '', '', '', -(totals.discount || 0)]);
+    rows.push(['Tax', '', '', '', totals.tax || 0]);
+    if (totals.contingency > 0) {
+      rows.push([`Contingency (${proposal.contingency_percentage}%)`, '', '', '', totals.contingency]);
+    }
+    if (totals.changeOrdersTotal > 0) {
+      rows.push(['Approved Change Orders', '', '', '', totals.changeOrdersTotal]);
+    }
+    rows.push(['GRAND TOTAL', '', '', '', totals.grandTotal]);
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{ wch: 50 }, { wch: 8 }, { wch: 10 }, { wch: 14 }, { wch: 16 }];
+
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; R++) {
+      const cell = ws[XLSX.utils.encode_cell({ r: R, c: 4 })];
+      if (cell && typeof cell.v === 'number') { cell.t = 'n'; cell.z = '"$"#,##0.00'; }
+      const cell3 = ws[XLSX.utils.encode_cell({ r: R, c: 3 })];
+      if (cell3 && typeof cell3.v === 'number') { cell3.t = 'n'; cell3.z = '"$"#,##0.00'; }
+    }
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Estimate');
+    XLSX.writeFile(wb, `Estimate_${proposal.project_number || 'proposal'}.xlsx`);
+  };
+
   // ── Pagination logic for Estimate pages
-  const PAGE_HEIGHT_PX = 800;
+  const PAGE_HEIGHT_PX = 864;
   const TITLE_HEIGHT = 40;
-  const TOTALS_HEIGHT = 240;
-  const CATEGORY_HEIGHT = 90;
-  const ITEM_HEIGHT = 56;
-  const ITEM_WITH_NOTE_HEIGHT = 96;
+  const TOTALS_HEIGHT = 180;
+  const CATEGORY_HEIGHT = 84;
+  const ITEM_HEIGHT = 36;
+  const ITEM_WITH_NOTE_HEIGHT = 54;
 
   const estimatePages = [];
   let currentPageItems = [];
@@ -562,9 +548,7 @@ export default function ProposalDetails() {
         <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
           {estimatePages.map((pageItems, pageIndex) => (
             <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
-              {/* BUG FIX: Added className="estimate-content" so @media print can override
-                  overflow:hidden and height:100% which were clipping content in print mode */}
-              <div className="estimate-content" style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+              <div style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
                 <h2 className="text-2xl font-black mb-4 pb-2 border-b-2" style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}>
                   Estimate {pageIndex > 0 ? '(Cont.)' : ''}
                 </h2>
