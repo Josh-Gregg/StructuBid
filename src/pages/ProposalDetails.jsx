@@ -430,7 +430,7 @@ export default function ProposalDetails() {
                 </div>
                 <div>
                   <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Project Location</p>
-                  <p style={{ fontSize: '16px', fontWeight: '500', color: '#111827', margin: '0 0 12px 0' }}>{proposal.project_address}</p>
+                  <p style={{ fontSize: '14px', fontWeight: '500', color: '#111827', margin: '0 0 8px 0' }}>{proposal.project_address}</p>
                   <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Date</p>
                   <p style={{ fontWeight: '500', margin: 0 }}>
                     {new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
