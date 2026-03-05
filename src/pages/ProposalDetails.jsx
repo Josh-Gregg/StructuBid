@@ -438,7 +438,7 @@ export default function ProposalDetails() {
               <div className="uppercase tracking-widest font-bold text-sm mb-2" style={{ color: '#042950' }}>
                 {proposal.cover_title || 'Project Proposal'}
               </div>
-              <h1 className="text-5xl font-black leading-tight" style={{ color: '#042950' }}>
+              <h1 className="text-4xl font-black leading-tight" style={{ color: '#042950' }}>
                 {proposal.cover_subtitle || proposal.project_type?.replace(/_/g, ' ')}
               </h1>
             </div>
