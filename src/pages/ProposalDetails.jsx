@@ -377,55 +377,64 @@ export default function ProposalDetails() {
         {/* ── COVER PAGE ── */}
         <div className={activeTab === 'cover' ? '' : 'hidden print:block'}>
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
-            <div className="flex flex-col" style={{ height: '11in', overflow: 'hidden', boxSizing: 'border-box', padding: '0.5in 0.6in' }}>
+            <div style={{
+              width: '8.5in',
+              height: '11in',
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '0.6in 0.75in',
+              overflow: 'hidden',
+            }}>
 
               {/* Logo + contact */}
-              <header className="flex justify-between items-start">
-                <Logo imageClassName="h-32 object-contain" />
-                <div className="text-right text-sm text-gray-600 space-y-1">
-                  <p className="font-bold text-gray-900">Great White Construction</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0 }}>
+                <Logo imageClassName="h-28 object-contain" />
+                <div style={{ textAlign: 'right', fontSize: '12px', color: '#4b5563', lineHeight: '1.6' }}>
+                  <p style={{ fontWeight: 'bold', color: '#111827' }}>Great White Construction</p>
                   <p>2470 S Zephyr St</p>
                   <p>Lakewood, CO 80227</p>
                   <p>303-908-5421</p>
                   <p>George@GreatWhiteGC.com</p>
                 </div>
-              </header>
+              </div>
 
-              {/* Title — vertically centered in remaining space */}
-              <div className="flex-1 flex flex-col items-center justify-center" style={{ paddingBottom: '0.5in' }}>
-                <h1 className="font-black leading-none uppercase text-center" style={{ color: '#042950', fontSize: '4.5rem', letterSpacing: '-0.02em' }}>
+              {/* Title — centered in remaining space */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <h1 style={{ color: '#042950', fontSize: '72px', fontWeight: 900, lineHeight: 1, textTransform: 'uppercase', textAlign: 'center', letterSpacing: '-0.02em', margin: 0 }}>
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
 
                 {/* Cover photo */}
                 {proposal.cover_photo_url && (
-                  <div className="mt-6 w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200" style={{ height: '2.2in' }}>
-                    <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
+                  <div style={{ marginTop: '24px', width: '100%', borderRadius: '12px', overflow: 'hidden', height: '2in', flexShrink: 0 }}>
+                    <img src={proposal.cover_photo_url} alt="Project Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 )}
               </div>
 
+              {/* Divider */}
+              <div style={{ height: '2px', backgroundColor: '#042950', marginBottom: '20px', flexShrink: 0 }} />
+
               {/* Client info grid */}
-              <div className="grid grid-cols-2 gap-8">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', flexShrink: 0 }}>
                 <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Prepared For</p>
-                  <p className="text-xl font-bold">{proposal.client_name}</p>
-                  {proposal.company_name && <p className="text-gray-700">{proposal.company_name}</p>}
-                  <p className="text-gray-600">{proposal.client_address}</p>
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Proposal Number</p>
-                    <p className="font-medium" style={{ color: '#042950' }}>#{proposal.project_number}</p>
+                  <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Prepared For</p>
+                  <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#111827', margin: '0 0 2px 0' }}>{proposal.client_name}</p>
+                  {proposal.company_name && <p style={{ color: '#374151', margin: '0 0 2px 0' }}>{proposal.company_name}</p>}
+                  <p style={{ color: '#6b7280', margin: 0 }}>{proposal.client_address}</p>
+                  <div style={{ marginTop: '12px' }}>
+                    <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Proposal Number</p>
+                    <p style={{ fontWeight: '600', color: '#042950', margin: 0 }}>#{proposal.project_number}</p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Project Location</p>
-                  <p className="text-lg font-medium">{proposal.project_address}</p>
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-1">Date</p>
-                    <p className="font-medium">
-                      {new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
-                  </div>
+                  <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Project Location</p>
+                  <p style={{ fontSize: '16px', fontWeight: '500', color: '#111827', margin: '0 0 12px 0' }}>{proposal.project_address}</p>
+                  <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Date</p>
+                  <p style={{ fontWeight: '500', margin: 0 }}>
+                    {new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </p>
                 </div>
               </div>
 
