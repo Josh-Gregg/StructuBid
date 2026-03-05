@@ -12,31 +12,35 @@ import 'react-quill/dist/quill.snow.css';
 // PaperSheet: one 8.5×11in page
 // ─────────────────────────────────────────────
 function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
-  const exactPage = {
+  const pageStyle = {
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
     colorAdjust: 'exact',
     width: '8.5in',
-    height: '11.5in',
+    minHeight: '11in',
+    maxHeight: '11in',
+    height: '11in',
     overflow: 'hidden',
     boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
   };
 
   if (hideHeaderFooter) {
     return (
-      <div className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto" style={exactPage} data-section={sectionId}>
+      <div className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
         {children}
       </div>
     );
   }
 
   return (
-    <div className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto flex flex-col" style={exactPage} data-section={sectionId}>
+    <div className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
       <div
         className="shrink-0 flex items-center justify-between px-16"
-        style={{ backgroundColor: '#042950', color: 'white', height: '1in', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
+        style={{ backgroundColor: '#042950', color: 'white', height: '0.75in', minHeight: '0.75in', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
       >
-        <h2 className="text-xl font-bold tracking-wider uppercase" style={{ color: 'white' }}>
+        <h2 className="text-lg font-bold tracking-wider uppercase" style={{ color: 'white' }}>
           Great White Construction
         </h2>
         <div className="text-right">
@@ -44,7 +48,7 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
           <div className="text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>#{proposal.project_number}</div>
         </div>
       </div>
-      <div className="px-16 pt-8 pb-8">
+      <div style={{ flex: 1, padding: '0.4in 0.65in', overflow: 'hidden' }}>
         {children}
       </div>
     </div>
