@@ -46,7 +46,7 @@
 
 @media print {
   @page {
-    size: letter portrait;
+    size: 8.5in 11in;
     margin: 0;
   }
 
