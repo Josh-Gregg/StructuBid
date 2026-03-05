@@ -393,7 +393,7 @@ export default function ProposalDetails() {
 
               {/* Title */}
               <div className="mb-3">
-                <h1 className="font-black leading-none uppercase" style={{ color: '#042950', fontSize: '5.5rem', letterSpacing: '-0.02em' }}>
+                <h1 className="font-black leading-none uppercase text-center" style={{ color: '#042950', fontSize: '5.5rem', letterSpacing: '-0.02em' }}>
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
               </div>
