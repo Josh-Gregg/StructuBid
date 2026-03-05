@@ -447,17 +447,26 @@ export default function ProposalDetails() {
           </PaperSheet>
         </div>
 
-        {/* ── ESTIMATE PAGES ── */}
-        <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
+        {/* ── SCOPE OF WORK ── */}
+        <div className={activeTab === 'scope' ? '' : 'hidden print:block'}>
           {proposal.executive_summary && (
-            <PaperSheet proposal={proposal} sectionId="estimate">
+            <PaperSheet proposal={proposal} sectionId="scope">
               <SectionTitle title="Executive Summary" />
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
             </PaperSheet>
           )}
+          {proposal.scope_of_work && (
+            <RichTextPages html={proposal.scope_of_work} sectionTitle="Scope of Work" proposal={proposal} sectionId="scope" />
+          )}
+          {!proposal.executive_summary && !proposal.scope_of_work && (
+            <div className="text-center text-gray-400 py-16 print:hidden">
+              <p className="text-lg font-medium">No scope of work added yet.</p>
+            </div>
+          )}
+        </div>
 
-          <RichTextPages html={proposal.scope_of_work} sectionTitle="Scope of Work" proposal={proposal} sectionId="estimate" />
-
+        {/* ── ESTIMATE PAGES ── */}
+        <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
           {estimatePages.map((pageItems, pageIndex) => (
             <PaperSheet key={`est-${pageIndex}`} proposal={proposal} sectionId="estimate">
               <div>
