@@ -156,7 +156,6 @@ export default function ProposalDetails() {
 
   // Print only the active section
   const handlePrintSection = () => {
-    // Temporarily show only the active section's pages
     const allPages = document.querySelectorAll('.print-page');
     allPages.forEach(p => {
       const section = p.getAttribute('data-section');
