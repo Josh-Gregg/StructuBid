@@ -228,38 +228,52 @@ export default function ProposalDetails() {
   const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   // ── Pagination logic for Estimate pages
+  // Page body = 11in - 2in margins = 9in = 864px at 96dpi
+  // Reserve space: title row ~40px, totals block ~160px, header row ~32px, category row ~52px
+  const PAGE_HEIGHT_PX = 864;
+  const TITLE_HEIGHT = 40;       // "Estimate" heading
+  const TOTALS_HEIGHT = 180;     // totals block reservation
+  const CATEGORY_HEIGHT = 84;    // category header + column header row
+  const ITEM_HEIGHT = 36;        // one line item row
+  const ITEM_WITH_NOTE_HEIGHT = 54; // line item + note row
+
   const estimatePages = [];
   let currentPageItems = [];
-  let currentLines = 0;
-  const MAX_LINES_PER_PAGE = 22;
+  let usedHeight = TITLE_HEIGHT;
+
+  const flushPage = () => {
+    estimatePages.push(currentPageItems);
+    currentPageItems = [];
+    usedHeight = TITLE_HEIGHT;
+  };
 
   if (proposal.categories) {
     proposal.categories.forEach((cat) => {
       if (!cat.line_items?.length) return;
-      if (currentLines + 3 > MAX_LINES_PER_PAGE) {
-        estimatePages.push(currentPageItems);
-        currentPageItems = [];
-        currentLines = 0;
+
+      // If category header doesn't fit, start new page
+      if (usedHeight + CATEGORY_HEIGHT + ITEM_HEIGHT > PAGE_HEIGHT_PX) {
+        flushPage();
       }
       currentPageItems.push({ type: 'category', data: cat });
-      currentLines += 2;
+      usedHeight += CATEGORY_HEIGHT;
+
       cat.line_items.forEach((item) => {
-        const itemLines = item.show_note && item.note ? 2 : 1;
-        if (currentLines + itemLines > MAX_LINES_PER_PAGE) {
-          estimatePages.push(currentPageItems);
-          currentPageItems = [];
-          currentLines = 0;
+        const itemH = item.show_note && item.note ? ITEM_WITH_NOTE_HEIGHT : ITEM_HEIGHT;
+        if (usedHeight + itemH > PAGE_HEIGHT_PX) {
+          flushPage();
           currentPageItems.push({ type: 'category-continued', data: cat });
-          currentLines += 2;
+          usedHeight += CATEGORY_HEIGHT;
         }
         currentPageItems.push({ type: 'item', data: item, category: cat });
-        currentLines += itemLines;
+        usedHeight += itemH;
       });
     });
   }
-  if (currentLines + 8 > MAX_LINES_PER_PAGE) {
-    estimatePages.push(currentPageItems);
-    currentPageItems = [];
+
+  // Totals block — push to new page if it won't fit
+  if (usedHeight + TOTALS_HEIGHT > PAGE_HEIGHT_PX) {
+    flushPage();
   }
   currentPageItems.push({ type: 'totals' });
   estimatePages.push(currentPageItems);
