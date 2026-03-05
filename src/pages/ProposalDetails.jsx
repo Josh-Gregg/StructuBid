@@ -23,23 +23,23 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
     overflow: 'hidden',
     boxSizing: 'border-box',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column'
   };
 
   if (hideHeaderFooter) {
     return (
       <div className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
         {children}
-      </div>
-    );
+      </div>);
+
   }
 
   return (
     <div className="print-page bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
       <div
         className="shrink-0 flex items-center justify-between px-16"
-        style={{ backgroundColor: '#042950', color: 'white', height: '0.75in', minHeight: '0.75in', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
-      >
+        style={{ backgroundColor: '#042950', color: 'white', height: '0.75in', minHeight: '0.75in', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+
         <h2 className="text-lg font-bold tracking-wider uppercase" style={{ color: 'white' }}>
           Great White Construction
         </h2>
@@ -51,16 +51,16 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
       <div style={{ flex: 1, padding: '1in', overflow: 'hidden' }}>
         {children}
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 function SectionTitle({ title }) {
   return (
     <h2 className="text-2xl font-black mb-4 pb-2 border-b-2" style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}>
       {title}
-    </h2>
-  );
+    </h2>);
+
 }
 
 function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
@@ -74,7 +74,7 @@ function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
     if (!measureRef.current || !html) return;
     const container = measureRef.current;
     const children = Array.from(container.childNodes);
-    if (children.length === 0) { setPages([html]); return; }
+    if (children.length === 0) {setPages([html]);return;}
 
     const result = [];
     let currentPageNodes = [];
@@ -85,7 +85,7 @@ function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
       const h = node.getBoundingClientRect?.()?.height || 24;
       if (currentHeight + h > availableHeight && currentPageNodes.length > 0) {
         const div = document.createElement('div');
-        currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
+        currentPageNodes.forEach((n) => div.appendChild(n.cloneNode(true)));
         result.push(div.innerHTML);
         currentPageNodes = [];
         currentHeight = 0;
@@ -97,7 +97,7 @@ function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
 
     if (currentPageNodes.length > 0) {
       const div = document.createElement('div');
-      currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
+      currentPageNodes.forEach((n) => div.appendChild(n.cloneNode(true)));
       result.push(div.innerHTML);
     }
     setPages(result.length > 0 ? result : [html]);
@@ -109,28 +109,28 @@ function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
         ref={measureRef}
         className="ql-editor"
         style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', width: 'calc(8.5in - 8rem)', top: 0, left: 0, zIndex: -9999 }}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-      {(pages || [html]).map((pageHtml, idx) => (
-        <PaperSheet key={idx} proposal={proposal} sectionId={sectionId}>
+        dangerouslySetInnerHTML={{ __html: html }} />
+
+      {(pages || [html]).map((pageHtml, idx) =>
+      <PaperSheet key={idx} proposal={proposal} sectionId={sectionId}>
           <SectionTitle title={idx === 0 ? sectionTitle : `${sectionTitle} (Cont.)`} />
           <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: pageHtml }} />
         </PaperSheet>
-      ))}
-    </>
-  );
+      )}
+    </>);
+
 }
 
 // ─────────────────────────────────────────────
 // Tab definitions
 // ─────────────────────────────────────────────
 const TABS = [
-  { id: 'cover', label: 'Cover Page' },
-  { id: 'scope', label: 'Scope of Work' },
-  { id: 'estimate', label: 'Estimate' },
-  { id: 'supporting', label: 'Supporting Docs' },
-  { id: 'signatures', label: 'Signatures' },
-];
+{ id: 'cover', label: 'Cover Page' },
+{ id: 'scope', label: 'Scope of Work' },
+{ id: 'estimate', label: 'Estimate' },
+{ id: 'supporting', label: 'Supporting Docs' },
+{ id: 'signatures', label: 'Signatures' }];
+
 
 export default function ProposalDetails() {
   const navigate = useNavigate();
@@ -157,18 +157,18 @@ export default function ProposalDetails() {
   // Print only the active section
   const handlePrintSection = () => {
     const allPages = document.querySelectorAll('.print-page');
-    allPages.forEach(p => {
+    allPages.forEach((p) => {
       const section = p.getAttribute('data-section');
       p.style.display = section === activeTab ? '' : 'none';
     });
     window.print();
-    allPages.forEach(p => { p.style.display = ''; });
+    allPages.forEach((p) => {p.style.display = '';});
   };
 
   // Print all sections merged
   const handlePrintAll = () => {
     const allPages = document.querySelectorAll('.print-page');
-    allPages.forEach(p => { p.style.display = ''; });
+    allPages.forEach((p) => {p.style.display = '';});
     window.print();
   };
 
@@ -181,7 +181,7 @@ export default function ProposalDetails() {
         to: proposal.client_email,
         subject: `Proposal from Great White Construction: ${proposal.project_number}`,
         body,
-        from_name: 'Great White Construction',
+        from_name: 'Great White Construction'
       });
       await base44.entities.Proposal.update(id, { status: 'sent' });
       alert('Proposal sent successfully!');
@@ -277,19 +277,19 @@ export default function ProposalDetails() {
             <div>
               <h1 className="font-bold text-gray-900">{proposal.project_number}</h1>
               <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${
-                proposal.status === 'accepted' ? 'bg-green-100 text-green-800'
-                : proposal.status === 'sent' ? 'bg-blue-100 text-blue-800'
-                : proposal.status === 'rejected' ? 'bg-red-100 text-red-800'
-                : 'bg-gray-100 text-gray-800'
-              }`}>
+              proposal.status === 'accepted' ? 'bg-green-100 text-green-800' :
+              proposal.status === 'sent' ? 'bg-blue-100 text-blue-800' :
+              proposal.status === 'rejected' ? 'bg-red-100 text-red-800' :
+              'bg-gray-100 text-gray-800'}`
+              }>
                 {proposal.status || 'draft'}
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap justify-end">
-            {user.role !== 'client' && (
-              <>
+            {user.role !== 'client' &&
+            <>
                 <Button variant="outline" size="sm" onClick={() => navigate(createPageUrl(`ProposalForm?id=${id}`))}>
                   <Edit className="w-4 h-4 mr-1" /> Edit
                 </Button>
@@ -297,13 +297,13 @@ export default function ProposalDetails() {
                   <Mail className="w-4 h-4 mr-1" /> {isSending ? 'Sending...' : 'Send'}
                 </Button>
               </>
-            )}
-            {user.role === 'client' && proposal.status === 'sent' && (
-              <>
+            }
+            {user.role === 'client' && proposal.status === 'sent' &&
+            <>
                 <Button variant="destructive" size="sm" onClick={() => handleStatusChange('rejected')}>Reject</Button>
                 <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleStatusChange('accepted')}>Accept</Button>
               </>
-            )}
+            }
             <Button size="sm" variant="outline" onClick={handlePrintSection} className="border-blue-200 text-blue-700">
               <Printer className="w-4 h-4 mr-1" /> Print This Section
             </Button>
@@ -315,67 +315,67 @@ export default function ProposalDetails() {
 
         {/* ── Tab Navigation ── */}
         <div className="flex gap-1 bg-white rounded-xl shadow-sm border border-gray-100 p-1.5 mb-6">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors ${
-                activeTab === tab.id
-                  ? 'bg-[#042950] text-white shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
+          {TABS.map((tab) =>
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors ${
+            activeTab === tab.id ?
+            'bg-[#042950] text-white shadow-sm' :
+            'text-gray-600 hover:bg-gray-100'}`
+            }>
+
               {tab.label}
             </button>
-          ))}
+          )}
         </div>
 
         {/* Change Orders panel (screen only, shown on estimate tab) */}
-        {user.role !== 'client' && activeTab === 'estimate' && (
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+        {user.role !== 'client' && activeTab === 'estimate' &&
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-gray-900">Change Orders</h3>
               <Button variant="ghost" size="sm" onClick={() => setIsAddingCO(!isAddingCO)} className="text-[#042950] font-bold">
                 <PlusCircle className="w-4 h-4 mr-2" /> Add CO
               </Button>
             </div>
-            {isAddingCO && (
-              <div className="flex items-center gap-4 mb-4 bg-gray-50 p-4 rounded-lg">
+            {isAddingCO &&
+          <div className="flex items-center gap-4 mb-4 bg-gray-50 p-4 rounded-lg">
                 <input
-                  className="flex-1 px-3 py-2 rounded-md border border-gray-300"
-                  placeholder="Description"
-                  value={newCO.description}
-                  onChange={(e) => setNewCO({ ...newCO, description: e.target.value })}
-                />
+              className="flex-1 px-3 py-2 rounded-md border border-gray-300"
+              placeholder="Description"
+              value={newCO.description}
+              onChange={(e) => setNewCO({ ...newCO, description: e.target.value })} />
+
                 <input
-                  type="number"
-                  className="w-32 px-3 py-2 rounded-md border border-gray-300 text-right"
-                  placeholder="Amount"
-                  value={newCO.amount}
-                  onChange={(e) => setNewCO({ ...newCO, amount: parseFloat(e.target.value) || 0 })}
-                />
+              type="number"
+              className="w-32 px-3 py-2 rounded-md border border-gray-300 text-right"
+              placeholder="Amount"
+              value={newCO.amount}
+              onChange={(e) => setNewCO({ ...newCO, amount: parseFloat(e.target.value) || 0 })} />
+
                 <Button onClick={handleAddCO} className="bg-blue-600 text-white">Add</Button>
               </div>
-            )}
-            {proposal.change_orders?.length > 0 ? (
-              <div className="space-y-2">
-                {proposal.change_orders.map((co, i) => (
-                  <div key={i} className="flex justify-between p-3 bg-gray-50 rounded-lg text-sm border border-gray-100">
+          }
+            {proposal.change_orders?.length > 0 ?
+          <div className="space-y-2">
+                {proposal.change_orders.map((co, i) =>
+            <div key={i} className="flex justify-between p-3 bg-gray-50 rounded-lg text-sm border border-gray-100">
                     <span className="font-medium text-gray-700">{co.description}</span>
                     <span className="font-bold">${co.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500 italic">No change orders yet.</p>
             )}
+              </div> :
+
+          <p className="text-sm text-gray-500 italic">No change orders yet.</p>
+          }
           </div>
-        )}
+        }
       </div>
 
       {/* ════════════════════════════════════════════════════
-          PRINTABLE PROPOSAL
-          ════════════════════════════════════════════════════ */}
+           PRINTABLE PROPOSAL
+           ════════════════════════════════════════════════════ */}
       <div id="printable-proposal" className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl py-12 text-gray-900">
 
         {/* ── COVER PAGE ── */}
@@ -388,7 +388,7 @@ export default function ProposalDetails() {
               display: 'flex',
               flexDirection: 'column',
               padding: '1in',
-              overflow: 'hidden',
+              overflow: 'hidden'
             }}>
 
               {/* Logo + contact */}
@@ -410,11 +410,11 @@ export default function ProposalDetails() {
                 </h1>
 
                 {/* Cover photo */}
-                {proposal.cover_photo_url && (
-                  <div style={{ marginTop: '16px', width: '100%', borderRadius: '12px', overflow: 'hidden', height: '1.7in', flexShrink: 0 }}>
+                {proposal.cover_photo_url &&
+                <div style={{ marginTop: '16px', width: '100%', borderRadius: '12px', overflow: 'hidden', height: '1.7in', flexShrink: 0 }}>
                     <img src={proposal.cover_photo_url} alt="Project Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
-                )}
+                }
               </div>
 
               {/* Divider */}
@@ -448,38 +448,38 @@ export default function ProposalDetails() {
 
         {/* ── SCOPE OF WORK ── */}
         <div className={activeTab === 'scope' ? '' : 'hidden print:block'}>
-          {proposal.executive_summary && (
-            <PaperSheet proposal={proposal} sectionId="scope">
+          {proposal.executive_summary &&
+          <PaperSheet proposal={proposal} sectionId="scope">
               <SectionTitle title="Executive Summary" />
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
             </PaperSheet>
-          )}
-          {proposal.scope_of_work && (
-            <RichTextPages html={proposal.scope_of_work} sectionTitle="Scope of Work" proposal={proposal} sectionId="scope" />
-          )}
-          {!proposal.executive_summary && !proposal.scope_of_work && (
-            <div className="text-center text-gray-400 py-16 print:hidden">
+          }
+          {proposal.scope_of_work &&
+          <RichTextPages html={proposal.scope_of_work} sectionTitle="Scope of Work" proposal={proposal} sectionId="scope" />
+          }
+          {!proposal.executive_summary && !proposal.scope_of_work &&
+          <div className="text-center text-gray-400 py-16 print:hidden">
               <p className="text-lg font-medium">No scope of work added yet.</p>
             </div>
-          )}
+          }
         </div>
 
         {/* ── ESTIMATE PAGES ── */}
         <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
-          {estimatePages.map((pageItems, pageIndex) => (
-            <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
+          {estimatePages.map((pageItems, pageIndex) =>
+          <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
               <div style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
-                <h2 className="text-2xl font-black mb-4 pb-2 border-b-2" style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}>
+                <h2 className="mb-4 pt-5 pb-2 text-2xl font-black border-b-2" style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}>
                   Estimate {pageIndex > 0 ? '(Cont.)' : ''}
                 </h2>
                 <table className="w-full text-sm border-collapse">
                   <tbody>
                     {pageItems.map((pi, i) => {
-                      if (pi.type === 'category' || pi.type === 'category-continued') {
-                        const cat = pi.data;
-                        const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
-                        return (
-                          <React.Fragment key={i}>
+                    if (pi.type === 'category' || pi.type === 'category-continued') {
+                      const cat = pi.data;
+                      const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
+                      return (
+                        <React.Fragment key={i}>
                             <tr>
                               <td colSpan={proposal.hide_markups ? 2 : 4} className="pt-5 pb-1">
                                 <div className="p-3 border border-gray-200 flex justify-between font-bold text-base text-gray-900" style={{ backgroundColor: '#f9fafb' }}>
@@ -491,37 +491,37 @@ export default function ProposalDetails() {
                             <tr className="border-b border-gray-200 text-gray-500 font-semibold">
                               <th className="py-2 px-3 text-left font-semibold">Description</th>
                               <th className="py-2 px-3 text-right font-semibold w-24">Qty</th>
-                              {!proposal.hide_markups && (
-                                <>
+                              {!proposal.hide_markups &&
+                            <>
                                   <th className="py-2 px-3 text-right font-semibold w-24">Unit Cost</th>
                                   <th className="py-2 px-3 text-right font-semibold w-32">Total</th>
                                 </>
-                              )}
+                            }
                             </tr>
-                          </React.Fragment>
-                        );
-                      }
-                      if (pi.type === 'item') {
-                        const item = pi.data;
-                        return (
-                          <tr key={i} className="border-b border-gray-100">
+                          </React.Fragment>);
+
+                    }
+                    if (pi.type === 'item') {
+                      const item = pi.data;
+                      return (
+                        <tr key={i} className="border-b border-gray-100">
                             <td className="py-2 px-3 text-gray-800 align-top">
                               <div>{item.description}</div>
                               {item.show_note && item.note && <div className="text-xs text-gray-500 mt-1 italic">{item.note}</div>}
                             </td>
                             <td className="py-2 px-3 text-right text-gray-600 align-top">{item.quantity} {item.unit}</td>
-                            {!proposal.hide_markups && (
-                              <>
+                            {!proposal.hide_markups &&
+                          <>
                                 <td className="py-2 px-3 text-right text-gray-600 align-top">${fmt(getDisplayCost(item) / (item.quantity || 1))}</td>
                                 <td className="py-2 px-3 text-right font-medium text-gray-900 align-top">${fmt(getDisplayCost(item))}</td>
                               </>
-                            )}
-                          </tr>
-                        );
-                      }
-                      if (pi.type === 'totals') {
-                        return (
-                          <tr key={i}>
+                          }
+                          </tr>);
+
+                    }
+                    if (pi.type === 'totals') {
+                      return (
+                        <tr key={i}>
                             <td colSpan={proposal.hide_markups ? 2 : 4} className="pt-10">
                               <div className="flex justify-end">
                                 <div className="w-full max-w-xs space-y-3">
@@ -530,80 +530,80 @@ export default function ProposalDetails() {
                                     <span>Discount</span><span>-${fmt(totals.discount || 0)}</span>
                                   </div>
                                   <div className="flex justify-between text-gray-600"><span>Tax</span><span>${fmt(totals.tax || 0)}</span></div>
-                                  {totals.contingency > 0 && (
-                                    <div className="flex justify-between text-gray-600">
+                                  {totals.contingency > 0 &&
+                                <div className="flex justify-between text-gray-600">
                                       <span>Contingency ({proposal.contingency_percentage}%)</span><span>${fmt(totals.contingency)}</span>
                                     </div>
-                                  )}
-                                  {totals.changeOrdersTotal > 0 && (
-                                    <div className="flex justify-between text-orange-600 font-medium pt-2 border-t border-gray-100">
+                                }
+                                  {totals.changeOrdersTotal > 0 &&
+                                <div className="flex justify-between text-orange-600 font-medium pt-2 border-t border-gray-100">
                                       <span>Approved Change Orders</span><span>${fmt(totals.changeOrdersTotal)}</span>
                                     </div>
-                                  )}
+                                }
                                   <div className="flex justify-between text-xl font-black pt-4 border-t-2 border-gray-900" style={{ color: '#042950' }}>
                                     <span>Grand Total</span><span>${fmt(totals.grandTotal)}</span>
                                   </div>
                                 </div>
                               </div>
                             </td>
-                          </tr>
-                        );
-                      }
-                      return null;
-                    })}
+                          </tr>);
+
+                    }
+                    return null;
+                  })}
                   </tbody>
                 </table>
               </div>
             </PaperSheet>
-          ))}
+          )}
         </div>
 
         {/* ── SUPPORTING DOCS ── */}
         <div className={activeTab === 'supporting' ? '' : 'hidden print:block'}>
-          {(proposal.schedule_start_date || proposal.schedule_end_date) && (
-            <PaperSheet proposal={proposal} sectionId="supporting">
+          {(proposal.schedule_start_date || proposal.schedule_end_date) &&
+          <PaperSheet proposal={proposal} sectionId="supporting">
               <SectionTitle title="Schedule" />
               <div className="flex gap-12 mt-4">
-                {proposal.schedule_start_date && (
-                  <div>
+                {proposal.schedule_start_date &&
+              <div>
                     <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
                     <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
                   </div>
-                )}
-                {proposal.schedule_end_date && (
-                  <div>
+              }
+                {proposal.schedule_end_date &&
+              <div>
                     <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
                     <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
                   </div>
-                )}
+              }
               </div>
             </PaperSheet>
-          )}
+          }
 
-          {proposal.assumptions && (
-            <RichTextPages html={proposal.assumptions} sectionTitle="Assumptions & Exclusions" proposal={proposal} sectionId="supporting" />
-          )}
+          {proposal.assumptions &&
+          <RichTextPages html={proposal.assumptions} sectionTitle="Assumptions & Exclusions" proposal={proposal} sectionId="supporting" />
+          }
 
-          {proposal.attachments?.length > 0 && (
-            <PaperSheet proposal={proposal} sectionId="supporting">
+          {proposal.attachments?.length > 0 &&
+          <PaperSheet proposal={proposal} sectionId="supporting">
               <SectionTitle title="Attachments" />
               <div className="space-y-4">
-                {proposal.attachments.map((att, idx) => (
-                  <div key={idx}>
+                {proposal.attachments.map((att, idx) =>
+              <div key={idx}>
                     <p className="font-bold text-lg" style={{ color: '#042950' }}>{att.name}</p>
                     <p className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{att.description}</p>
                   </div>
-                ))}
+              )}
               </div>
             </PaperSheet>
-          )}
+          }
 
-          {!proposal.schedule_start_date && !proposal.schedule_end_date && !proposal.assumptions && !proposal.attachments?.length && (
-            <div className="text-center text-gray-400 py-16 print:hidden">
+          {!proposal.schedule_start_date && !proposal.schedule_end_date && !proposal.assumptions && !proposal.attachments?.length &&
+          <div className="text-center text-gray-400 py-16 print:hidden">
               <p className="text-lg font-medium">No supporting documents added yet.</p>
               <p className="text-sm mt-1">Add a schedule, assumptions, or attachments in the proposal editor.</p>
             </div>
-          )}
+          }
         </div>
 
         {/* ── SIGNATURES PAGE ── */}
@@ -634,13 +634,13 @@ export default function ProposalDetails() {
                 </div>
               </div>
 
-              {user.role === 'client' && proposal.status === 'sent' && (
-                <div className="mt-12 text-center print:hidden">
+              {user.role === 'client' && proposal.status === 'sent' &&
+              <div className="mt-12 text-center print:hidden">
                   <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold px-12" onClick={() => handleStatusChange('accepted')}>
                     Click Here to Digitally Accept
                   </Button>
                 </div>
-              )}
+              }
 
               <p className="mt-6 text-sm text-gray-500">
                 Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
@@ -650,6 +650,6 @@ export default function ProposalDetails() {
         </div>
 
       </div>
-    </div>
-  );
+    </div>);
+
 }
