@@ -445,7 +445,7 @@ export default function ProposalDetails() {
 
             {/* Cover photo */}
             {proposal.cover_photo_url && (
-              <div className="mb-8 w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200" style={{ height: '3.5in' }}>
+              <div className="mb-6 w-full rounded-2xl overflow-hidden shadow-lg border border-gray-200" style={{ height: '3in' }}>
                 <img src={proposal.cover_photo_url} alt="Project Cover" className="w-full h-full object-cover" />
               </div>
             )}
