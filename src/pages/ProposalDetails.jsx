@@ -393,6 +393,11 @@ export default function ProposalDetails() {
                 <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleStatusChange('accepted')}>Accept</Button>
               </>
             )}
+            {activeTab === 'estimate' && (
+              <Button size="sm" variant="outline" onClick={handleExportExcel} className="border-green-200 text-green-700">
+                <FileSpreadsheet className="w-4 h-4 mr-1" /> Export Excel
+              </Button>
+            )}
             <Button size="sm" variant="outline" onClick={handlePrintSection} className="border-blue-200 text-blue-700">
               <Printer className="w-4 h-4 mr-1" /> Print This Section
             </Button>
