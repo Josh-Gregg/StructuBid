@@ -467,8 +467,8 @@ export default function ProposalDetails() {
         {/* ── ESTIMATE PAGES ── */}
         <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
           {estimatePages.map((pageItems, pageIndex) => (
-            <PaperSheet key={`est-${pageIndex}`} proposal={proposal} sectionId="estimate">
-              <div>
+            <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
+              <div style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
                 <h2 className="text-2xl font-black mb-4 pb-2 border-b-2" style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}>
                   Estimate {pageIndex > 0 ? '(Cont.)' : ''}
                 </h2>
