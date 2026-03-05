@@ -414,7 +414,7 @@ export default function ProposalDetails() {
               </div>
 
               {/* Divider */}
-              <div style={{ height: '2px', backgroundColor: '#042950', marginBottom: '16px', flexShrink: 0 }} />
+              <div style={{ height: '2px', backgroundColor: '#042950', marginBottom: '12px', flexShrink: 0 }} />
 
               {/* Client info grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', flexShrink: 0 }}>
