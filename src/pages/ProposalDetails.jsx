@@ -422,7 +422,7 @@ export default function ProposalDetails() {
           <div className="flex flex-col p-8" style={{ height: '11in', overflow: 'hidden', boxSizing: 'border-box' }}>
 
             {/* Logo + contact */}
-            <header className="flex justify-between items-start mb-8">
+            <header className="flex justify-between items-start mb-6">
               <Logo imageClassName="h-28 object-contain" />
               <div className="text-right text-sm text-gray-600 space-y-1">
                 <p className="font-bold text-gray-900">Great White Construction</p>
