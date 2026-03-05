@@ -156,6 +156,83 @@ export default function ProposalDetails() {
     base44.entities.Proposal.get(id).then(setProposal);
   };
 
+  const handleExportExcel = () => {
+    const wb = XLSX.utils.book_new();
+    const rows = [];
+
+    // Header info
+    rows.push(['Project Proposal - Great White Construction']);
+    rows.push(['Project #', proposal.project_number]);
+    rows.push(['Client', proposal.client_name]);
+    rows.push(['Project Address', proposal.project_address]);
+    rows.push(['Date', new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })]);
+    rows.push([]);
+
+    // Column headers
+    if (proposal.hide_markups) {
+      rows.push(['Description', 'Qty', 'Unit']);
+    } else {
+      rows.push(['Description', 'Qty', 'Unit', 'Unit Cost', 'Total']);
+    }
+
+    proposal.categories?.forEach((cat) => {
+      if (!cat.line_items?.length) return;
+      const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
+      // Category header row
+      rows.push([cat.name, '', '', '', `$${fmt(catTotal)}`]);
+
+      cat.line_items.forEach((item) => {
+        const displayCost = getDisplayCost(item);
+        const unitCost = displayCost / (item.quantity || 1);
+        if (proposal.hide_markups) {
+          rows.push([item.description, item.quantity, item.unit]);
+          if (item.show_note && item.note) rows.push([`  Note: ${item.note}`]);
+        } else {
+          rows.push([item.description, item.quantity, item.unit, unitCost, displayCost]);
+          if (item.show_note && item.note) rows.push([`  Note: ${item.note}`]);
+        }
+      });
+      rows.push([]); // spacer
+    });
+
+    // Totals
+    rows.push([]);
+    rows.push(['Subtotal', '', '', '', totals.totalWithMarkup]);
+    rows.push(['Discount', '', '', '', -(totals.discount || 0)]);
+    rows.push(['Tax', '', '', '', totals.tax || 0]);
+    if (totals.contingency > 0) {
+      rows.push([`Contingency (${proposal.contingency_percentage}%)`, '', '', '', totals.contingency]);
+    }
+    if (totals.changeOrdersTotal > 0) {
+      rows.push(['Approved Change Orders', '', '', '', totals.changeOrdersTotal]);
+    }
+    rows.push(['GRAND TOTAL', '', '', '', totals.grandTotal]);
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    // Column widths
+    ws['!cols'] = [{ wch: 50 }, { wch: 8 }, { wch: 10 }, { wch: 14 }, { wch: 16 }];
+
+    // Format currency cells in the Total column (col index 4)
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; R++) {
+      const cell = ws[XLSX.utils.encode_cell({ r: R, c: 4 })];
+      if (cell && typeof cell.v === 'number') {
+        cell.t = 'n';
+        cell.z = '"$"#,##0.00';
+      }
+      // Also format unit cost col (col 3)
+      const cell3 = ws[XLSX.utils.encode_cell({ r: R, c: 3 })];
+      if (cell3 && typeof cell3.v === 'number') {
+        cell3.t = 'n';
+        cell3.z = '"$"#,##0.00';
+      }
+    }
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Estimate');
+    XLSX.writeFile(wb, `Estimate_${proposal.project_number || 'proposal'}.xlsx`);
+  };
+
   // Print only the active section
   const handlePrintSection = () => {
     const allPages = document.querySelectorAll('.print-page');
