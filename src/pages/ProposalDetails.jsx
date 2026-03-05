@@ -381,7 +381,7 @@ export default function ProposalDetails() {
 
               {/* Logo + contact */}
               <header className="flex justify-between items-start">
-                <Logo imageClassName="h-44 object-contain" />
+                <Logo imageClassName="h-32 object-contain" />
                 <div className="text-right text-sm text-gray-600 space-y-1">
                   <p className="font-bold text-gray-900">Great White Construction</p>
                   <p>2470 S Zephyr St</p>
