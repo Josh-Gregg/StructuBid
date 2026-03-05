@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,32 +13,28 @@
 .ql-editor ol li {
   counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important;
 }
-.ql-editor ol li.ql-indent-1 {
-  counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important;
-}
-.ql-editor ol li.ql-indent-2 {
-  counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important;
-}
-.ql-editor ol li.ql-indent-3 {
-  counter-reset: list-4 list-5 list-6 list-7 list-8 list-9 !important;
-}
-.ql-editor ol li.ql-indent-4 {
-  counter-reset: list-5 list-6 list-7 list-8 list-9 !important;
-}
-.ql-editor ol li.ql-indent-5 {
-  counter-reset: list-6 list-7 list-8 list-9 !important;
-}
-.ql-editor ol li.ql-indent-6 {
-  counter-reset: list-7 list-8 list-9 !important;
-}
-.ql-editor ol li.ql-indent-7 {
-  counter-reset: list-8 list-9 !important;
-}
-.ql-editor ol li.ql-indent-8 {
-  counter-reset: list-9 !important;
-}
-.ql-editor ol li.ql-indent-9 {
-  counter-reset: none !important;
+.ql-editor ol li.ql-indent-1 { counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important; }
+.ql-editor ol li.ql-indent-2 { counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important; }
+.ql-editor ol li.ql-indent-3 { counter-reset: list-4 list-5 list-6 list-7 list-8 list-9 !important; }
+.ql-editor ol li.ql-indent-4 { counter-reset: list-5 list-6 list-7 list-8 list-9 !important; }
+.ql-editor ol li.ql-indent-5 { counter-reset: list-6 list-7 list-8 list-9 !important; }
+.ql-editor ol li.ql-indent-6 { counter-reset: list-7 list-8 list-9 !important; }
+.ql-editor ol li.ql-indent-7 { counter-reset: list-8 list-9 !important; }
+.ql-editor ol li.ql-indent-8 { counter-reset: list-9 !important; }
+.ql-editor ol li.ql-indent-9 { counter-reset: none !important; }
+
+/* ============================================================
+   SCREEN-ONLY: paper-sheet-screen
+   These styles give the on-screen preview its 8.5×11in "paper" look.
+   They are explicitly UNDONE inside @media print below so that the
+   browser's print engine can lay out pages naturally.
+   ============================================================ */
+.paper-sheet-screen {
+  width: 8.5in;
+  height: 11in;
+  min-height: 11in;
+  max-height: 11in;
+  overflow: hidden;
 }
 
 /* ============================================================
@@ -78,50 +75,49 @@
   }
 
   /*
-   * BUG FIX 1 + 2 + 3: #printable-proposal positioning
+   * FIX: The proposal wrapper
    *
-   * OLD: position: absolute — this removes the element from normal document
-   * flow, which breaks page-break-after on child .print-page elements in
-   * Chrome/Edge. Pages would either all stack on page 1 or render blank pages.
+   * On screen: flex flex-col items-center bg-gray-200/50 rounded-2xl py-12
+   * All of these must be zeroed for print.
    *
-   * FIX: position: static so the browser's print engine sees a normal block
-   * flow and correctly applies page breaks after each .print-page child.
+   * - display:block removes flexbox so page-break-after works on children
+   * - padding:0 removes the 48px top/bottom gap that was creating blank space
+   * - position:static keeps pages in normal document flow for page breaks
+   * - background:white removes the gray wrapper background
    */
   #printable-proposal {
+    display: block !important;
     position: static !important;
     top: auto !important;
     left: auto !important;
     width: 100% !important;
-    background: white !important;
     padding: 0 !important;
     margin: 0 !important;
+    background: white !important;
     border-radius: 0 !important;
-    display: block !important;
   }
 
   /*
-   * BUG FIX 4 + 5: .print-page height and overflow
+   * FIX: paper-sheet-screen overrides for print
    *
-   * OLD: height: 11in + overflow: hidden — this hard-clips any content that
-   * spills even 1px over the JS-estimated page boundary. The JS estimation
-   * uses fixed pixel heights (36px/item) that don't account for text wrapping,
-   * so almost every estimate with longer descriptions gets content silently cut.
+   * On screen: height:11in, min-height:11in, max-height:11in, overflow:hidden
+   * These are defined as a CSS class (not inline) so !important here wins.
    *
-   * FIX: height: auto + overflow: visible — the browser handles page sizing
-   * via @page { size: 8.5in 11in } and page-break-after: always. Each
-   * .print-page becomes a natural block that breaks to the next page after
-   * itself. No content is ever clipped.
-   *
-   * The on-screen preview still shows 11in sheets with overflow:hidden because
-   * those styles are applied via inline style (which only affects screen).
-   * The !important here only applies inside @media print.
+   * height:auto  — each page is as tall as its content; the browser's @page
+   *                rule handles the 11in page size. No more blank gaps.
+   * overflow:visible — content is never silently clipped if pagination
+   *                    places slightly too much on one page.
    */
-  .print-page {
+  .paper-sheet-screen {
     width: 8.5in !important;
-    height: auto !important;         /* Was 11in — was clipping overflowed content */
-    max-height: none !important;     /* Was 11in — same problem */
+    height: auto !important;
     min-height: 0 !important;
-    overflow: visible !important;    /* Was hidden — was silently hiding clipped content */
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Each paper sheet triggers a page break after itself */
+  .print-page {
     page-break-after: always !important;
     break-after: page !important;
     display: flex !important;
@@ -131,42 +127,35 @@
     box-shadow: none !important;
   }
 
-  /* Last page: don't force a blank trailing page */
-  .print-page:last-child {
+  /*
+   * FIX: Trailing blank page
+   * The last .print-page should NOT force a new blank page after it.
+   * Using both :last-child and :last-of-type to cover all nesting scenarios.
+   */
+  .print-page:last-child,
+  .print-page:last-of-type {
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
 
-  /*
-   * BUG FIX 6: Inner content body overflow
-   *
-   * The PaperSheet body div and estimate content div both have
-   * overflow: hidden as inline styles. In print we want visible so that
-   * if pagination places slightly too much on one page it renders rather
-   * than silently disappearing.
-   *
-   * CSS !important overrides inline styles per the cascade spec.
-   */
+  /* Inner content containers — let them breathe in print */
   .paper-body,
   .estimate-content {
     overflow: visible !important;
     height: auto !important;
-    flex: 0 0 auto !important; /* Don't try to stretch to fill a now-auto parent */
+    flex: 0 0 auto !important;
   }
 
   /* Ensure colored backgrounds print */
   .bg-\[\#042950\] {
     background-color: #042950 !important;
   }
-
   .bg-gray-50 {
     background-color: #f9fafb !important;
   }
-
   .bg-gray-100 {
     background-color: #f3f4f6 !important;
   }
-
   .text-white {
     color: white !important;
   }
