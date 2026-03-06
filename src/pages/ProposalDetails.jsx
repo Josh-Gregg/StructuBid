@@ -617,7 +617,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* ── SIGNATURES PAGE ── */}
-        <div className={activeTab === 'signatures' ? '' : 'hidden print:block'}>
+        <div className={activeTab === 'signatures' ? '' : 'hidden print:block'} data-section-wrapper="signatures">
           <PaperSheet proposal={proposal} sectionId="signatures">
             <div className="mt-auto pt-6">
               <SectionTitle title="Acceptance & Signatures" />
