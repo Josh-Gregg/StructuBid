@@ -415,7 +415,7 @@ export default function ProposalDetails() {
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
                 {proposal.cover_photo_url && (
-                  <div style={{ marginTop: '12px', width: '100%', borderRadius: '10px', overflow: 'hidden', height: '1.5in', flexShrink: 0 }}>
+                  <div style={{ marginTop: '12px', width: '100%', borderRadius: '10px', overflow: 'hidden', height: '3in', flexShrink: 0 }}>
                     <img src={proposal.cover_photo_url} alt="Project Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 )}
