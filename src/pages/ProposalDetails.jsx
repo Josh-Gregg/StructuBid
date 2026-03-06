@@ -613,7 +613,8 @@ export default function ProposalDetails() {
 
         {/* SIGNATURES PAGE */}
         <div className={activeTab === 'signatures' ? '' : 'hidden print:block'}>
-          <PaperSheet proposal={proposal} sectionId="signatures">
+          <PaperSheet hideHeaderFooter proposal={proposal} sectionId="signatures">
+            <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
             <div className="mt-auto pt-6">
               <SectionTitle title="Acceptance & Signatures" />
               <div className="grid grid-cols-2 gap-16 mt-8">
