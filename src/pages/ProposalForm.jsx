@@ -713,9 +713,10 @@ export default function ProposalForm() {
                     </Button>
                   </div>
                   </div>
+                  )}
                   </Draggable>
                   ))}
-              {catProvided.placeholder}
+                  {catProvided.placeholder}
             </div>
                 )}
               </Droppable>
