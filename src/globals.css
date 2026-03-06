@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -132,11 +133,11 @@
     break-after: avoid !important;
   }
 
-  /* ── Section wrappers: every section starts on a fresh sheet ── */
-  /* The last .print-page in each section already has page-break-after:always,
-     so each section's pages fill full sheets. We also force a page-break
-     before every section wrapper (except the first) so sections never share
-     a physical page with each other. */
+  /* ── Section wrappers: force block display and fresh sheet before each section ── */
+  [data-section-wrapper] {
+    display: block !important;
+  }
+
   [data-section-wrapper="scope"],
   [data-section-wrapper="estimate"],
   [data-section-wrapper="supporting"],
