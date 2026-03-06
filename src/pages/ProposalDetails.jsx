@@ -652,6 +652,7 @@ export default function ProposalDetails() {
                 Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
               </p>
             </div>
+            </div>
           </PaperSheet>
         </div>
 
