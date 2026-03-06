@@ -171,13 +171,6 @@ export default function ProposalDetails() {
   const [isGeneratingPDFs, setIsGeneratingPDFs] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
 
-  const stripHtml = (html) => {
-    if (!html) return '';
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent || div.innerText || '';
-  };
-
   const handleExportWord = async () => {
     setIsGeneratingWord(true);
     try {
