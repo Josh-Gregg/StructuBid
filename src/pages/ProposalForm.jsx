@@ -200,6 +200,17 @@ export default function ProposalForm() {
     });
   };
 
+  const handleCategoryDragEnd = (result) => {
+    if (!result.destination) return;
+    lastEditTimeRef.current = Date.now();
+    setForm(prev => {
+      const newCategories = Array.from(prev.categories || []);
+      const [moved] = newCategories.splice(result.source.index, 1);
+      newCategories.splice(result.destination.index, 0, moved);
+      return { ...prev, categories: newCategories };
+    });
+  };
+
   const updateLineItem = (catIndex, itemIndex, field, value) => {
     lastEditTimeRef.current = Date.now();
     setForm(prev => {
