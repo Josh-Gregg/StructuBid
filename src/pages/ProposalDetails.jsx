@@ -30,7 +30,7 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
   }
 
   return (
-    <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
+    <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto print:shadow-none print:mb-0" style={pageStyle} data-section={sectionId}>
       <div
         className="shrink-0 flex items-center justify-between px-16"
         style={{ backgroundColor: '#042950', color: 'white', height: '0.75in', minHeight: '0.75in', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
