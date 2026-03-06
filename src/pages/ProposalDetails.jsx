@@ -180,10 +180,169 @@ export default function ProposalDetails() {
 
   const handleExportWord = async () => {
     setIsGeneratingWord(true);
-    const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const totals = computeTotals(proposal);
+    try {
+      const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const totals = computeTotals(proposal);
 
-    const heading = (text) => new Paragraph({
+      const getDisplayCostLocal = (item) => {
+        const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0) / 100);
+        if (item.exclude_from_markup) return itemSub;
+        const dist = totals.totalLineItemsForMarkup > 0 ? totals.distMarkup / totals.totalLineItemsForMarkup : 0;
+        return itemSub + dist;
+      };
+
+      const h = (tag, style, content) => `<${tag} style="${style}">${content}</${tag}>`;
+      const hr = () => `<hr style="border:none;border-top:2px solid #042950;margin:12pt 0;" />`;
+
+      let html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; font-size: 11pt; color: #111827; margin: 1in; }
+          h1 { color: #042950; font-size: 20pt; font-weight: 900; border-bottom: 2px solid #042950; padding-bottom: 6pt; margin-top: 24pt; }
+          h2 { color: #042950; font-size: 14pt; font-weight: 700; margin-top: 16pt; margin-bottom: 4pt; }
+          table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 12pt; }
+          th { background-color: #f3f4f6; text-align: left; padding: 6pt 8pt; font-weight: 600; border-bottom: 1px solid #d1d5db; }
+          th.right, td.right { text-align: right; }
+          td { padding: 5pt 8pt; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+          .cat-header { background-color: #f9fafb; font-weight: 700; font-size: 11pt; border: 1px solid #e5e7eb; }
+          .totals-table { width: 40%; margin-left: auto; margin-top: 16pt; }
+          .totals-table td { border-bottom: 1px solid #e5e7eb; padding: 4pt 8pt; }
+          .grand-total td { font-weight: 900; font-size: 13pt; color: #042950; border-top: 2px solid #042950; }
+          .label { font-size: 8pt; color: #6b7280; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin: 0 0 2pt 0; }
+          .sig-table { width: 100%; margin-top: 60pt; }
+          .sig-table td { padding: 0 20pt; width: 50%; vertical-align: top; }
+          .sig-line { border-bottom: 1px solid #9ca3af; height: 40pt; margin-bottom: 4pt; }
+          .note { font-size: 9pt; color: #6b7280; font-style: italic; }
+          .page-break { page-break-after: always; }
+        </style></head><body>`;
+
+      // ── COVER ──
+      html += `<div style="text-align:center; margin-bottom: 24pt;">
+        <p style="font-size:10pt;color:#6b7280;margin:0 0 4pt 0;">Great White Construction &nbsp;|&nbsp; 2470 S Zephyr St, Lakewood, CO 80227 &nbsp;|&nbsp; 303-908-5421</p>
+        <h1 style="font-size:28pt;font-weight:900;color:#042950;border:none;text-transform:uppercase;letter-spacing:-0.02em;margin:12pt 0;">${proposal.cover_title || 'Project Proposal'}</h1>
+        ${hr()}
+      </div>
+      <table style="width:100%;border:none;font-size:11pt;">
+        <tr>
+          <td style="border:none;padding:0 20pt 0 0;vertical-align:top;width:50%;">
+            <p class="label">Prepared For</p>
+            <p style="font-size:14pt;font-weight:700;margin:0 0 4pt 0;">${proposal.client_name}</p>
+            ${proposal.company_name ? `<p style="margin:0 0 4pt 0;">${proposal.company_name}</p>` : ''}
+            <p class="label" style="margin-top:12pt;">Proposal Number</p>
+            <p style="font-weight:600;color:#042950;margin:0;">#${proposal.project_number || ''}</p>
+          </td>
+          <td style="border:none;padding:0;vertical-align:top;width:50%;">
+            <p class="label">Project Location</p>
+            <p style="margin:0 0 12pt 0;">${proposal.project_address}</p>
+            <p class="label">Date</p>
+            <p style="margin:0;">${new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </td>
+        </tr>
+      </table>`;
+
+      // ── SCOPE ──
+      if (proposal.executive_summary || proposal.scope_of_work) {
+        html += `<div class="page-break"></div>`;
+        if (proposal.executive_summary) {
+          html += `<h1>Executive Summary</h1><p style="line-height:1.6;">${proposal.executive_summary.replace(/\n/g, '<br/>')}</p>`;
+        }
+        if (proposal.scope_of_work) {
+          html += `<h1>Scope of Work</h1><div style="line-height:1.6;">${proposal.scope_of_work}</div>`;
+        }
+      }
+
+      // ── ESTIMATE ──
+      html += `<div class="page-break"></div><h1>Estimate</h1>`;
+      if (proposal.categories?.length) {
+        for (const cat of proposal.categories) {
+          if (!cat.line_items?.length) continue;
+          const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCostLocal(item), 0);
+          html += `<table>
+            <tr><td class="cat-header" colspan="${proposal.hide_markups ? 2 : 4}" style="padding:6pt 8pt;">
+              <span>${cat.name}</span>
+              <span style="float:right;">$${fmt(catTotal)}</span>
+            </td></tr>
+            <tr>
+              <th style="width:55%;">Description</th>
+              <th class="right" style="width:15%;">Qty</th>
+              ${!proposal.hide_markups ? `<th class="right" style="width:15%;">Unit Cost</th><th class="right" style="width:15%;">Total</th>` : ''}
+            </tr>
+            ${cat.line_items.map(item => {
+              const cost = getDisplayCostLocal(item);
+              return `<tr>
+                <td>${item.description || ''}${item.show_note && item.note ? `<br/><span class="note">${item.note}</span>` : ''}</td>
+                <td class="right">${item.quantity} ${item.unit || ''}</td>
+                ${!proposal.hide_markups ? `<td class="right">$${fmt(cost / (item.quantity || 1))}</td><td class="right">$${fmt(cost)}</td>` : ''}
+              </tr>`;
+            }).join('')}
+          </table>`;
+        }
+      }
+
+      // Totals
+      html += `<table class="totals-table">
+        <tr><td>Subtotal</td><td class="right">$${fmt(totals.totalWithMarkup)}</td></tr>
+        ${totals.discount > 0 ? `<tr><td>Discount</td><td class="right" style="color:#dc2626;">-$${fmt(totals.discount)}</td></tr>` : ''}
+        <tr><td>Tax</td><td class="right">$${fmt(totals.tax || 0)}</td></tr>
+        ${totals.contingency > 0 ? `<tr><td>Contingency (${proposal.contingency_percentage}%)</td><td class="right">$${fmt(totals.contingency)}</td></tr>` : ''}
+        ${totals.changeOrdersTotal > 0 ? `<tr><td>Approved Change Orders</td><td class="right" style="color:#d97706;">$${fmt(totals.changeOrdersTotal)}</td></tr>` : ''}
+        <tr class="grand-total"><td><strong>GRAND TOTAL</strong></td><td class="right"><strong>$${fmt(totals.grandTotal)}</strong></td></tr>
+      </table>`;
+
+      // ── SUPPORTING DOCS ──
+      if (proposal.schedule_start_date || proposal.schedule_end_date || proposal.assumptions || proposal.attachments?.length) {
+        html += `<div class="page-break"></div><h1>Supporting Documents</h1>`;
+        if (proposal.schedule_start_date || proposal.schedule_end_date) {
+          html += `<table style="width:auto;"><tr>`;
+          if (proposal.schedule_start_date) html += `<td style="border:none;padding:0 40pt 0 0;"><p class="label">Target Start Date</p><p style="font-size:13pt;font-weight:500;margin:0;">${proposal.schedule_start_date}</p></td>`;
+          if (proposal.schedule_end_date) html += `<td style="border:none;padding:0;"><p class="label">Target End Date</p><p style="font-size:13pt;font-weight:500;margin:0;">${proposal.schedule_end_date}</p></td>`;
+          html += `</tr></table>`;
+        }
+        if (proposal.assumptions) {
+          html += `<h2>Assumptions &amp; Exclusions</h2><div style="line-height:1.6;">${proposal.assumptions}</div>`;
+        }
+        if (proposal.attachments?.length) {
+          html += `<h2>Attachments</h2>`;
+          proposal.attachments.forEach(att => {
+            html += `<p style="font-weight:700;font-size:12pt;color:#042950;margin:8pt 0 2pt 0;">${att.name}</p><p style="margin:0;">${att.description || ''}</p>`;
+          });
+        }
+      }
+
+      // ── SIGNATURES ──
+      html += `<div class="page-break"></div><h1>Acceptance &amp; Signatures</h1>
+        <table class="sig-table">
+          <tr>
+            <td>
+              <div class="sig-line"></div>
+              <p style="font-weight:700;margin:0;">George Gregg</p>
+              <p style="color:#6b7280;font-size:10pt;margin:2pt 0 12pt 0;">Great White Construction</p>
+              <p style="margin:0;">Date: _____________________</p>
+            </td>
+            <td>
+              <div class="sig-line"></div>
+              <p style="font-weight:700;margin:0;">${proposal.client_name}</p>
+              <p style="color:#6b7280;font-size:10pt;margin:2pt 0 12pt 0;">Client</p>
+              <p style="margin:0;">Date: _____________________</p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin-top:24pt;font-size:10pt;color:#6b7280;">Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.</p>`;
+
+      html += `</body></html>`;
+
+      const blob = htmlDocx.asBlob(html);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${proposal.project_number || 'Proposal'}_Full_Proposal.docx`;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      a.remove();
+    } finally {
+      setIsGeneratingWord(false);
+    }
+  };
       text,
       heading: HeadingLevel.HEADING_1,
       spacing: { before: 400, after: 200 },
