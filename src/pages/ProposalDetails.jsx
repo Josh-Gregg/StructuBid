@@ -360,8 +360,8 @@ export default function ProposalDetails() {
             <Button size="sm" variant="outline" onClick={handlePrintSection} className="border-blue-200 text-blue-700">
               <Printer className="w-4 h-4 mr-1" /> Print This Section
             </Button>
-            <Button size="sm" onClick={handlePrintAll} className="bg-blue-700 hover:bg-blue-800 text-white shadow-md">
-              <Layers className="w-4 h-4 mr-1" /> Merge & Print All
+            <Button size="sm" onClick={handleExportAllPDFs} disabled={isGeneratingPDFs} className="bg-blue-700 hover:bg-blue-800 text-white shadow-md">
+              <Download className="w-4 h-4 mr-1" /> {isGeneratingPDFs ? 'Generating...' : 'Export All PDFs'}
             </Button>
           </div>
         </div>
