@@ -386,7 +386,7 @@ export default function ProposalDetails() {
       <div id="printable-proposal" className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl py-12 text-gray-900">
 
         {/* ── COVER PAGE ── */}
-        <div className={activeTab === 'cover' ? '' : 'hidden print:block'} data-section-wrapper="cover">
+        <div className={activeTab === 'cover' ? '' : 'print:block hidden'} style={{}} data-section-wrapper="cover">
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
             <div style={{
               flex: 1,
