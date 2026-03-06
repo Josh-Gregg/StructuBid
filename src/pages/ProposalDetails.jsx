@@ -564,21 +564,21 @@ export default function ProposalDetails() {
           {(proposal.schedule_start_date || proposal.schedule_end_date) && (
             <PaperSheet hideHeaderFooter proposal={proposal} sectionId="supporting">
               <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
-              <SectionTitle title="Schedule" />
-              <div className="flex gap-12 mt-4">
-                {proposal.schedule_start_date && (
-                  <div>
-                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
-                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
-                  </div>
-                )}
-                {proposal.schedule_end_date && (
-                  <div>
-                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
-                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
-                  </div>
-                )}
-              </div>
+                <SectionTitle title="Schedule" />
+                <div className="flex gap-12 mt-4">
+                  {proposal.schedule_start_date && (
+                    <div>
+                      <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
+                      <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
+                    </div>
+                  )}
+                  {proposal.schedule_end_date && (
+                    <div>
+                      <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
+                      <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </PaperSheet>
           )}
