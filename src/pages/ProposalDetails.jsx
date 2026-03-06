@@ -588,15 +588,17 @@ export default function ProposalDetails() {
           )}
 
           {proposal.attachments?.length > 0 && (
-            <PaperSheet proposal={proposal} sectionId="supporting">
-              <SectionTitle title="Attachments" />
-              <div className="space-y-4">
-                {proposal.attachments.map((att, idx) => (
-                  <div key={idx}>
-                    <p className="font-bold text-lg" style={{ color: '#042950' }}>{att.name}</p>
-                    <p className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{att.description}</p>
-                  </div>
-                ))}
+            <PaperSheet hideHeaderFooter proposal={proposal} sectionId="supporting">
+              <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
+                <SectionTitle title="Attachments" />
+                <div className="space-y-4">
+                  {proposal.attachments.map((att, idx) => (
+                    <div key={idx}>
+                      <p className="font-bold text-lg" style={{ color: '#042950' }}>{att.name}</p>
+                      <p className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{att.description}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </PaperSheet>
           )}
