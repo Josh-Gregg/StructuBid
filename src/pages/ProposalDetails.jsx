@@ -557,7 +557,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* SUPPORTING DOCS */}
-        <div className={activeTab === 'supporting' ? '' : 'hidden print:block'}>
+        <div className="proposal-section" data-section="supporting" style={{ display: activeTab === 'supporting' ? '' : 'none' }}>
           {(proposal.schedule_start_date || proposal.schedule_end_date) && (
             <PaperSheet proposal={proposal} sectionId="supporting">
               <SectionTitle title="Schedule" />
