@@ -161,6 +161,20 @@
     break-inside: avoid !important;
   }
 
+  /* ── Rich-text measure div ─────────────────────────────────────────────
+   * The RichTextPages component uses a hidden off-screen div (ql-measure-hidden)
+   * to measure paragraph heights for pagination. It has visibility:hidden on
+   * screen, but our "#printable-proposal * { visibility: visible }" rule was
+   * overriding that — causing the entire raw scope HTML to appear as an
+   * absolutely-positioned block at top:0 left:0, creating the large blank gap
+   * at the top of every scope page.
+   *
+   * display:none !important removes it from print layout entirely.
+   * ──────────────────────────────────────────────────────────────────── */
+  .ql-measure-hidden {
+    display: none !important;
+  }
+
   /* ── Rich-text (Quill) fixes ────────────────────────────────────────── */
   .ql-editor {
     padding: 0 !important;
