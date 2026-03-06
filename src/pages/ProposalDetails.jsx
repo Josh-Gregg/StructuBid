@@ -384,7 +384,7 @@ export default function ProposalDetails() {
 
               {/* Logo + contact */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0 }}>
-                <Logo imageClassName="h-20 object-contain" />
+                <Logo imageClassName="h-32 object-contain" />
                 <div style={{ textAlign: 'right', fontSize: '11px', color: '#4b5563', lineHeight: '1.5' }}>
                   <p style={{ fontWeight: 'bold', color: '#111827', margin: '0 0 1px 0' }}>Great White Construction</p>
                   <p style={{ margin: '0 0 1px 0' }}>2470 S Zephyr St</p>
