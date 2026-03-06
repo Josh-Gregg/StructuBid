@@ -714,7 +714,13 @@ export default function ProposalForm() {
                   </div>
                 </div>
               ))}
+                </Draggable>
+              ))}
+              {catProvided.placeholder}
             </div>
+                )}
+              </Droppable>
+            </DragDropContext>
             
             {form.categories?.length > 0 && (
               <div className="mt-8 pt-6 border-t border-gray-100 flex justify-center">
