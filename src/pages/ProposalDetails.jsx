@@ -229,11 +229,11 @@ export default function ProposalDetails() {
       new Paragraph({ text: '2470 S Zephyr St, Lakewood, CO 80227', alignment: AlignmentType.CENTER, spacing: { after: 80 } }),
       new Paragraph({ text: '303-908-5421 | George@GreatWhiteGC.com', alignment: AlignmentType.CENTER, spacing: { after: 400 } }),
       bold('Prepared For', proposal.client_name),
-      proposal.company_name ? bold('Company', proposal.company_name) : null,
+      ...(proposal.company_name ? [bold('Company', proposal.company_name)] : []),
       bold('Proposal Number', '#' + proposal.project_number),
       bold('Project Location', proposal.project_address),
       bold('Date', new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })),
-    ).filter(Boolean);
+    );
 
     // ── SCOPE ──
     if (proposal.executive_summary || proposal.scope_of_work) {
