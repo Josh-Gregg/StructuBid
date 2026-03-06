@@ -436,7 +436,7 @@ export default function ProposalDetails() {
         {/* COVER PAGE */}
         <div className={activeTab === 'cover' ? '' : 'hidden print:block'}>
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
-            <div style={{ width: '100%', height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', padding: '1in', overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: '11in', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', padding: '1in', overflow: 'hidden' }}>
 
               {/* Logo + contact */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0 }}>
