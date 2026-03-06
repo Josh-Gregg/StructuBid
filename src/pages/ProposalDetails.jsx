@@ -180,37 +180,59 @@ export default function ProposalDetails() {
       signatures: 'Signatures',
     };
 
+    // Letter page in points (1pt = 1/72 in): 8.5in × 11in
+    const PDF_W_PT = 8.5 * 72;
+    const PDF_H_PT = 11 * 72;
+
     for (const sectionId of sectionIds) {
       const pages = document.querySelectorAll(`.print-page[data-section="${sectionId}"]`);
       if (pages.length === 0) continue;
 
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' });
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: [PDF_W_PT, PDF_H_PT] });
 
       for (let i = 0; i < pages.length; i++) {
         const page = pages[i];
-        // Temporarily make visible if hidden
-        const wasHidden = page.closest('[data-section-wrapper]')?.classList.contains('hidden');
-        if (wasHidden) page.closest('[data-section-wrapper]').style.display = 'block';
+
+        // Temporarily reveal hidden section wrappers
+        const wrapper = page.closest('[data-section-wrapper]');
+        const wrapperWasHidden = wrapper && wrapper.classList.contains('hidden');
+        if (wrapperWasHidden) {
+          wrapper.style.display = 'block';
+          wrapper.style.visibility = 'visible';
+        }
+
+        // The page element is sized 8.5in on screen; use its actual rendered pixel size
+        // and scale up to 3× for crisp text (equivalent to ~288 dpi)
+        const SCALE = 3;
+        const elW = page.offsetWidth;
+        const elH = page.offsetHeight;
 
         const canvas = await html2canvas(page, {
-          scale: 2,
+          scale: SCALE,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
-          width: page.offsetWidth,
-          height: page.offsetHeight,
+          width: elW,
+          height: elH,
+          windowWidth: elW,
+          windowHeight: elH,
+          logging: false,
         });
 
-        if (wasHidden) page.closest('[data-section-wrapper]').style.display = '';
+        if (wrapperWasHidden) {
+          wrapper.style.display = '';
+          wrapper.style.visibility = '';
+        }
 
-        if (i > 0) pdf.addPage();
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        pdf.addImage(imgData, 'JPEG', 0, 0, 8.5, 11);
+        if (i > 0) pdf.addPage([PDF_W_PT, PDF_H_PT]);
+
+        // Place image to fill exactly one letter page (no scaling artifacts)
+        const imgData = canvas.toDataURL('image/png');
+        pdf.addImage(imgData, 'PNG', 0, 0, PDF_W_PT, PDF_H_PT, '', 'FAST');
       }
 
       const filename = `${proposal.project_number || 'Proposal'}_${sectionLabels[sectionId]}.pdf`;
       pdf.save(filename);
-      // Small delay between downloads
       await new Promise(r => setTimeout(r, 400));
     }
 
