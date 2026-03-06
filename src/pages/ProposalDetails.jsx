@@ -23,7 +23,7 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
 
   if (hideHeaderFooter) {
     return (
-      <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
+      <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto print:shadow-none print:mb-0" style={pageStyle} data-section={sectionId}>
         {children}
       </div>
     );
