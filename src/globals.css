@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,9 +9,7 @@
 }
 
 /* Definitively fix ReactQuill flat list numbering bug */
-.ql-editor ol li {
-  counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important;
-}
+.ql-editor ol li { counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important; }
 .ql-editor ol li.ql-indent-1 { counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important; }
 .ql-editor ol li.ql-indent-2 { counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9 !important; }
 .ql-editor ol li.ql-indent-3 { counter-reset: list-4 list-5 list-6 list-7 list-8 list-9 !important; }
@@ -24,10 +21,11 @@
 .ql-editor ol li.ql-indent-9 { counter-reset: none !important; }
 
 /* ============================================================
-   SCREEN-ONLY: paper-sheet-screen
-   These styles give the on-screen preview its 8.5×11in "paper" look.
-   They are explicitly UNDONE inside @media print below so that the
-   browser's print engine can lay out pages naturally.
+   paper-sheet-screen — SCREEN styles for the on-screen page preview.
+   These give each virtual "sheet" its 8.5×11in look on screen.
+   They are OVERRIDDEN inside @media print below.
+   By keeping these in a CSS class (not inline style), the print
+   override with !important wins cleanly in Chrome's print engine.
    ============================================================ */
 .paper-sheet-screen {
   width: 8.5in;
@@ -47,12 +45,11 @@
     margin: 0;
   }
 
-  /* Hide EVERYTHING by default when printing */
+  /* Hide all UI chrome; only the printable proposal is visible */
   body * {
     visibility: hidden;
   }
 
-  /* Show ONLY the printable proposal and its children */
   #printable-proposal,
   #printable-proposal * {
     visibility: visible;
@@ -68,28 +65,25 @@
   }
 
   * {
-    box-sizing: border-box !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
   }
 
-  /*
-   * FIX: The proposal wrapper
+  /* ── #printable-proposal ───────────────────────────────────────────────
+   * On screen: display:flex flex-col items-center, bg-gray-200/50,
+   *            rounded-2xl, py-12 (48px top/bottom padding)
    *
-   * On screen: flex flex-col items-center bg-gray-200/50 rounded-2xl py-12
-   * All of these must be zeroed for print.
-   *
-   * - display:block removes flexbox so page-break-after works on children
-   * - padding:0 removes the 48px top/bottom gap that was creating blank space
-   * - position:static keeps pages in normal document flow for page breaks
-   * - background:white removes the gray wrapper background
-   */
+   * In print every one of those must go:
+   *  - display:block  → children participate in normal-flow page breaks
+   *  - position:static → element stays in normal document flow so
+   *                       page-break-after works on its children
+   *  - padding:0      → no invisible 48px gaps creeping into pages
+   *  - background:white → no gray bleed between pages
+   * ──────────────────────────────────────────────────────────────────── */
   #printable-proposal {
-    display: block !important;
     position: static !important;
-    top: auto !important;
-    left: auto !important;
+    display: block !important;
     width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
@@ -97,68 +91,66 @@
     border-radius: 0 !important;
   }
 
-  /*
-   * FIX: paper-sheet-screen overrides for print
+  /* ── .paper-sheet-screen ───────────────────────────────────────────────
+   * WHY we restore height:11in in print (not height:auto):
    *
-   * On screen: height:11in, min-height:11in, max-height:11in, overflow:hidden
-   * These are defined as a CSS class (not inline) so !important here wins.
+   * With height:auto each virtual page is only as tall as its content
+   * (~10in). The browser fills the rest of the physical sheet with white
+   * and the NEXT virtual page starts at the TOP of the next sheet — correct
+   * in theory, but Chrome inserts an extra layout offset equal to the gap
+   * between where the previous page ended and the physical page boundary.
+   * The result is a blank block at the TOP of every continuation sheet.
    *
-   * height:auto  — each page is as tall as its content; the browser's @page
-   *                rule handles the 11in page size. No more blank gaps.
-   * overflow:visible — content is never silently clipped if pagination
-   *                    places slightly too much on one page.
-   */
+   * With height:11in each virtual page is EXACTLY one physical letter sheet.
+   * page-break-after:always cleanly maps virtual→physical. No gaps, no
+   * offset. Content that exceeds the budget is clipped by overflow:hidden,
+   * but the PAGE_HEIGHT_PX pagination constant (760px) gives a 104px safety
+   * margin below the actual 864px usable area so clipping never occurs.
+   * ──────────────────────────────────────────────────────────────────── */
   .paper-sheet-screen {
     width: 8.5in !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
+    height: 11in !important;
+    min-height: 11in !important;
+    max-height: 11in !important;
+    overflow: hidden !important;
   }
 
-  /* Each paper sheet triggers a page break after itself */
+  /* ── .print-page ────────────────────────────────────────────────────── */
   .print-page {
     page-break-after: always !important;
     break-after: page !important;
-    display: flex !important;
-    flex-direction: column !important;
-    margin: 0 !important;
+    margin: 0 !important;   /* zeros mb-12 spacing */
     padding: 0 !important;
     box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
-  /*
-   * FIX: Trailing blank page
-   * The last .print-page should NOT force a new blank page after it.
-   * Using both :last-child and :last-of-type to cover all nesting scenarios.
-   */
-  .print-page:last-child,
-  .print-page:last-of-type {
+  /* Don't force a blank trailing page after the last sheet */
+  .print-page:last-child {
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
 
-  /* Inner content containers — let them breathe in print */
-  .paper-body,
-  .estimate-content {
-    overflow: visible !important;
-    height: auto !important;
-    flex: 0 0 auto !important;
+  /* ── Inner content containers ──────────────────────────────────────── */
+  /* paper-body: the padded body div in PaperSheets that have a header bar.
+     height:100% is fine here since the parent is now a fixed 11in height. */
+  .paper-body {
+    overflow: hidden !important;
   }
 
-  /* Ensure colored backgrounds print */
-  .bg-\[\#042950\] {
-    background-color: #042950 !important;
+  /* estimate-content: the padded div wrapping each estimate page table.
+     height:100% resolves to 11in (fixed parent) — correct. overflow:hidden
+     clips anything beyond the 1in-padded content area. */
+  .estimate-content {
+    overflow: hidden !important;
   }
-  .bg-gray-50 {
-    background-color: #f9fafb !important;
-  }
-  .bg-gray-100 {
-    background-color: #f3f4f6 !important;
-  }
-  .text-white {
-    color: white !important;
-  }
+
+  /* ── Background / colour fixes ──────────────────────────────────────── */
+  .bg-\[\#042950\] { background-color: #042950 !important; }
+  .bg-gray-50      { background-color: #f9fafb !important; }
+  .bg-gray-100     { background-color: #f3f4f6 !important; }
+  .text-white      { color: white !important; }
 
   table {
     width: 100% !important;
@@ -169,7 +161,7 @@
     break-inside: avoid !important;
   }
 
-  /* Rich text (Quill) print fixes */
+  /* ── Rich-text (Quill) fixes ────────────────────────────────────────── */
   .ql-editor {
     padding: 0 !important;
     font-size: 14px !important;
