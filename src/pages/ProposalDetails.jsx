@@ -475,7 +475,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* ── ESTIMATE PAGES ── */}
-        <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
+        <div className={activeTab === 'estimate' ? '' : 'hidden print:block'} data-section-wrapper="estimate">
           {estimatePages.map((pageItems, pageIndex) =>
           <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
               <div className="estimate-content" style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
