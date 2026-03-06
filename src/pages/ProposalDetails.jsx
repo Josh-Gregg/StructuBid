@@ -445,7 +445,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* SCOPE OF WORK */}
-        <div className={activeTab === 'scope' ? '' : 'hidden print:block'}>
+        <div className="proposal-section" data-section="scope" style={{ display: activeTab === 'scope' ? '' : 'none' }}>
           {proposal.executive_summary && (
             <PaperSheet proposal={proposal} sectionId="scope">
               <SectionTitle title="Executive Summary" />
