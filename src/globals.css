@@ -132,6 +132,12 @@
     break-after: avoid !important;
   }
 
+  /* ── Section wrappers: force a new sheet before each section when printing all ── */
+  [data-section-wrapper] + [data-section-wrapper] {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
   /* ── Inner content containers ──────────────────────────────────────── */
   /* paper-body: the padded body div in PaperSheets that have a header bar.
      height:100% is fine here since the parent is now a fixed 11in height. */
