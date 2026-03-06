@@ -53,6 +53,7 @@ import Proposals from './pages/Proposals';
 import Team from './pages/Team';
 import TemplateForm from './pages/TemplateForm';
 import Templates from './pages/Templates';
+import ProposalDetails from './pages/ProposalDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +64,7 @@ export const PAGES = {
     "Team": Team,
     "TemplateForm": TemplateForm,
     "Templates": Templates,
+    "ProposalDetails": ProposalDetails,
 }
 
 export const pagesConfig = {
