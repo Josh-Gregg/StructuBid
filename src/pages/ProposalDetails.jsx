@@ -13,12 +13,8 @@ import * as XLSX from 'xlsx';
 // PaperSheet: one 8.5×11in page
 // ─────────────────────────────────────────────
 function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
-  // HEIGHT/OVERFLOW MOVED TO CSS CLASS "paper-sheet-screen" so that @media print
-  // can override them cleanly. Inline styles beat !important in Chrome's print
-  // engine for height, causing each page to consume a full 11in on paper even
-  // when content ends at 60% — leaving large blank gaps at the top of every
-  // continuation page. By moving height constraints to a class, the print CSS
-  // can set height:auto and overflow:visible without fighting inline specificity.
+  // Width, height, and overflow live in the CSS class "paper-sheet-screen"
+  // so that @media print rules can override them without fighting inline specificity.
   const pageStyle = {
     WebkitPrintColorAdjust: 'exact',
     printColorAdjust: 'exact',
@@ -50,7 +46,7 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
           <div className="text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>#{proposal.project_number}</div>
         </div>
       </div>
-      <div style={{ flex: 1, padding: '1in', overflow: 'hidden' }}>
+      <div className="paper-body" style={{ flex: 1, padding: '1in', overflow: 'hidden' }}>
         {children}
       </div>
     </div>
@@ -292,13 +288,20 @@ export default function ProposalDetails() {
     XLSX.writeFile(wb, `Estimate_${proposal.project_number || 'proposal'}.xlsx`);
   };
 
-  // ── Pagination logic for Estimate pages
-  const PAGE_HEIGHT_PX = 864;
-  const TITLE_HEIGHT = 40;
-  const TOTALS_HEIGHT = 180;
-  const CATEGORY_HEIGHT = 84;
-  const ITEM_HEIGHT = 36;
-  const ITEM_WITH_NOTE_HEIGHT = 54;
+  // ── Pagination constants ──────────────────────────────────────────────────
+  // Available content area per estimate page:
+  //   Page height:     11in  = 1056px (at 96dpi)
+  //   estimate-content padding: 1in top + 1in bottom = 192px
+  //   Usable height:   9in   =  864px
+  //
+  // PAGE_HEIGHT_PX = 760 → leaves 104px (≈3 text lines) as a safety buffer so
+  // no item ever gets clipped at the page boundary.
+  const PAGE_HEIGHT_PX = 760;
+  const TITLE_HEIGHT = 44;
+  const TOTALS_HEIGHT = 240;
+  const CATEGORY_HEIGHT = 92;
+  const ITEM_HEIGHT = 52;
+  const ITEM_WITH_NOTE_HEIGHT = 100;
 
   const estimatePages = [];
   let currentPageItems = [];
@@ -548,7 +551,7 @@ export default function ProposalDetails() {
         <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
           {estimatePages.map((pageItems, pageIndex) => (
             <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
-              <div style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
+              <div className="estimate-content" style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
                 <h2 className="text-2xl font-black mb-4 pb-2 border-b-2" style={{ color: '#042950', borderColor: 'rgba(4,41,80,0.2)' }}>
                   Estimate {pageIndex > 0 ? '(Cont.)' : ''}
                 </h2>
