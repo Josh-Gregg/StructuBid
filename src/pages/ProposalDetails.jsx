@@ -169,6 +169,193 @@ export default function ProposalDetails() {
   };
 
   const [isGeneratingPDFs, setIsGeneratingPDFs] = useState(false);
+  const [isGeneratingWord, setIsGeneratingWord] = useState(false);
+
+  const stripHtml = (html) => {
+    if (!html) return '';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  };
+
+  const handleExportWord = async () => {
+    setIsGeneratingWord(true);
+    const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const totals = computeTotals(proposal);
+
+    const heading = (text) => new Paragraph({
+      text,
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 400, after: 200 },
+      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: '042950' } },
+    });
+
+    const subheading = (text) => new Paragraph({
+      text,
+      heading: HeadingLevel.HEADING_2,
+      spacing: { before: 240, after: 120 },
+    });
+
+    const body = (text) => new Paragraph({
+      children: [new TextRun({ text: text || '', size: 24 })],
+      spacing: { after: 120 },
+    });
+
+    const bold = (label, value) => new Paragraph({
+      children: [
+        new TextRun({ text: label + ': ', bold: true, size: 24 }),
+        new TextRun({ text: value || '', size: 24 }),
+      ],
+      spacing: { after: 80 },
+    });
+
+    const pageBreak = () => new Paragraph({ children: [new PageBreak()] });
+
+    const children = [];
+
+    // ── COVER ──
+    children.push(
+      new Paragraph({
+        text: proposal.cover_title || 'Project Proposal',
+        heading: HeadingLevel.TITLE,
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 300 },
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: 'Great White Construction', bold: true, size: 28 })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 80 },
+      }),
+      new Paragraph({ text: '2470 S Zephyr St, Lakewood, CO 80227', alignment: AlignmentType.CENTER, spacing: { after: 80 } }),
+      new Paragraph({ text: '303-908-5421 | George@GreatWhiteGC.com', alignment: AlignmentType.CENTER, spacing: { after: 400 } }),
+      bold('Prepared For', proposal.client_name),
+      proposal.company_name ? bold('Company', proposal.company_name) : null,
+      bold('Proposal Number', '#' + proposal.project_number),
+      bold('Project Location', proposal.project_address),
+      bold('Date', new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })),
+    ).filter(Boolean);
+
+    // ── SCOPE ──
+    if (proposal.executive_summary || proposal.scope_of_work) {
+      children.push(pageBreak());
+      if (proposal.executive_summary) {
+        children.push(heading('Executive Summary'), body(proposal.executive_summary));
+      }
+      if (proposal.scope_of_work) {
+        children.push(heading('Scope of Work'), body(stripHtml(proposal.scope_of_work)));
+      }
+    }
+
+    // ── ESTIMATE ──
+    children.push(pageBreak(), heading('Estimate'));
+
+    if (proposal.categories?.length) {
+      for (const cat of proposal.categories) {
+        if (!cat.line_items?.length) continue;
+        const catTotal = cat.line_items.reduce((sum, item) => {
+          const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0) / 100);
+          if (item.exclude_from_markup) return sum + itemSub;
+          const dist = totals.totalLineItemsForMarkup > 0 ? totals.distMarkup / totals.totalLineItemsForMarkup : 0;
+          return sum + itemSub + dist;
+        }, 0);
+
+        children.push(subheading(`${cat.name}  —  $${fmt(catTotal)}`));
+
+        const headerRow = new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Description', bold: true })] })], width: { size: 50, type: WidthType.PERCENTAGE } }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Qty', bold: true })], alignment: AlignmentType.RIGHT })], width: { size: 15, type: WidthType.PERCENTAGE } }),
+            ...(!proposal.hide_markups ? [
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Unit Cost', bold: true })], alignment: AlignmentType.RIGHT })], width: { size: 17, type: WidthType.PERCENTAGE } }),
+              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'Total', bold: true })], alignment: AlignmentType.RIGHT })], width: { size: 18, type: WidthType.PERCENTAGE } }),
+            ] : []),
+          ],
+          tableHeader: true,
+        });
+
+        const dataRows = cat.line_items.map(item => {
+          const itemSub = (item.quantity || 0) * (item.cost_per_unit || 0) * (1 + (item.markup_percentage || 0) / 100);
+          const dist = (!item.exclude_from_markup && totals.totalLineItemsForMarkup > 0) ? totals.distMarkup / totals.totalLineItemsForMarkup : 0;
+          const displayCost = itemSub + dist;
+          return new TableRow({
+            children: [
+              new TableCell({ children: [new Paragraph(item.description || ''), ...(item.show_note && item.note ? [new Paragraph({ children: [new TextRun({ text: item.note, italics: true, size: 20, color: '6b7280' })] })] : [])] }),
+              new TableCell({ children: [new Paragraph({ text: `${item.quantity} ${item.unit}`, alignment: AlignmentType.RIGHT })] }),
+              ...(!proposal.hide_markups ? [
+                new TableCell({ children: [new Paragraph({ text: `$${fmt(displayCost / (item.quantity || 1))}`, alignment: AlignmentType.RIGHT })] }),
+                new TableCell({ children: [new Paragraph({ text: `$${fmt(displayCost)}`, alignment: AlignmentType.RIGHT })] }),
+              ] : []),
+            ],
+          });
+        });
+
+        children.push(new Table({
+          rows: [headerRow, ...dataRows],
+          width: { size: 100, type: WidthType.PERCENTAGE },
+        }));
+      }
+    }
+
+    // Totals
+    children.push(
+      new Paragraph({ spacing: { before: 300 } }),
+      new Table({
+        rows: [
+          new TableRow({ children: [new TableCell({ children: [new Paragraph('Subtotal')] }), new TableCell({ children: [new Paragraph({ text: `$${fmt(totals.totalWithMarkup)}`, alignment: AlignmentType.RIGHT })] })] }),
+          ...(totals.discount > 0 ? [new TableRow({ children: [new TableCell({ children: [new Paragraph('Discount')] }), new TableCell({ children: [new Paragraph({ text: `-$${fmt(totals.discount)}`, alignment: AlignmentType.RIGHT })] })] })] : []),
+          new TableRow({ children: [new TableCell({ children: [new Paragraph('Tax')] }), new TableCell({ children: [new Paragraph({ text: `$${fmt(totals.tax || 0)}`, alignment: AlignmentType.RIGHT })] })] }),
+          ...(totals.contingency > 0 ? [new TableRow({ children: [new TableCell({ children: [new Paragraph(`Contingency (${proposal.contingency_percentage}%)`)] }), new TableCell({ children: [new Paragraph({ text: `$${fmt(totals.contingency)}`, alignment: AlignmentType.RIGHT })] })] })] : []),
+          ...(totals.changeOrdersTotal > 0 ? [new TableRow({ children: [new TableCell({ children: [new Paragraph('Approved Change Orders')] }), new TableCell({ children: [new Paragraph({ text: `$${fmt(totals.changeOrdersTotal)}`, alignment: AlignmentType.RIGHT })] })] })] : []),
+          new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: 'GRAND TOTAL', bold: true, size: 28 })] })] }), new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `$${fmt(totals.grandTotal)}`, bold: true, size: 28 })], alignment: AlignmentType.RIGHT })] })] }),
+        ],
+        width: { size: 40, type: WidthType.PERCENTAGE },
+        float: { horizontalAnchor: 'margin', absoluteHorizontalPosition: 0 },
+      }),
+    );
+
+    // ── SUPPORTING DOCS ──
+    if (proposal.schedule_start_date || proposal.schedule_end_date || proposal.assumptions || proposal.attachments?.length) {
+      children.push(pageBreak(), heading('Supporting Documents'));
+      if (proposal.schedule_start_date) children.push(bold('Target Start Date', proposal.schedule_start_date));
+      if (proposal.schedule_end_date) children.push(bold('Target End Date', proposal.schedule_end_date));
+      if (proposal.assumptions) children.push(subheading('Assumptions & Exclusions'), body(stripHtml(proposal.assumptions)));
+      if (proposal.attachments?.length) {
+        children.push(subheading('Attachments'));
+        proposal.attachments.forEach(att => {
+          children.push(bold('', att.name), body(att.description));
+        });
+      }
+    }
+
+    // ── SIGNATURES ──
+    children.push(
+      pageBreak(),
+      heading('Acceptance & Signatures'),
+      new Paragraph({ spacing: { before: 600 } }),
+      new Table({
+        rows: [
+          new TableRow({ children: [
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: '_______________________________', color: '9ca3af' })] }), new Paragraph({ children: [new TextRun({ text: 'George Gregg — Great White Construction', bold: true })] }), new Paragraph('Date: _______________')] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: '_______________________________', color: '9ca3af' })] }), new Paragraph({ children: [new TextRun({ text: `${proposal.client_name} — Client`, bold: true })] }), new Paragraph('Date: _______________')] }),
+          ]}),
+        ],
+        width: { size: 100, type: WidthType.PERCENTAGE },
+      }),
+      new Paragraph({ text: 'Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.', spacing: { before: 400 }, style: 'footnote' }),
+    );
+
+    const doc = new Document({ sections: [{ children }] });
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${proposal.project_number || 'Proposal'}_Full_Proposal.docx`;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    a.remove();
+    setIsGeneratingWord(false);
+  };
 
   const handleExportAllPDFs = async () => {
     setIsGeneratingPDFs(true);
