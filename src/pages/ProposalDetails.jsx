@@ -323,7 +323,9 @@ export default function ProposalDetails() {
 
       html += `</body></html>`;
 
-      const blob = htmlDocx.asBlob(html);
+      // Dynamically load html-docx-js to avoid Vite/Rollup bundler issues with legacy JS syntax
+      const htmlDocx = await import(/* @vite-ignore */ 'https://esm.sh/html-docx-js@0.3.1/dist/html-docx.js');
+      const blob = (htmlDocx.default || htmlDocx).asBlob(html);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
