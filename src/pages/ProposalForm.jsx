@@ -712,10 +712,9 @@ export default function ProposalForm() {
                       <Plus className="w-4 h-4 mr-2" /> Add Line Item
                     </Button>
                   </div>
-                </div>
-              ))}
-                </Draggable>
-              ))}
+                  </div>
+                  </Draggable>
+                  ))}
               {catProvided.placeholder}
             </div>
                 )}
