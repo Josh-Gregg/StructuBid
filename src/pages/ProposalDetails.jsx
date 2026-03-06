@@ -153,18 +153,19 @@ export default function ProposalDetails() {
   };
 
   const handlePrintSection = () => {
-    const allPages = document.querySelectorAll('.print-page');
-    allPages.forEach(p => {
-      const section = p.getAttribute('data-section');
-      p.style.display = section === activeTab ? '' : 'none';
+    // Hide all section wrappers except the active one
+    const allSections = document.querySelectorAll('.proposal-section');
+    allSections.forEach(s => {
+      s.style.display = s.getAttribute('data-section') === activeTab ? '' : 'none';
     });
     window.print();
-    allPages.forEach(p => { p.style.display = ''; });
+    allSections.forEach(s => { s.style.display = ''; });
   };
 
   const handlePrintAll = () => {
-    const allPages = document.querySelectorAll('.print-page');
-    allPages.forEach(p => { p.style.display = ''; });
+    // Ensure all sections are visible
+    const allSections = document.querySelectorAll('.proposal-section');
+    allSections.forEach(s => { s.style.display = ''; });
     window.print();
   };
 
