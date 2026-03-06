@@ -62,48 +62,54 @@ function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
   const [pages, setPages] = React.useState(null);
   const measureRef = React.useRef(null);
 
-  const PAGE_BODY_HEIGHT = Math.floor(11 * 96) - 96 - 128;
-  const FIRST_PAGE_BODY = PAGE_BODY_HEIGHT - 60;
+  // 11in @ 96dpi = 1056px. Header bar = 72px. Paper padding top+bottom = 192px (2*96px = 2in).
+  // SectionTitle ~44px. So usable content per page after title ≈ 748px.
+  const USABLE_HEIGHT = 1056 - 72 - 192 - 44;
 
   React.useEffect(() => {
-    if (!measureRef.current || !html) return;
-    const container = measureRef.current;
-    const children = Array.from(container.childNodes);
-    if (children.length === 0) { setPages([html]); return; }
+    const run = () => {
+      if (!measureRef.current || !html) return;
+      const container = measureRef.current;
+      const children = Array.from(container.childNodes);
+      if (children.length === 0) { setPages([html]); return; }
 
-    const result = [];
-    let currentPageNodes = [];
-    let currentHeight = 0;
-    let availableHeight = FIRST_PAGE_BODY;
+      const result = [];
+      let currentPageNodes = [];
+      let currentHeight = 0;
 
-    children.forEach((node) => {
-      const h = node.getBoundingClientRect?.()?.height || 24;
-      if (currentHeight + h > availableHeight && currentPageNodes.length > 0) {
+      children.forEach((node) => {
+        const h = (node.getBoundingClientRect?.()?.height) || 24;
+        if (currentHeight + h > USABLE_HEIGHT && currentPageNodes.length > 0) {
+          const div = document.createElement('div');
+          currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
+          result.push(div.innerHTML);
+          currentPageNodes = [];
+          currentHeight = 0;
+        }
+        currentPageNodes.push(node);
+        currentHeight += h;
+      });
+
+      if (currentPageNodes.length > 0) {
         const div = document.createElement('div');
         currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
         result.push(div.innerHTML);
-        currentPageNodes = [];
-        currentHeight = 0;
-        availableHeight = PAGE_BODY_HEIGHT;
       }
-      currentPageNodes.push(node);
-      currentHeight += h;
-    });
+      setPages(result.length > 0 ? result : [html]);
+    };
 
-    if (currentPageNodes.length > 0) {
-      const div = document.createElement('div');
-      currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
-      result.push(div.innerHTML);
-    }
-    setPages(result.length > 0 ? result : [html]);
+    // Small delay to ensure the hidden measurement div is laid out
+    const timer = setTimeout(run, 100);
+    return () => clearTimeout(timer);
   }, [html]);
 
   return (
     <>
+      {/* Measurement container — always in DOM, off-screen so getBoundingClientRect works */}
       <div
         ref={measureRef}
         className="ql-editor"
-        style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', width: 'calc(8.5in - 8rem)', top: 0, left: 0, zIndex: -9999 }}
+        style={{ position: 'fixed', visibility: 'hidden', pointerEvents: 'none', width: 'calc(8.5in - 2in)', top: 0, left: '-9999px', zIndex: -9999 }}
         dangerouslySetInnerHTML={{ __html: html }}
       />
       {(pages || [html]).map((pageHtml, idx) => (
