@@ -579,6 +579,7 @@ export default function ProposalDetails() {
                   </div>
                 )}
               </div>
+              </div>
             </PaperSheet>
           )}
 
