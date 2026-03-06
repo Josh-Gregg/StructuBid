@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Printer, Mail, Edit, ArrowLeft, PlusCircle, Layers, FileSpreadsheet } from 'lucide-react';
+import { Printer, Mail, Edit, ArrowLeft, PlusCircle, Layers } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { computeTotals } from '../components/proposalUtils';
 import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
-import * as XLSX from 'xlsx';
 
 // ─────────────────────────────────────────────
 // PaperSheet: one 8.5×11in page
@@ -218,65 +217,6 @@ export default function ProposalDetails() {
 
   const fmt = (n) => n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  const handleExportExcel = () => {
-    const wb = XLSX.utils.book_new();
-    const rows = [];
-
-    rows.push(['Project Proposal - Great White Construction']);
-    rows.push(['Project #', proposal.project_number]);
-    rows.push(['Client', proposal.client_name]);
-    rows.push(['Project Address', proposal.project_address]);
-    rows.push(['Date', new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })]);
-    rows.push([]);
-
-    if (proposal.hide_markups) {
-      rows.push(['Description', 'Qty', 'Unit']);
-    } else {
-      rows.push(['Description', 'Qty', 'Unit', 'Unit Cost', 'Total']);
-    }
-
-    proposal.categories?.forEach((cat) => {
-      if (!cat.line_items?.length) return;
-      const catTotal = cat.line_items.reduce((sum, item) => sum + getDisplayCost(item), 0);
-      rows.push([cat.name, '', '', '', `$${fmt(catTotal)}`]);
-      cat.line_items.forEach((item) => {
-        const displayCost = getDisplayCost(item);
-        const unitCost = displayCost / (item.quantity || 1);
-        if (proposal.hide_markups) {
-          rows.push([item.description, item.quantity, item.unit]);
-          if (item.show_note && item.note) rows.push([`  Note: ${item.note}`]);
-        } else {
-          rows.push([item.description, item.quantity, item.unit, unitCost, displayCost]);
-          if (item.show_note && item.note) rows.push([`  Note: ${item.note}`]);
-        }
-      });
-      rows.push([]);
-    });
-
-    rows.push([]);
-    rows.push(['Subtotal', '', '', '', totals.totalWithMarkup]);
-    rows.push(['Discount', '', '', '', -(totals.discount || 0)]);
-    rows.push(['Tax', '', '', '', totals.tax || 0]);
-    if (totals.contingency > 0) rows.push([`Contingency (${proposal.contingency_percentage}%)`, '', '', '', totals.contingency]);
-    if (totals.changeOrdersTotal > 0) rows.push(['Approved Change Orders', '', '', '', totals.changeOrdersTotal]);
-    rows.push(['GRAND TOTAL', '', '', '', totals.grandTotal]);
-
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{ wch: 50 }, { wch: 8 }, { wch: 10 }, { wch: 14 }, { wch: 16 }];
-
-    const range = XLSX.utils.decode_range(ws['!ref']);
-    for (let R = range.s.r; R <= range.e.r; R++) {
-      const cell = ws[XLSX.utils.encode_cell({ r: R, c: 4 })];
-      if (cell && typeof cell.v === 'number') { cell.t = 'n'; cell.z = '"$"#,##0.00'; }
-      const cell3 = ws[XLSX.utils.encode_cell({ r: R, c: 3 })];
-      if (cell3 && typeof cell3.v === 'number') { cell3.t = 'n'; cell3.z = '"$"#,##0.00'; }
-    }
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Estimate');
-    XLSX.writeFile(wb, `Estimate_${proposal.project_number || 'proposal'}.xlsx`);
-  };
-
-  // Estimate pagination
   const PAGE_HEIGHT_PX = 760;
   const TITLE_HEIGHT = 44;
   const TOTALS_HEIGHT = 240;
@@ -358,11 +298,6 @@ export default function ProposalDetails() {
                 <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleStatusChange('accepted')}>Accept</Button>
               </>
             )}
-            {activeTab === 'estimate' && (
-              <Button size="sm" variant="outline" onClick={handleExportExcel} className="border-green-200 text-green-700">
-                <FileSpreadsheet className="w-4 h-4 mr-1" /> Export Excel
-              </Button>
-            )}
             <Button size="sm" variant="outline" onClick={handlePrintSection} className="border-blue-200 text-blue-700">
               <Printer className="w-4 h-4 mr-1" /> Print This Section
             </Button>
@@ -379,7 +314,9 @@ export default function ProposalDetails() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors ${
-                activeTab === tab.id ? 'bg-[#042950] text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+                activeTab === tab.id
+                  ? 'bg-[#042950] text-white shadow-sm'
+                  : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               {tab.label}
@@ -436,55 +373,61 @@ export default function ProposalDetails() {
         {/* COVER PAGE */}
         <div className={activeTab === 'cover' ? '' : 'hidden print:block'}>
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
-            <div style={{ width: '100%', height: '11in', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', padding: '1in', overflow: 'hidden' }}>
+            <div style={{
+              flex: 1,
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '0.75in',
+              overflow: 'hidden',
+            }}>
 
               {/* Logo + contact */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0 }}>
-                <Logo imageClassName="h-32 object-contain" />
-                <div style={{ textAlign: 'right', fontSize: '12px', color: '#4b5563', lineHeight: '1.6' }}>
-                  <p style={{ fontWeight: 'bold', color: '#111827' }}>Great White Construction</p>
-                  <p>2470 S Zephyr St</p>
-                  <p>Lakewood, CO 80227</p>
-                  <p>303-908-5421</p>
-                  <p>George@GreatWhiteGC.com</p>
+                <Logo imageClassName="h-20 object-contain" />
+                <div style={{ textAlign: 'right', fontSize: '11px', color: '#4b5563', lineHeight: '1.5' }}>
+                  <p style={{ fontWeight: 'bold', color: '#111827', margin: '0 0 1px 0' }}>Great White Construction</p>
+                  <p style={{ margin: '0 0 1px 0' }}>2470 S Zephyr St</p>
+                  <p style={{ margin: '0 0 1px 0' }}>Lakewood, CO 80227</p>
+                  <p style={{ margin: '0 0 1px 0' }}>303-908-5421</p>
+                  <p style={{ margin: 0 }}>George@GreatWhiteGC.com</p>
                 </div>
               </div>
 
-              {/* Title */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.3in', marginBottom: '0.2in', flexShrink: 0 }}>
-                <h1 style={{ color: '#042950', fontSize: '56px', fontWeight: 900, lineHeight: 1, textTransform: 'uppercase', textAlign: 'center', letterSpacing: '-0.02em', margin: 0 }}>
+              {/* Title + photo */}
+              <div style={{ marginTop: '12px', flexShrink: 0 }}>
+                <h1 style={{ color: '#042950', fontSize: '44px', fontWeight: 900, lineHeight: 1, textTransform: 'uppercase', textAlign: 'center', letterSpacing: '-0.02em', margin: 0 }}>
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
-              </div>
-
-              {/* Cover photo */}
-              <div style={{ flex: 1, width: '100%', borderRadius: '12px', overflow: 'hidden', minHeight: '1in' }}>
-                {proposal.cover_photo_url ? (
-                  <img src={proposal.cover_photo_url} alt="Project Cover" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                ) : (
-                  <div style={{ width: '100%', height: '100%', backgroundColor: '#f3f4f6', borderRadius: '12px', border: '2px dashed #d1d5db' }} />
+                {proposal.cover_photo_url && (
+                  <div style={{ marginTop: '12px', width: '100%', borderRadius: '10px', overflow: 'hidden', height: '1.5in', flexShrink: 0 }}>
+                    <img src={proposal.cover_photo_url} alt="Project Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
                 )}
               </div>
 
+              {/* Spacer */}
+              <div style={{ flex: 1, minHeight: '24px' }} />
+
               {/* Divider */}
-              <div style={{ height: '2px', backgroundColor: '#042950', marginTop: '12px', marginBottom: '12px', flexShrink: 0 }} />
+              <div style={{ height: '2px', backgroundColor: '#042950', marginBottom: '10px', flexShrink: 0 }} />
 
               {/* Client info grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', flexShrink: 0 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', flexShrink: 0 }}>
                 <div>
-                  <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Prepared For</p>
-                  <p style={{ fontSize: '16px', fontWeight: 'bold', color: '#111827', margin: '0 0 2px 0' }}>{proposal.client_name}</p>
-                  {proposal.company_name && <p style={{ color: '#374151', margin: '0 0 2px 0' }}>{proposal.company_name}</p>}
-                  <div style={{ marginTop: '8px' }}>
-                    <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Proposal Number</p>
-                    <p style={{ fontWeight: '600', color: '#042950', margin: 0 }}>#{proposal.project_number}</p>
+                  <p style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', margin: '0 0 3px 0' }}>Prepared For</p>
+                  <p style={{ fontSize: '15px', fontWeight: 'bold', color: '#111827', margin: '0 0 2px 0' }}>{proposal.client_name}</p>
+                  {proposal.company_name && <p style={{ fontSize: '13px', color: '#374151', margin: '0 0 2px 0' }}>{proposal.company_name}</p>}
+                  <div style={{ marginTop: '6px' }}>
+                    <p style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', margin: '0 0 3px 0' }}>Proposal Number</p>
+                    <p style={{ fontSize: '13px', fontWeight: '600', color: '#042950', margin: 0 }}>#{proposal.project_number}</p>
                   </div>
                 </div>
                 <div>
-                  <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Project Location</p>
-                  <p style={{ fontSize: '14px', fontWeight: '500', color: '#111827', margin: '0 0 8px 0' }}>{proposal.project_address}</p>
-                  <p style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', marginBottom: '4px' }}>Date</p>
-                  <p style={{ fontWeight: '500', margin: 0 }}>
+                  <p style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', margin: '0 0 3px 0' }}>Project Location</p>
+                  <p style={{ fontSize: '13px', fontWeight: '500', color: '#111827', margin: '0 0 6px 0' }}>{proposal.project_address}</p>
+                  <p style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 'bold', margin: '0 0 3px 0' }}>Date</p>
+                  <p style={{ fontSize: '13px', fontWeight: '500', margin: 0 }}>
                     {new Date(proposal.created_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                 </div>
