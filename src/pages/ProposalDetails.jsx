@@ -562,7 +562,8 @@ export default function ProposalDetails() {
         {/* SUPPORTING DOCS */}
         <div className={activeTab === 'supporting' ? '' : 'hidden print:block'}>
           {(proposal.schedule_start_date || proposal.schedule_end_date) && (
-            <PaperSheet proposal={proposal} sectionId="supporting">
+            <PaperSheet hideHeaderFooter proposal={proposal} sectionId="supporting">
+              <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
               <SectionTitle title="Schedule" />
               <div className="flex gap-12 mt-4">
                 {proposal.schedule_start_date && (
