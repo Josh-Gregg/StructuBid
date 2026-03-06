@@ -573,6 +573,9 @@ export default function ProposalDetails() {
             <Button size="sm" onClick={handleExportAllPDFs} disabled={isGeneratingPDFs} className="bg-blue-700 hover:bg-blue-800 text-white shadow-md">
               <Download className="w-4 h-4 mr-1" /> {isGeneratingPDFs ? 'Generating...' : 'Export All PDFs'}
             </Button>
+            <Button size="sm" onClick={handleExportWord} disabled={isGeneratingWord} variant="outline" className="border-blue-200 text-blue-700">
+              <FileText className="w-4 h-4 mr-1" /> {isGeneratingWord ? 'Generating...' : 'Export Word'}
+            </Button>
           </div>
         </div>
 
