@@ -9,6 +9,7 @@ import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, HeadingLevel, PageBreak, ShadingType } from 'docx';
 
 // ─────────────────────────────────────────────
 // PaperSheet: one 8.5×11in page
