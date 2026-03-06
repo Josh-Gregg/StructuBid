@@ -486,19 +486,20 @@ export default function ProposalDetails() {
                 </div>
               </div>
 
-              {/* Title — centered in remaining space */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              {/* Title */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '0.3in', marginBottom: '0.2in', flexShrink: 0 }}>
                 <h1 style={{ color: '#042950', fontSize: '56px', fontWeight: 900, lineHeight: 1, textTransform: 'uppercase', textAlign: 'center', letterSpacing: '-0.02em', margin: 0 }}>
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
-
-                {/* Cover photo */}
-                {proposal.cover_photo_url && (
-                  <div style={{ marginTop: '16px', width: '100%', borderRadius: '12px', overflow: 'hidden', height: '1.7in', flexShrink: 0 }}>
-                    <img src={proposal.cover_photo_url} alt="Project Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
               </div>
+
+              {/* Cover photo — fills remaining space between title and divider */}
+              <div style={{ flex: 1, width: '100%', borderRadius: '12px', overflow: 'hidden', minHeight: '1in' }}>
+                {proposal.cover_photo_url ? (
+                  <img src={proposal.cover_photo_url} alt="Project Cover" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', backgroundColor: '#f3f4f6', borderRadius: '12px', border: '2px dashed #d1d5db' }} />
+                )}
 
               {/* Divider */}
               <div style={{ height: '2px', backgroundColor: '#042950', marginBottom: '12px', flexShrink: 0 }} />
