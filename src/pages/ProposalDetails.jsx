@@ -323,13 +323,12 @@ export default function ProposalDetails() {
 
       html += `</body></html>`;
 
-      // Dynamically load html-docx-js to avoid Vite/Rollup bundler issues with legacy JS syntax
-      const htmlDocx = await import(/* @vite-ignore */ 'https://esm.sh/html-docx-js@0.3.1/dist/html-docx.js');
-      const blob = (htmlDocx.default || htmlDocx).asBlob(html);
+      // Use Word-compatible HTML blob (.doc) — no external library needed
+      const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${proposal.project_number || 'Proposal'}_Full_Proposal.docx`;
+      a.download = `${proposal.project_number || 'Proposal'}_Full_Proposal.doc`;
       document.body.appendChild(a);
       a.click();
       URL.revokeObjectURL(url);
