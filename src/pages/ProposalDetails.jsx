@@ -113,9 +113,11 @@ function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
         dangerouslySetInnerHTML={{ __html: html }}
       />
       {(pages || [html]).map((pageHtml, idx) => (
-        <PaperSheet key={idx} proposal={proposal} sectionId={sectionId}>
-          <SectionTitle title={idx === 0 ? sectionTitle : `${sectionTitle} (Cont.)`} />
-          <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: pageHtml }} />
+        <PaperSheet key={idx} hideHeaderFooter proposal={proposal} sectionId={sectionId}>
+          <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
+            <SectionTitle title={idx === 0 ? sectionTitle : `${sectionTitle} (Cont.)`} />
+            <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: pageHtml }} />
+          </div>
         </PaperSheet>
       ))}
     </>
