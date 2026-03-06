@@ -546,22 +546,32 @@ export default function ProposalForm() {
               </div>
             )}
 
-            <div className="space-y-8">
+            <DragDropContext onDragEnd={handleCategoryDragEnd}>
+              <Droppable droppableId="categories">
+                {(catProvided) => (
+            <div className="space-y-8" {...catProvided.droppableProps} ref={catProvided.innerRef}>
               {form.categories?.map((cat, catIndex) => (
-                <div key={catIndex} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <Draggable key={`cat-${catIndex}`} draggableId={`cat-${catIndex}`} index={catIndex}>
+                  {(catDraggable) => (
+                <div ref={catDraggable.innerRef} {...catDraggable.draggableProps} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                   <div className="flex items-center justify-between mb-4 gap-4">
-                    <Input 
-                      value={cat.name} 
-                      onChange={e => {
-                        lastEditTimeRef.current = Date.now();
-                        setForm(prev => {
-                          const newCategories = [...(prev.categories || [])];
-                          newCategories[catIndex] = { ...newCategories[catIndex], name: e.target.value };
-                          return { ...prev, categories: newCategories };
-                        });
-                      }}
-                      className="text-lg font-bold text-blue-900 bg-transparent border-transparent hover:border-gray-200 focus:border-blue-500 focus:bg-white h-auto py-1 px-2 -ml-2"
-                    />
+                    <div className="flex items-center gap-2 flex-1">
+                      <div {...catDraggable.dragHandleProps} className="text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing flex-shrink-0">
+                        <GripVertical className="w-5 h-5" />
+                      </div>
+                      <Input 
+                        value={cat.name} 
+                        onChange={e => {
+                          lastEditTimeRef.current = Date.now();
+                          setForm(prev => {
+                            const newCategories = [...(prev.categories || [])];
+                            newCategories[catIndex] = { ...newCategories[catIndex], name: e.target.value };
+                            return { ...prev, categories: newCategories };
+                          });
+                        }}
+                        className="text-lg font-bold text-blue-900 bg-transparent border-transparent hover:border-gray-200 focus:border-blue-500 focus:bg-white h-auto py-1 px-2"
+                      />
+                    </div>
                     <div className="flex gap-2">
                       <Button variant="ghost" size="sm" onClick={() => removeCategory(catIndex)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
                         <Trash2 className="w-4 h-4" />
