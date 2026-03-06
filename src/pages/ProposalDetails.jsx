@@ -446,9 +446,11 @@ export default function ProposalDetails() {
         {/* SCOPE OF WORK */}
         <div className={activeTab === 'scope' ? '' : 'hidden print:block'}>
           {proposal.executive_summary && (
-            <PaperSheet proposal={proposal} sectionId="scope">
-              <SectionTitle title="Executive Summary" />
-              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
+            <PaperSheet hideHeaderFooter proposal={proposal} sectionId="scope">
+              <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
+                <SectionTitle title="Executive Summary" />
+                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
+              </div>
             </PaperSheet>
           )}
           {proposal.scope_of_work && (
