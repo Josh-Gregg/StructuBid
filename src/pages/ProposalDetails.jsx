@@ -615,43 +615,43 @@ export default function ProposalDetails() {
         <div className={activeTab === 'signatures' ? '' : 'hidden print:block'}>
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="signatures">
             <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
-            <div className="mt-auto pt-6">
-              <SectionTitle title="Acceptance & Signatures" />
-              <div className="grid grid-cols-2 gap-16 mt-8">
-                <div>
-                  <div className="border-b border-gray-400 h-10 mb-2" />
-                  <p className="text-[10px] text-gray-400 italic mb-1">(Contractor Signature)</p>
-                  <p className="text-sm font-bold text-gray-900">George Gregg</p>
-                  <p className="text-xs text-gray-500">Great White Construction</p>
-                  <div className="flex gap-2 mt-4 text-sm text-gray-500">
-                    <span className="w-8">Date:</span>
-                    <div className="border-b border-gray-400 flex-1" />
+              <div className="mt-auto pt-6">
+                <SectionTitle title="Acceptance & Signatures" />
+                <div className="grid grid-cols-2 gap-16 mt-8">
+                  <div>
+                    <div className="border-b border-gray-400 h-10 mb-2" />
+                    <p className="text-[10px] text-gray-400 italic mb-1">(Contractor Signature)</p>
+                    <p className="text-sm font-bold text-gray-900">George Gregg</p>
+                    <p className="text-xs text-gray-500">Great White Construction</p>
+                    <div className="flex gap-2 mt-4 text-sm text-gray-500">
+                      <span className="w-8">Date:</span>
+                      <div className="border-b border-gray-400 flex-1" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="border-b border-gray-400 h-10 mb-2" />
+                    <p className="text-[10px] text-gray-400 italic mb-1">(Client Signature)</p>
+                    <p className="text-sm font-bold text-gray-900">{proposal.client_name}</p>
+                    <p className="text-xs text-gray-500">Client</p>
+                    <div className="flex gap-2 mt-4 text-sm text-gray-500">
+                      <span className="w-8">Date:</span>
+                      <div className="border-b border-gray-400 flex-1" />
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="border-b border-gray-400 h-10 mb-2" />
-                  <p className="text-[10px] text-gray-400 italic mb-1">(Client Signature)</p>
-                  <p className="text-sm font-bold text-gray-900">{proposal.client_name}</p>
-                  <p className="text-xs text-gray-500">Client</p>
-                  <div className="flex gap-2 mt-4 text-sm text-gray-500">
-                    <span className="w-8">Date:</span>
-                    <div className="border-b border-gray-400 flex-1" />
+
+                {user.role === 'client' && proposal.status === 'sent' && (
+                  <div className="mt-12 text-center print:hidden">
+                    <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold px-12" onClick={() => handleStatusChange('accepted')}>
+                      Click Here to Digitally Accept
+                    </Button>
                   </div>
-                </div>
+                )}
+
+                <p className="mt-6 text-sm text-gray-500">
+                  Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
+                </p>
               </div>
-
-              {user.role === 'client' && proposal.status === 'sent' && (
-                <div className="mt-12 text-center print:hidden">
-                  <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold px-12" onClick={() => handleStatusChange('accepted')}>
-                    Click Here to Digitally Accept
-                  </Button>
-                </div>
-              )}
-
-              <p className="mt-6 text-sm text-gray-500">
-                Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
-              </p>
-            </div>
             </div>
           </PaperSheet>
         </div>
