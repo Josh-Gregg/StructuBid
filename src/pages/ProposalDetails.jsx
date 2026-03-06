@@ -153,19 +153,18 @@ export default function ProposalDetails() {
   };
 
   const handlePrintSection = () => {
-    // Hide all section wrappers except the active one
-    const allSections = document.querySelectorAll('.proposal-section');
-    allSections.forEach(s => {
-      s.style.display = s.getAttribute('data-section') === activeTab ? '' : 'none';
+    const allPages = document.querySelectorAll('.print-page');
+    allPages.forEach(p => {
+      const section = p.getAttribute('data-section');
+      p.style.display = section === activeTab ? '' : 'none';
     });
     window.print();
-    allSections.forEach(s => { s.style.display = ''; });
+    allPages.forEach(p => { p.style.display = ''; });
   };
 
   const handlePrintAll = () => {
-    // Ensure all sections are visible
-    const allSections = document.querySelectorAll('.proposal-section');
-    allSections.forEach(s => { s.style.display = ''; });
+    const allPages = document.querySelectorAll('.print-page');
+    allPages.forEach(p => { p.style.display = ''; });
     window.print();
   };
 
@@ -378,7 +377,7 @@ export default function ProposalDetails() {
       <div id="printable-proposal" className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl py-12 text-gray-900">
 
         {/* COVER PAGE */}
-        <div className="proposal-section" data-section="cover" style={{ display: activeTab === 'cover' ? '' : 'none' }}>
+        <div className={activeTab === 'cover' ? '' : 'hidden print:block'}>
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
             <div style={{
               flex: 1,
@@ -445,7 +444,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* SCOPE OF WORK */}
-        <div className="proposal-section" data-section="scope" style={{ display: activeTab === 'scope' ? '' : 'none' }}>
+        <div className={activeTab === 'scope' ? '' : 'hidden print:block'}>
           {proposal.executive_summary && (
             <PaperSheet proposal={proposal} sectionId="scope">
               <SectionTitle title="Executive Summary" />
@@ -463,7 +462,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* ESTIMATE PAGES */}
-        <div className="proposal-section" data-section="estimate" style={{ display: activeTab === 'estimate' ? '' : 'none' }}>
+        <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
           {estimatePages.map((pageItems, pageIndex) => (
             <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
               <div className="estimate-content" style={{ padding: '1in', height: '100%', boxSizing: 'border-box', overflow: 'hidden' }}>
@@ -557,7 +556,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* SUPPORTING DOCS */}
-        <div className="proposal-section" data-section="supporting" style={{ display: activeTab === 'supporting' ? '' : 'none' }}>
+        <div className={activeTab === 'supporting' ? '' : 'hidden print:block'}>
           {(proposal.schedule_start_date || proposal.schedule_end_date) && (
             <PaperSheet proposal={proposal} sectionId="supporting">
               <SectionTitle title="Schedule" />
@@ -605,7 +604,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* SIGNATURES PAGE */}
-        <div className="proposal-section" data-section="signatures" style={{ display: activeTab === 'signatures' ? '' : 'none' }}>
+        <div className={activeTab === 'signatures' ? '' : 'hidden print:block'}>
           <PaperSheet proposal={proposal} sectionId="signatures">
             <div className="mt-auto pt-6">
               <SectionTitle title="Acceptance & Signatures" />

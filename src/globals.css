@@ -146,11 +146,6 @@
     overflow: hidden !important;
   }
 
-  /* ── Show all proposal sections when printing ──────────────────────── */
-  .proposal-section {
-    display: block !important;
-  }
-
   /* ── Background / colour fixes ──────────────────────────────────────── */
   .bg-\[\#042950\] { background-color: #042950 !important; }
   .bg-gray-50      { background-color: #f9fafb !important; }
