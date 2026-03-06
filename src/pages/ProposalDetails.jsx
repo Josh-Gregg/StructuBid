@@ -23,14 +23,14 @@ function PaperSheet({ children, hideHeaderFooter, proposal, sectionId }) {
 
   if (hideHeaderFooter) {
     return (
-      <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto print:shadow-none print:mb-0" style={pageStyle} data-section={sectionId}>
+      <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
         {children}
       </div>
     );
   }
 
   return (
-    <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto print:shadow-none print:mb-0" style={pageStyle} data-section={sectionId}>
+    <div className="print-page paper-sheet-screen bg-white shadow-xl mb-12 shrink-0 mx-auto" style={pageStyle} data-section={sectionId}>
       <div
         className="shrink-0 flex items-center justify-between px-16"
         style={{ backgroundColor: '#042950', color: 'white', height: '0.75in', minHeight: '0.75in', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}
@@ -58,66 +58,67 @@ function SectionTitle({ title }) {
   );
 }
 
-function RichTextPages({ html, sectionTitle, proposal, sectionId }) {
+function RichTextPages({ html, sectionTitle, proposal, sectionId, prefixContent }) {
   const [pages, setPages] = React.useState(null);
   const measureRef = React.useRef(null);
 
-  // 11in @ 96dpi = 1056px. Header bar = 72px. Paper padding top+bottom = 192px (2*96px = 2in).
-  // SectionTitle ~44px. So usable content per page after title ≈ 748px.
-  const USABLE_HEIGHT = 1056 - 72 - 192 - 44;
+  const PAGE_BODY_HEIGHT = 700;
+  const FIRST_PAGE_BODY = PAGE_BODY_HEIGHT;
 
   React.useEffect(() => {
-    const run = () => {
-      if (!measureRef.current || !html) return;
-      const container = measureRef.current;
-      const children = Array.from(container.childNodes);
-      if (children.length === 0) { setPages([html]); return; }
+    if (!measureRef.current || !html) return;
+    const container = measureRef.current;
+    const children = Array.from(container.childNodes);
+    if (children.length === 0) { setPages([html]); return; }
 
-      const result = [];
-      let currentPageNodes = [];
-      let currentHeight = 0;
+    const result = [];
+    let currentPageNodes = [];
+    let currentHeight = 0;
+    let availableHeight = FIRST_PAGE_BODY;
 
-      children.forEach((node) => {
-        const h = (node.getBoundingClientRect?.()?.height) || 24;
-        if (currentHeight + h > USABLE_HEIGHT && currentPageNodes.length > 0) {
-          const div = document.createElement('div');
-          currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
-          result.push(div.innerHTML);
-          currentPageNodes = [];
-          currentHeight = 0;
-        }
-        currentPageNodes.push(node);
-        currentHeight += h;
-      });
-
-      if (currentPageNodes.length > 0) {
+    children.forEach((node) => {
+      const h = node.getBoundingClientRect?.()?.height || 24;
+      if (currentHeight + h > availableHeight && currentPageNodes.length > 0) {
         const div = document.createElement('div');
         currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
         result.push(div.innerHTML);
+        currentPageNodes = [];
+        currentHeight = 0;
+        availableHeight = PAGE_BODY_HEIGHT;
       }
-      setPages(result.length > 0 ? result : [html]);
-    };
+      currentPageNodes.push(node);
+      currentHeight += h;
+    });
 
-    // Small delay to ensure the hidden measurement div is laid out
-    const timer = setTimeout(run, 100);
-    return () => clearTimeout(timer);
+    if (currentPageNodes.length > 0) {
+      const div = document.createElement('div');
+      currentPageNodes.forEach(n => div.appendChild(n.cloneNode(true)));
+      result.push(div.innerHTML);
+    }
+    setPages(result.length > 0 ? result : [html]);
   }, [html]);
 
   return (
     <>
-      {/* Measurement container — always in DOM, off-screen so getBoundingClientRect works */}
       <div
         ref={measureRef}
-        className="ql-editor"
-        style={{ position: 'fixed', visibility: 'hidden', pointerEvents: 'none', width: 'calc(8.5in - 2in)', top: 0, left: '-9999px', zIndex: -9999 }}
+        className="ql-editor ql-measure-hidden"
+        style={{ position: 'absolute', visibility: 'hidden', pointerEvents: 'none', width: '6.5in', top: 0, left: 0, zIndex: -9999 }}
         dangerouslySetInnerHTML={{ __html: html }}
       />
       {(pages || [html]).map((pageHtml, idx) => (
-        <PaperSheet key={idx} hideHeaderFooter proposal={proposal} sectionId={sectionId}>
-          <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
-            <SectionTitle title={idx === 0 ? sectionTitle : `${sectionTitle} (Cont.)`} />
-            <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: pageHtml }} />
-          </div>
+        <PaperSheet key={idx} proposal={proposal} sectionId={sectionId}>
+          {idx === 0 && prefixContent && (
+            <div style={{ marginBottom: '20px', flexShrink: 0 }}>
+              <SectionTitle title="Executive Summary" />
+              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap" style={{ fontSize: '14px', marginBottom: '8px' }}>
+                {prefixContent}
+              </p>
+              <div style={{ height: '1px', backgroundColor: 'rgba(4,41,80,0.1)', margin: '16px 0' }} />
+            </div>
+          )}
+          <SectionTitle title={idx === 0 ? sectionTitle : `${sectionTitle} (Cont.)`} />
+          <div className="ql-editor p-0 text-gray-700 whitespace-normal" dangerouslySetInnerHTML={{ __html: pageHtml }} />
         </PaperSheet>
       ))}
     </>
@@ -245,7 +246,9 @@ export default function ProposalDetails() {
   if (proposal.categories) {
     proposal.categories.forEach((cat) => {
       if (!cat.line_items?.length) return;
-      if (usedHeight + CATEGORY_HEIGHT + ITEM_HEIGHT > PAGE_HEIGHT_PX) flushPage();
+      if (usedHeight + CATEGORY_HEIGHT + ITEM_HEIGHT > PAGE_HEIGHT_PX) {
+        flushPage();
+      }
       currentPageItems.push({ type: 'category', data: cat });
       usedHeight += CATEGORY_HEIGHT;
 
@@ -262,7 +265,9 @@ export default function ProposalDetails() {
     });
   }
 
-  if (usedHeight + TOTALS_HEIGHT > PAGE_HEIGHT_PX) flushPage();
+  if (usedHeight + TOTALS_HEIGHT > PAGE_HEIGHT_PX) {
+    flushPage();
+  }
   currentPageItems.push({ type: 'totals' });
   estimatePages.push(currentPageItems);
 
@@ -375,10 +380,12 @@ export default function ProposalDetails() {
         )}
       </div>
 
-      {/* ── PRINTABLE PROPOSAL ── */}
+      {/* ════════════════════════════════════════════════════
+          PRINTABLE PROPOSAL
+          ════════════════════════════════════════════════════ */}
       <div id="printable-proposal" className="w-full flex flex-col items-center bg-gray-200/50 rounded-2xl py-12 text-gray-900">
 
-        {/* COVER PAGE */}
+        {/* ── COVER PAGE ── */}
         <div className={activeTab === 'cover' ? '' : 'hidden print:block'}>
           <PaperSheet hideHeaderFooter proposal={proposal} sectionId="cover">
             <div style={{
@@ -392,7 +399,7 @@ export default function ProposalDetails() {
 
               {/* Logo + contact */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0 }}>
-                <Logo imageClassName="h-32 object-contain" />
+                <Logo imageClassName="h-20 object-contain" />
                 <div style={{ textAlign: 'right', fontSize: '11px', color: '#4b5563', lineHeight: '1.5' }}>
                   <p style={{ fontWeight: 'bold', color: '#111827', margin: '0 0 1px 0' }}>Great White Construction</p>
                   <p style={{ margin: '0 0 1px 0' }}>2470 S Zephyr St</p>
@@ -408,7 +415,7 @@ export default function ProposalDetails() {
                   {proposal.cover_title || 'Project Proposal'}
                 </h1>
                 {proposal.cover_photo_url && (
-                  <div style={{ marginTop: '12px', width: '100%', borderRadius: '10px', overflow: 'hidden', height: '3in', flexShrink: 0 }}>
+                  <div style={{ marginTop: '12px', width: '100%', borderRadius: '10px', overflow: 'hidden', height: '1.5in', flexShrink: 0 }}>
                     <img src={proposal.cover_photo_url} alt="Project Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 )}
@@ -445,27 +452,29 @@ export default function ProposalDetails() {
           </PaperSheet>
         </div>
 
-        {/* SCOPE OF WORK */}
+        {/* ── SCOPE OF WORK ── */}
         <div className={activeTab === 'scope' ? '' : 'hidden print:block'}>
-          {proposal.executive_summary && (
-            <PaperSheet hideHeaderFooter proposal={proposal} sectionId="scope">
-              <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
-                <SectionTitle title="Executive Summary" />
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
-              </div>
+          {proposal.scope_of_work ? (
+            <RichTextPages
+              html={proposal.scope_of_work}
+              sectionTitle="Scope of Work"
+              proposal={proposal}
+              sectionId="scope"
+              prefixContent={proposal.executive_summary || null}
+            />
+          ) : proposal.executive_summary ? (
+            <PaperSheet proposal={proposal} sectionId="scope">
+              <SectionTitle title="Executive Summary" />
+              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{proposal.executive_summary}</p>
             </PaperSheet>
-          )}
-          {proposal.scope_of_work && (
-            <RichTextPages html={proposal.scope_of_work} sectionTitle="Scope of Work" proposal={proposal} sectionId="scope" />
-          )}
-          {!proposal.executive_summary && !proposal.scope_of_work && (
+          ) : (
             <div className="text-center text-gray-400 py-16 print:hidden">
               <p className="text-lg font-medium">No scope of work added yet.</p>
             </div>
           )}
         </div>
 
-        {/* ESTIMATE PAGES */}
+        {/* ── ESTIMATE PAGES ── */}
         <div className={activeTab === 'estimate' ? '' : 'hidden print:block'}>
           {estimatePages.map((pageItems, pageIndex) => (
             <PaperSheet key={`est-${pageIndex}`} hideHeaderFooter proposal={proposal} sectionId="estimate">
@@ -559,26 +568,24 @@ export default function ProposalDetails() {
           ))}
         </div>
 
-        {/* SUPPORTING DOCS */}
+        {/* ── SUPPORTING DOCS ── */}
         <div className={activeTab === 'supporting' ? '' : 'hidden print:block'}>
           {(proposal.schedule_start_date || proposal.schedule_end_date) && (
-            <PaperSheet hideHeaderFooter proposal={proposal} sectionId="supporting">
-              <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
-                <SectionTitle title="Schedule" />
-                <div className="flex gap-12 mt-4">
-                  {proposal.schedule_start_date && (
-                    <div>
-                      <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
-                      <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
-                    </div>
-                  )}
-                  {proposal.schedule_end_date && (
-                    <div>
-                      <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
-                      <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
-                    </div>
-                  )}
-                </div>
+            <PaperSheet proposal={proposal} sectionId="supporting">
+              <SectionTitle title="Schedule" />
+              <div className="flex gap-12 mt-4">
+                {proposal.schedule_start_date && (
+                  <div>
+                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target Start Date</p>
+                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_start_date)}</p>
+                  </div>
+                )}
+                {proposal.schedule_end_date && (
+                  <div>
+                    <p className="text-sm text-gray-500 uppercase font-bold tracking-wider mb-1">Target End Date</p>
+                    <p className="text-lg font-medium">{formatDateString(proposal.schedule_end_date)}</p>
+                  </div>
+                )}
               </div>
             </PaperSheet>
           )}
@@ -588,17 +595,15 @@ export default function ProposalDetails() {
           )}
 
           {proposal.attachments?.length > 0 && (
-            <PaperSheet hideHeaderFooter proposal={proposal} sectionId="supporting">
-              <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
-                <SectionTitle title="Attachments" />
-                <div className="space-y-4">
-                  {proposal.attachments.map((att, idx) => (
-                    <div key={idx}>
-                      <p className="font-bold text-lg" style={{ color: '#042950' }}>{att.name}</p>
-                      <p className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{att.description}</p>
-                    </div>
-                  ))}
-                </div>
+            <PaperSheet proposal={proposal} sectionId="supporting">
+              <SectionTitle title="Attachments" />
+              <div className="space-y-4">
+                {proposal.attachments.map((att, idx) => (
+                  <div key={idx}>
+                    <p className="font-bold text-lg" style={{ color: '#042950' }}>{att.name}</p>
+                    <p className="text-gray-700 text-sm mt-1 whitespace-pre-wrap">{att.description}</p>
+                  </div>
+                ))}
               </div>
             </PaperSheet>
           )}
@@ -611,47 +616,45 @@ export default function ProposalDetails() {
           )}
         </div>
 
-        {/* SIGNATURES PAGE */}
+        {/* ── SIGNATURES PAGE ── */}
         <div className={activeTab === 'signatures' ? '' : 'hidden print:block'}>
-          <PaperSheet hideHeaderFooter proposal={proposal} sectionId="signatures">
-            <div style={{ flex: 1, boxSizing: 'border-box', padding: '1in', overflow: 'hidden' }}>
-              <div className="mt-auto pt-6">
-                <SectionTitle title="Acceptance & Signatures" />
-                <div className="grid grid-cols-2 gap-16 mt-8">
-                  <div>
-                    <div className="border-b border-gray-400 h-10 mb-2" />
-                    <p className="text-[10px] text-gray-400 italic mb-1">(Contractor Signature)</p>
-                    <p className="text-sm font-bold text-gray-900">George Gregg</p>
-                    <p className="text-xs text-gray-500">Great White Construction</p>
-                    <div className="flex gap-2 mt-4 text-sm text-gray-500">
-                      <span className="w-8">Date:</span>
-                      <div className="border-b border-gray-400 flex-1" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="border-b border-gray-400 h-10 mb-2" />
-                    <p className="text-[10px] text-gray-400 italic mb-1">(Client Signature)</p>
-                    <p className="text-sm font-bold text-gray-900">{proposal.client_name}</p>
-                    <p className="text-xs text-gray-500">Client</p>
-                    <div className="flex gap-2 mt-4 text-sm text-gray-500">
-                      <span className="w-8">Date:</span>
-                      <div className="border-b border-gray-400 flex-1" />
-                    </div>
+          <PaperSheet proposal={proposal} sectionId="signatures">
+            <div className="mt-auto pt-6">
+              <SectionTitle title="Acceptance & Signatures" />
+              <div className="grid grid-cols-2 gap-16 mt-8">
+                <div>
+                  <div className="border-b border-gray-400 h-10 mb-2" />
+                  <p className="text-[10px] text-gray-400 italic mb-1">(Contractor Signature)</p>
+                  <p className="text-sm font-bold text-gray-900">George Gregg</p>
+                  <p className="text-xs text-gray-500">Great White Construction</p>
+                  <div className="flex gap-2 mt-4 text-sm text-gray-500">
+                    <span className="w-8">Date:</span>
+                    <div className="border-b border-gray-400 flex-1" />
                   </div>
                 </div>
-
-                {user.role === 'client' && proposal.status === 'sent' && (
-                  <div className="mt-12 text-center print:hidden">
-                    <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold px-12" onClick={() => handleStatusChange('accepted')}>
-                      Click Here to Digitally Accept
-                    </Button>
+                <div>
+                  <div className="border-b border-gray-400 h-10 mb-2" />
+                  <p className="text-[10px] text-gray-400 italic mb-1">(Client Signature)</p>
+                  <p className="text-sm font-bold text-gray-900">{proposal.client_name}</p>
+                  <p className="text-xs text-gray-500">Client</p>
+                  <div className="flex gap-2 mt-4 text-sm text-gray-500">
+                    <span className="w-8">Date:</span>
+                    <div className="border-b border-gray-400 flex-1" />
                   </div>
-                )}
-
-                <p className="mt-6 text-sm text-gray-500">
-                  Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
-                </p>
+                </div>
               </div>
+
+              {user.role === 'client' && proposal.status === 'sent' && (
+                <div className="mt-12 text-center print:hidden">
+                  <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-bold px-12" onClick={() => handleStatusChange('accepted')}>
+                    Click Here to Digitally Accept
+                  </Button>
+                </div>
+              )}
+
+              <p className="mt-6 text-sm text-gray-500">
+                Upon signature, the client agrees to this proposal along with the terms, conditions for the proposal and to supply the first payment for the project.
+              </p>
             </div>
           </PaperSheet>
         </div>
