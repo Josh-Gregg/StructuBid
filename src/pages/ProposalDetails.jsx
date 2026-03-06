@@ -167,10 +167,54 @@ export default function ProposalDetails() {
     allPages.forEach((p) => {p.style.display = '';});
   };
 
-  const handlePrintAll = () => {
-    const allPages = document.querySelectorAll('.print-page');
-    allPages.forEach((p) => {p.style.display = '';});
-    window.print();
+  const [isGeneratingPDFs, setIsGeneratingPDFs] = useState(false);
+
+  const handleExportAllPDFs = async () => {
+    setIsGeneratingPDFs(true);
+    const sectionIds = ['cover', 'scope', 'estimate', 'supporting', 'signatures'];
+    const sectionLabels = {
+      cover: 'Cover',
+      scope: 'Scope_of_Work',
+      estimate: 'Estimate',
+      supporting: 'Supporting_Docs',
+      signatures: 'Signatures',
+    };
+
+    for (const sectionId of sectionIds) {
+      const pages = document.querySelectorAll(`.print-page[data-section="${sectionId}"]`);
+      if (pages.length === 0) continue;
+
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' });
+
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i];
+        // Temporarily make visible if hidden
+        const wasHidden = page.closest('[data-section-wrapper]')?.classList.contains('hidden');
+        if (wasHidden) page.closest('[data-section-wrapper]').style.display = 'block';
+
+        const canvas = await html2canvas(page, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: page.offsetWidth,
+          height: page.offsetHeight,
+        });
+
+        if (wasHidden) page.closest('[data-section-wrapper]').style.display = '';
+
+        if (i > 0) pdf.addPage();
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        pdf.addImage(imgData, 'JPEG', 0, 0, 8.5, 11);
+      }
+
+      const filename = `${proposal.project_number || 'Proposal'}_${sectionLabels[sectionId]}.pdf`;
+      pdf.save(filename);
+      // Small delay between downloads
+      await new Promise(r => setTimeout(r, 400));
+    }
+
+    setIsGeneratingPDFs(false);
   };
 
   const handleSendEmail = async () => {
