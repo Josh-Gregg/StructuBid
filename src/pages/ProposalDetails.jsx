@@ -500,9 +500,10 @@ export default function ProposalDetails() {
                 ) : (
                   <div style={{ width: '100%', height: '100%', backgroundColor: '#f3f4f6', borderRadius: '12px', border: '2px dashed #d1d5db' }} />
                 )}
+              </div>
 
               {/* Divider */}
-              <div style={{ height: '2px', backgroundColor: '#042950', marginBottom: '12px', flexShrink: 0 }} />
+              <div style={{ height: '2px', backgroundColor: '#042950', marginTop: '12px', marginBottom: '12px', flexShrink: 0 }} />
 
               {/* Client info grid */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', flexShrink: 0 }}>
