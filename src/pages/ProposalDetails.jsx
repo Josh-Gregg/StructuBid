@@ -9,7 +9,7 @@ import Logo from '../components/Logo';
 import 'react-quill/dist/quill.snow.css';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import htmlDocx from 'html-docx-js/dist/html-docx';
+// html-docx-js loaded dynamically to avoid Vite bundler issues
 
 // ─────────────────────────────────────────────
 // PaperSheet: one 8.5×11in page
