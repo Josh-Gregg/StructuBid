@@ -453,7 +453,7 @@ export default function ProposalDetails() {
         </div>
 
         {/* ── SCOPE OF WORK ── */}
-        <div className={`section-break-before ${activeTab === 'scope' ? '' : 'hidden print:block'}`}>
+        <div className={activeTab === 'scope' ? '' : 'hidden print:block'} data-section-wrapper="scope">
           {proposal.scope_of_work ?
           <RichTextPages
             html={proposal.scope_of_work}
