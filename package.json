@@ -78,7 +78,8 @@
     "vaul": "^1.1.2",
     "zod": "^3.24.2",
     "react-image-crop": "^11.0.5",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "docx": "^8.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
