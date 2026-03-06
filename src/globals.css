@@ -126,8 +126,8 @@
     flex-direction: column !important;
   }
 
-  /* Don't force a blank trailing page after the last sheet */
-  .print-page:last-child {
+  /* Don't force a blank trailing page after the very last sheet in the document */
+  #printable-proposal > div:last-child .print-page:last-child {
     page-break-after: avoid !important;
     break-after: avoid !important;
   }
