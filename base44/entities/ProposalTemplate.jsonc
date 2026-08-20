@@ -1,0 +1,74 @@
+{
+  "name": "ProposalTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "project_type": {
+      "type": "string"
+    },
+    "scope_of_work": {
+      "type": "string"
+    },
+    "executive_summary": {
+      "type": "string"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "line_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "cost_per_unit": {
+                  "type": "number"
+                },
+                "markup_percentage": {
+                  "type": "number"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "show_note": {
+                  "type": "boolean"
+                },
+                "exclude_from_markup": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "round_up_type": {
+      "type": "string",
+      "enum": [
+        "none",
+        "dollar",
+        "ten",
+        "hundred"
+      ],
+      "default": "none"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

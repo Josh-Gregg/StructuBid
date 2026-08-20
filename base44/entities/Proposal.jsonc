@@ -1,0 +1,233 @@
+{
+  "name": "Proposal",
+  "type": "object",
+  "properties": {
+    "client_name": {
+      "type": "string"
+    },
+    "company_name": {
+      "type": "string"
+    },
+    "client_address": {
+      "type": "string"
+    },
+    "client_phone": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "referral_source": {
+      "type": "string"
+    },
+    "project_number": {
+      "type": "string"
+    },
+    "project_type": {
+      "type": "string",
+      "enum": [
+        "residential_remodel",
+        "residential_addition",
+        "custom_home_build",
+        "commercial_tenant_finish",
+        "commercial_new_build"
+      ],
+      "default": "residential_remodel"
+    },
+    "project_address": {
+      "type": "string"
+    },
+    "property_owner": {
+      "type": "string"
+    },
+    "scope_of_work": {
+      "type": "string"
+    },
+    "executive_summary": {
+      "type": "string"
+    },
+    "cover_title": {
+      "type": "string",
+      "default": "Project Proposal"
+    },
+    "cover_subtitle": {
+      "type": "string"
+    },
+    "cover_photo_url": {
+      "type": "string"
+    },
+    "schedule_start_date": {
+      "type": "string"
+    },
+    "schedule_end_date": {
+      "type": "string"
+    },
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "line_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "cost_per_unit": {
+                  "type": "number"
+                },
+                "markup_percentage": {
+                  "type": "number"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "show_note": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "exclude_from_markup": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hide_markups": {
+      "type": "boolean",
+      "default": false
+    },
+    "overall_markup_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "overall_markup_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "flat"
+      ],
+      "default": "percentage"
+    },
+    "tax_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "tax_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "flat"
+      ],
+      "default": "percentage"
+    },
+    "discount_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "discount_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "flat"
+      ],
+      "default": "percentage"
+    },
+    "contingency_percentage": {
+      "type": "number",
+      "default": 10
+    },
+    "round_up_type": {
+      "type": "string",
+      "enum": [
+        "none",
+        "dollar",
+        "ten",
+        "hundred"
+      ],
+      "default": "none"
+    },
+    "assumptions": {
+      "type": "string"
+    },
+    "terms_and_conditions_url": {
+      "type": "string"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "accepted",
+        "rejected"
+      ],
+      "default": "draft"
+    },
+    "change_orders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "client_name",
+    "client_address",
+    "client_phone",
+    "client_email",
+    "project_address",
+    "property_owner",
+    "scope_of_work"
+  ]
+}
